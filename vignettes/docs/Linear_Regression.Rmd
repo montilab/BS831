@@ -1,0 +1,48 @@
+---
+title: "Linear Regression"
+author: "Stefano Monti"
+output:
+  html_document:
+    theme: united
+    toc: yes
+    code_folding: show
+    css: "../style/BS831.css" 
+---
+
+This is the code for the plot shown in slide #42 of BS831\_class03\_ComparativeExperiment.Rmd.
+
+```{r global, echo=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE)
+```
+
+```{r gen.data}
+set.seed(159) # for reproducible results 
+nobs <- 1000   # sample size
+beta0 <- 1     # true intercept
+beta1 <- 0.15  # true slope
+## simulate an imaginary dependent variable (e.g., age between 18-75)
+X <- sample(15:75,nobs,replace=TRUE)
+Y <- rnorm(nobs,mean=beta0 + beta1 * X,sd=1)
+
+## or, equivalently
+## Y <- beta0 + beta1 * X + rnorm(nobs,mean=0,sd=1)
+```
+
+```{r plot.data}
+## png(file.path(OMPATH,"Rmodules/figures/diffanalLM.png"))
+par(mar=c(c(5, 4, 4, 5) + 0.1))
+plot(X,Y,pch=20,xlab="age",ylab="expression")
+abline(beta0,beta1,col="red",lty=3,lwd=2)
+
+## notice the use of 'expression' to display mathematical symbols
+##text(50,2,labels=expression(Y=beta[0]+beta[1]*X),las=1)
+```
+
+We now fit a linear model to the generated data by `lm`.
+
+```{r lm.fit}
+LM <- lm(Y ~ X)
+print(summary(LM))
+```
+
+As you can see, the estimates are quite close to the generating parameters.

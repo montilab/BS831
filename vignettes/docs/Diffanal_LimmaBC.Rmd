@@ -1,0 +1,190 @@
+---
+title: "Gene Expression Differential Analysis based on Limma"
+author: "Stefano Monti"
+output:
+  html_document:
+    theme: united
+    toc: yes
+    code_folding: show
+    css: "../style/BS831.css" 
+---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
+devtools::load_all(".")
+require(Biobase)
+require(limma)
+```
+
+Here, we present a couple of simple examples of differential analysis
+based on `limma`. In particular, we show how the design matrix can be
+constructed using different 'codings' of the regression variables.
+We also define a simple wrapper function that can help us remember the
+different `limma` steps.
+
+This document also provides examples of how to embed equations into an
+R markdown document, and how to cross-reference those equations.
+
+```{r eval=FALSE}
+require(BS831)
+require(Biobase)
+require(limma)
+```
+
+### Load the Data
+
+We start by loading and pre-processing the necessary expression dataset.
+
+```{r load.data, echo=TRUE}
+## let us load the ExpressionSet, an already simplified version of the
+## ..breast cancer dataset
+data(renamedBreastDB)
+
+dat <- renamedBreastDB
+head(pData(dat))
+table(dat$diseaseState)
+```
+
+### Differential Analysis based on `Limma`
+When the regression variable is categorical (binary in this case), we
+can choose different (yet equivalent) 'codings'. In particular, we can
+fit a standard model
+
+$$
+\begin{equation}
+y = \beta_0 + \beta_1 X_{group},
+\label{eq:lm1}
+\tag{1}
+\end{equation}
+$$
+
+where $X_{group} = 0,1,$ if the observation is from a nonbasal- or a
+basal-type tumor, respectively. Alternatively, we can fit the following model
+
+$$
+\begin{equation}
+y = \beta_{\not{basal}} X_{\not{basal}} + \beta_{basal}X_{basal},
+\label{eq:lm2}
+\tag{2}
+\end{equation}
+$$
+
+where $X_{\not{basal}} = 1,0$, if the observation is from a nonbasal-
+or a basal-type tumor, respectively. Conversely, $X_{basal} = 0,1$, if
+the observation is from a nonbasal- or a basal-type tumor,
+respectively.
+
+The corresponding models in `limma` are defined based on the two
+design matrices `design1`, for model $\eqref{eq:lm1}$, and `design2`,
+for model $\eqref{eq:lm2}$, as follows.
+
+```{r limma.design}
+design1 <- model.matrix( ~ diseaseState, data = pData(dat) )
+colnames(design1) <- c("baseline","basal")      # let's simplify column names  
+design2 <- model.matrix( ~ 0 + dat$diseaseState )
+colnames(design2) <- levels( dat$diseaseState ) # ditto
+
+print(unique(design1)) # showing only one instance of each class
+print(unique(design2)) # ditto
+```
+
+The different designs require slightly different approaches to model
+fitting. In model $\eqref{eq:lm1}$, we want to extract the p-value
+corresponding to the $\beta_{group}$ parameter. In model
+$\eqref{eq:lm2}$, we care about the _difference_ $\beta_{basal} -
+\beta_{\not{basal}}$.
+
+```{r limma.fit}
+## model (1)
+fit1 <- lmFit(dat,design1) # fitting of linear model
+head(fit1$coefficients)
+fit1 <- eBayes(fit1)       # pooling of variance across like-genes
+fit1table <- topTable(fit1,coef="basal",adjust="BH",number=Inf,sort.by="P")
+head(fit1table)
+
+## model (2)
+fit2 <- lmFit(dat,design2) # fitting of linear model
+head(fit2$coefficients)
+## let's define the contrast matrix we need
+contrast.matrix <- makeContrasts((basal-nonbasal),levels=design2)
+fit2 <- contrasts.fit(fit2,contrast.matrix)
+## notice that the contrast coefficient takes the same values as the basal coefficient in design1
+head(fit2$coefficients)
+fit2 <- eBayes(fit2)       # pooling of variance across like-genes
+fit2table <- topTable(fit2,coef=1,adjust="BH",number=Inf,sort.by="P")
+head(fit2table)
+```
+
+Regardless of the 'coding', the results are the same.
+
+```{r limma.compare}
+## compare the results from the two 'codings'
+all.equal(fit2table[,"t"],fit1table[rownames(fit2table),"t"])
+plot(fit2table[,"t"],fit1table[rownames(fit2table),"t"],xlab="design2",ylab="design1")
+```
+
+### Defining a wrapper function
+
+Since running `limma` requires memorizing several commands that are
+not easy to remember, here we define a simple wrapper function that
+will relief us from remembering them all. Incidentally, this is also
+(a simplified version of) the wrapper function defined in `CBMRtools`,
+and it corresponds to the `design2`, model $\eqref{eq:lm2}$, shown above.
+
+It should be noted that this simple wrapper function does not allow
+you to specify additional covariates (confounders). In that case, you
+will have to either define a more advanced wrapper (any volunteer?),
+or revert back to the direct use of limma commands.
+
+```{r limma.wrapper}
+run_limma <- function(
+    eset,                # the expression set
+    treatment,           # pData variable name of the phenotype
+    cond,                # label of the 'treatment' group
+    control,             # label of the 'control' group
+    sort.by="P",         # sort output by given criterion
+    decreasing = FALSE,  # sort order
+    cutoff = NA          # extract only genes above/below 'sort.by' cutoff
+)
+{
+    if ( ncol(fData(eset))<1 ) 
+        stop( "empty fData" )
+    
+    cat( "running limma\n" )
+    test_name <- paste(control, "_vs_", cond, sep = "")
+    treatmentvec <- pData(eset)[, treatment]
+    eset <- eset[, treatmentvec %in% c(cond, control)]
+    treatmentvec <- factor( pData(eset)[, treatment] )
+    design <- model.matrix( ~ 0 + treatmentvec )
+    colnames(design) <- levels( treatmentvec )
+    fit <- lmFit(eset, design)
+    command_str <- paste("makeContrasts(", "(", cond , "-", control, ")", 
+                         ",levels = design)", sep = "")
+    contrast.matrix <- eval( parse(text=command_str) ) 
+    fit2 <- contrasts.fit( fit, contrast.matrix )
+    fit2 <- eBayes(fit2)
+    
+    ## extract full table
+    fit2.table <- topTable(fit2, coef=1, adjust="BH", number=length(fit2), sort.by=sort.by)
+
+    ## extract genes above/below cutoff
+    if( !is.na(cutoff) ) {
+        if (decreasing) {
+            fit2.table <- fit2.table[fit2.table[,sort.by] > cutoff,]
+        }
+        else {
+            fit2.table <- fit2.table[fit2.table[,sort.by] < cutoff,]
+        }
+    }
+    return(fit2.table)
+}
+```
+
+Now, let us test the newly defined function on our data.
+
+```{r run.wrapper}
+fit3table <- run_limma(dat,treatment="diseaseState",cond="basal",control="nonbasal")
+head(fit3table)
+all.equal(fit2table[,"t"],fit3table[rownames(fit2table),"t"])
+```
+

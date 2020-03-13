@@ -1,0 +1,331 @@
+---
+title: "Classification Using Caret"
+author: "Stefano Monti"
+output:
+  html_document:
+    theme: united
+    toc: yes
+    code_folding: show
+    css: "../style/BS831.css" 
+---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
+devtools::load_all(".")
+require(caret)
+require(pROC)
+```
+
+```{r eval=FALSE}
+require(BS831)
+require(caret)
+require(pROC)
+```
+
+## Loading the DrugMatrix Data
+
+Loading data for the classification task. We will be using the
+10-chemical subset of the DrugMatrix dataset, and aim to predict the
+chemicals' carcinogenicity status.
+
+```{r load_data}
+data(dm10)
+
+## DrugMatrix dataset 10 drugs/10 controls
+DM <- dm10
+## show chemicals and their numbers
+table(pData(DM)[,"CHEMICAL"])
+## show carcinogenicity status
+table(pData(DM)[,"Carcinogen_liv"],exclude=NULL)
+## exclude the controls (the ones with carcinogenicity status==NA)
+DM1 <- DM[,!is.na(pData(DM)[,"Carcinogen_liv"])]
+DM1$Carcinogen_liv <- droplevels(DM1$Carcinogen_liv)
+table(pData(DM1)[,"Carcinogen_liv"],exclude=NULL)
+## carry out (drastic) variation filtering
+DM1000 <- variationFilter(DM1,ngenes=1000,score="mad",do.plot=FALSE)
+dim(DM1000)
+```
+
+### Exploratory Data Visualization
+After having uploaded and properly processed the data, we start by
+visualizing them with a heatmap (see `Rmodule_heatmap.Rmd`).
+
+```{r heatmap, fig.width=7, fig.height=10}
+library(ggpubr)
+library(cba)
+library(gridExtra)
+## plotting using heatmap.ggplot2
+p1 <- heatmap.ggplot2(eSet=DM1000,
+                      col.legend.brewer = "",
+                      col.clust = TRUE, row.clust = TRUE,
+                      col.clust.hc = NA, row.clust.hc = NA,
+                      col.lab = c("Carcinogen_liv", "CHEMICAL"), row.lab = "",
+                      heatmap.y.text = FALSE, heatmap.x.text = FALSE,
+                      heatmap.colorlegend.name = "expression",
+                      title.text = "Expression of top 1k MAD filtered genes",
+                      col.legend.name = c("Carcinogen_liv", "CHEMICAL"),
+                      row.legend.name = "",
+                      row.scaling = "z-score.capped",
+                      z.norm = FALSE,
+                      cuttree.col = 0, cuttree.row = 0,
+                      verbose = FALSE,
+                      grid.heights =c(1,1.5,0.5,4,0.5,0.5,0.5)/sum(c(1,1.5,0.5,4,0.5,0.5,0.5)),
+                      show = FALSE)
+grid.arrange(p1)
+```
+
+## Classifying the Carcinogenicity Status of Compounds
+
+### Data partitioning
+
+Here, we perform the data partition into discovery and validation sets
+(alternatively, into train and test sets).
+
+We start by simplifying the phenotype labels.
+
+```{r classify_1}
+set.seed(3456) # for reproducible results
+
+## some renaming to make data handling simpler
+DM1000$CHEMICAL <- factor(DM1000$CHEMICAL)              # ensuring phenoype is a factor
+DM1000$Carcinogen_liv <- factor(DM1000$Carcinogen_liv)  # ditto
+levels(DM1000$Carcinogen_liv)[levels(DM1000$Carcinogen_liv)=="NON-CARC"] <- "noncarc"
+levels(DM1000$Carcinogen_liv)[levels(DM1000$Carcinogen_liv)=="CARCINOGEN"] <- "carc"
+table(pData(DM1000)[,c( "CHEMICAL", "Carcinogen_liv")]) # show composition
+```
+
+We then perform the _stratified_ partition, whereby stratified means
+that both subsets should have a relatively equal representation of the
+two classes ('noncar' and 'carc').
+
+Also, notice that there is an additional level of complexity here,
+because we have multiple replicates for each chemical. Hence, if we
+were to carry out the split 'naively', we might end up with
+representative of the same chemicals _both_ in the discovery and
+validation set, which would not be appropriate (it would be
+'cheating').
+
+To address this issue, we carry out the partition at the _chemical_
+level, rather than the _sample_ level. That is, we partition the
+chemicals into a discovery and validation set, so that _all_ the
+replicates of a given chemical will be assigned to either the
+discovery or the validation set.
+
+```{r classify_2}
+## data partitioning into discovery and validation set
+CHEMICALGROUP <- pData(DM1000)[!duplicated(pData(DM1000)$CHEMICAL),c("CHEMICAL", "Carcinogen_liv")]
+discoveryCHEMICALindex <- createDataPartition(CHEMICALGROUP$Carcinogen_liv, p=0.6, list=FALSE, times=1)
+discoveryCHEMICAL <- CHEMICALGROUP$CHEMICAL[discoveryCHEMICALindex]
+validationCHEMICAL <- CHEMICALGROUP$CHEMICAL[-discoveryCHEMICALindex]
+
+## split data into discovery and validation set (all replicates belong to one or the other)
+DM1000discovery <- DM1000[,DM1000$CHEMICAL %in% discoveryCHEMICAL]
+DM1000validation <- DM1000[,DM1000$CHEMICAL %in% validationCHEMICAL]
+
+discovery <- data.frame(t(Biobase::exprs(DM1000discovery)))
+discoveryLab <- factor(DM1000discovery$Carcinogen_liv, levels = c("noncarc", "carc"))
+
+validation <- data.frame(t(Biobase::exprs(DM1000validation)))
+validationLab <- factor(DM1000validation$Carcinogen_liv, levels = c("noncarc", "carc"))
+```
+
+### Model Fitting on the Training Set
+
+We now fit a KNN classifier. We evaluate several versions, based on
+different numbers of neighbors, and evaluate the performance of each
+by 5-fold cross-validation (cv).
+
+```{r classify_3}
+## KNN with 5x cross validation
+fitControl <- trainControl(method="cv",
+                           number=5,
+                           classProbs=T,
+                           summaryFunction=twoClassSummary)
+set.seed(1234) # for reproducible results
+
+## evaluate on train set based on area under the ROC (AUC)
+KNN <- train(x=discovery,
+             y=discoveryLab,
+             method="knn",
+             trControl=fitControl,
+             tuneGrid=expand.grid(.k=c(3,5,7,9,20)),
+             metric='ROC')
+## summary of performance across each value of tuning parameters
+KNN
+plot(KNN, metric = "ROC")
+
+## show the parameters that yield the most accurate classifier (as estimated by cv)
+KNN$bestTune
+
+#final model used and performance across test sets of each fold
+KNN$finalModel
+```
+
+**WARNING**: It should be noted that the internal cv performed by caret in
+this case does not take into account the problem of multiple
+replicates per chemical. Thus the cv estimates of accuracy (based on
+AUC) will in general be over-optimistic. However, we will hope that
+all the estimates will be equally over-optimistic, thus allowing us to
+select the best model parameterization.
+
+### Validation on the Test Set
+
+After having selected the "best" classifier, we can now apply it to
+the validation set.
+
+```{r classify_4}
+## predicting the validation data:
+pred <- predict(KNN,validation)
+
+## or predicting using the probabilities (nice because you can get ROC)
+probs <- extractProb(list(model=KNN),
+                     testX=validation,
+                     testY=validationLab)
+
+## removing trainings data
+probs <- probs[probs$dataType!='Training',]
+
+## Make sure the levels are appropriate for twoClassSummary(), ie case group is first level
+levs <- c("carc", "noncarc")
+probs$obs <- factor(probs$obs, levels = levs)
+probs$pred <- factor(probs$pred, levels = levs)
+
+## Calculating Accuracy
+mean(probs$obs==probs$pred)
+
+## see classification prob for each sample in validation set
+## pred column shows model predicted label if cutoff for calling label = 0.5
+table(probs$obs, probs$pred)
+
+## summary of performance result on validation set
+twoClassSummary(probs, lev = levels(probs$obs))
+```
+
+### Random Forest
+
+#### Model Fitting on the Training Set
+
+Next we fit a Random Forest classifier. We evaluate several versions, based on
+different numbers of random features to be used for each tree, and evaluate the performance of each by 5-fold cross-validation (cv). Note, that a commonly features per tree is $\sqrt{total\; features}$, in this case $\sqrt{total\; features} = \sqrt{1000} \sim 32$.
+
+```{r classify_5}
+## RandomForest with 5x cross validation
+fitControl <- trainControl(method="cv",
+                           number=5,
+                           classProbs=T,
+                           summaryFunction=twoClassSummary)
+
+set.seed(1234) # for reproducible results
+
+## evaluate on train set based on area under the ROC (AUC)
+RF <- train(x=discovery,
+             y=discoveryLab,
+             method="rf",
+             trControl=fitControl,
+             tuneGrid=expand.grid(mtry=c(32, 50, 100, 250, 500)),
+             metric='ROC')
+## summary of performance across each value of tuning parameters
+RF
+plot(RF, metric = "ROC")
+
+## show the parameters that yield the most accurate classifier (as estimated by cv)
+RF$bestTune
+
+#final model used and performance across test sets of each fold
+RF$finalModel
+```
+
+#### Validation on the Test Set
+
+All of the classifiers work well on the training data.  A nice thing about Random Forests are that they're performance is fairly robust to different parameter choices  We'll end using use $\sqrt{total\; features} = \sqrt{1000} \sim 32$ , we can now apply it to the validation set.
+
+```{r classify_6}
+## predicting the validation data:
+predRF <- predict(RF,validation)
+
+## or predicting using the probabilities (nice because you can get ROC)
+probsRF <- extractProb(list(model=RF),
+                     testX=validation,
+                     testY=validationLab)
+
+## removing trainings data
+probsRF <- probsRF[probsRF$dataType!='Training',]
+
+## Make sure the levels are appropriate for twoClassSummary(), ie case group is first level
+levs <- c("carc", "noncarc")
+probsRF$obs <- factor(probsRF$obs, levels = levs)
+probsRF$pred <- factor(probsRF$pred, levels = levs)
+
+## Calculating Accuracy
+mean(probsRF$obs==probsRF$pred)
+
+## see classification prob for each sample in validation set
+## pred column shows model predicted label if cutoff for calling label = 0.5
+table(probsRF$obs, probsRF$pred)
+
+## summary of performance result on validation set
+twoClassSummary(probsRF, lev = levels(probsRF$obs))
+```
+
+### Support Vecor Machine (Linear Kernel)
+
+#### Model Fitting on the Training Set
+
+Next we fit a SVM classifier with a linear. We evaluate several versions, based on different cost parameters, and evaluate the performance of each by 5-fold cross-validation (cv). SVM attempts to separate each group by a hyperplane over all variables by maximizing the distance (or margin) between this hyperplane and the closest points to it. The cost parameter controls the leniency of certain points falling on the wrong side of this hyperplane if it means the margin of the hyperplane to other points to be greater. This is to control overfitting.  Large cost parameters don't allow for any points in the training data to be misclassified.
+
+```{r classify_7}
+## SVM with 5x cross validation
+fitControl <- trainControl(method="cv",
+                           number=5,
+                           classProbs=T,
+                           summaryFunction=twoClassSummary)
+
+set.seed(1234) # for reproducible results
+
+## evaluate on train set based on area under the ROC (AUC)
+SVM <- train(x=discovery,
+             y=discoveryLab,
+             method="svmLinear2",
+             trControl=fitControl,
+             tuneGrid=expand.grid(cost=10^(seq(-4.5, -3, by = 0.05))),
+             metric='ROC')
+## summary of performance across each value of tuning parameters
+SVM
+plot(SVM, metric = "ROC")
+
+## show the parameters that yield the most accurate classifier (as estimated by cv)
+SVM$bestTune
+
+#final model used and performance across test sets of each fold
+SVM$finalModel
+```
+
+#### Validation on the Test Set
+
+```{r classify_8}
+## predicting the validation data:
+predSVM <- predict(SVM,validation)
+
+## or predicting using the probabilities (nice because you can get ROC)
+probsSVM <- extractProb(list(model=SVM),
+                     testX=validation,
+                     testY=validationLab)
+
+## removing trainings data
+probsSVM <- probsSVM[probsSVM$dataType!='Training',]
+
+## Make sure the levels are appropriate for twoClassSummary(), ie case group is first level
+levs <- c("carc", "noncarc")
+probsSVM$obs <- factor(probsSVM$obs, levels = levs)
+probsSVM$pred <- factor(probsSVM$pred, levels = levs)
+
+## Calculating Accuracy
+mean(probsSVM$obs==probsSVM$pred)
+
+## see classification prob for each sample in validation set
+## pred column shows model predicted label if cutoff for calling label = 0.5
+table(probsSVM$obs, probsSVM$pred)
+
+## summary of performance result on validation set
+twoClassSummary(probsSVM, lev = levels(probsSVM$obs))
+```

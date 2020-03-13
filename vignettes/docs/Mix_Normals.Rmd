@@ -1,0 +1,114 @@
+---
+title: "Mixture of Normals"
+author: "Stefano Monti"
+output:
+  html_document:
+    theme: united
+    toc: yes
+    code_folding: show
+    css: "../style/BS831.css" 
+---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
+devtools::load_all(".")
+require(mclust)
+```
+
+```{r eval=FALSE}
+require(BS831)
+require(mclust)
+```
+
+Here we describe the definition and use of few simple functions to
+generate data and to plot from a univariate mixture of Normal
+distributions. According to R conventions, we define the four functions
+`rmixnorm`, `pmixnorm`, `dmixnorm`, and `qmixnorm`. These functions
+are defined in the file `mixnorm.R`. We also briefly introduce the
+package [`Mclust`](https://www.stat.washington.edu/mclust/) (see [Quick
+Tour](https://cran.r-project.org/web/packages/mclust/vignettes/mclust.html)).
+
+## A simple mixnorm function
+
+Below we define simple functions for sampling from, and computing the
+density of, Gaussian mixtures. In particular, inspect the function
+`rmixnorm` for the operational definition of the _Data Generating
+Process_ discussed in class. We have also defined a function
+`plot.mixnorm` (in `code/mixnorm.R`, not shown here) for plotting a
+mixnorm's density function. See `Distributions.Rmd` for more details on how
+to write a density plotting function.
+
+```{r mixnorm.functions}
+## show the code
+print(rmixnorm) 
+print(dmixnorm)
+```
+
+Below, we generate a sample from a 3-component Gaussian mixture, and
+show the data histogram together with the density plot.
+
+```{r rmixnorm}
+set.seed(345) # for reproducible results
+M3 <- rmixnorm(500,p=rep(1/3,3),mu=c(0,5,10),sigma=c(1,2,3))
+hist(M3,probability=TRUE)
+plot.mixnorm(1000,p=rep(1/3,3),mu=c(0,5,10),sigma=c(1,2,3),add=TRUE)
+
+## Plot's truncated. Let's try the other way around ..
+plot.mixnorm(1000,p=rep(1/3,3),mu=c(0,5,10),sigma=c(1,2,3))
+hist(M3,probability=TRUE,add=TRUE) 
+abline(v=c(0,5,10),lty=3,col='red')
+```
+
+## The MClust package
+
+Here we briefly show the use of <a
+href="http://www.stat.washington.edu/mclust/">MClust</a> (see <a
+href="https://cran.r-project.org/web/packages/mclust/vignettes/mclust.html">vignette</a>),
+a package that implements the fitting of Gaussian mixture models
+(univariate and multivariate), and which uses Expectation Maximization
+(EM) for parameter estimation, and the BIC approximation of the
+marginal likelihood P(D|M) for model selection. We start by fitting
+and testing models with between 1 and 6 mixture components with
+unequal (i.e., cluster-specific) variances.
+
+```{r mclust1}
+MC3fit <- Mclust(M3,G=1:6,model="V")
+summary(MC3fit)
+print(MC3fit$parameters)
+
+## boxplot the data as a function of their cluster assignment
+boxplot(M3~MC3fit$classification)
+```
+
+Even with 500 points, because of the large variance of the 2nd and 3rd
+components, the fitting procedure was not capable of guessing the
+'correct' number of clusters. Let's try by either increasing the
+sample size or decreasing the variance.
+
+```{r mclust.two}
+set.seed(123)
+## increase the sample size
+M3 <- rmixnorm(5000,p=rep(1/3,3),mu=c(0,5,10),sigma=c(1,2,3))
+plot.mixnorm(5000,p=rep(1/3,3),mu=c(0,5,10),sigma=c(1,2,3),main="5,000 data points")
+hist(M3,probability=TRUE,add=TRUE)
+abline(v=c(0,5,10),lty=3,col='red')
+
+MC3fit <- Mclust(M3,G=1:6,model="V")
+summary(MC3fit)
+print(MC3fit$parameters)
+
+## boxplot the data as a function of their cluster assignment
+boxplot(M3~MC3fit$classification)
+abline(h=MC3fit$parameters$mean,col="red",lty=3)
+
+## decrease the variance
+set.seed(123)
+M3 <- rmixnorm(500,p=rep(1/3,3),mu=c(0,5,10),sigma=c(1,1,1))
+plot.mixnorm(500,p=rep(1/3,3),mu=c(0,5,10),sigma=c(1,1,1),main="500 data points")
+hist(M3,probability=TRUE,add=TRUE)
+abline(v=c(0,5,10),lty=3,col='red')
+
+MC3fit <- Mclust(M3,G=1:6,model="V")
+summary(MC3fit)
+print(MC3fit$parameters)
+```

@@ -1,0 +1,105 @@
+---
+title: "Gene Set Projection based on KS"
+author: "Stefano Monti"
+output:
+  html_document:
+    theme: united
+    toc: yes
+    code_folding: show
+    css: "../style/BS831.css" 
+---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
+devtools::load_all(".")
+require(GSVA)
+require(Biobase)
+library(cba)
+```
+In this module, we show how to use Kolmogorov-Smirnov (KS)-based
+scoring to map gene expression data to geneset expression data. The
+approach is useful to _abstract_ from the gene level to the signature
+or pathway level, thus making the data more interpretable while at the
+same time making them more robust to potential batch-to-batch effects.
+
+```{r eval=FALSE}
+library(BS831)
+require(GSVA)
+require(Biobase)
+library(cba)
+```
+
+We start by requiring the necessary package and loading the data. The
+data consists of two objects: a "toy" expression dataset of 126 genes
+(`gsp.eSet`); and a list of four genesets (`gsp.GeneSet`).
+
+```{r load_data}
+data(gspData)
+
+## make sure the expected objects have been uploaded ..
+if (is.null(gsp.eSet)) stop("is.null(gsp.eSet)")
+if (is.null(gsp.GeneSet)) stop("is.null(gsp.GeneSet)")
+
+## show the size of the genesets and of the expression dataset
+print(sapply(getGeneSet(gsp.GeneSet),length))
+print(dim(gsp.eSet))
+```
+
+We then rename the dataset rows, so as to have them indexed by gene symbols.
+
+```{r rename}
+DAT1 <- gsp.eSet[fData(gsp.eSet)[,"symbol"]!="",]     # eliminate rows w/o gene symbols
+Biobase::exprs(DAT1) <- log2(Biobase::exprs(DAT1)+1)                    # log-transform the data
+featureNames(DAT1) <- toupper(fData(DAT1)[,"symbol"]) # replace row names
+```
+
+We next visualize the raw, gene-level, data. We use the heatmap
+function avaliable from *heatmap.ggplot.R*.
+
+```{r visualize_raw, message=FALSE, warning=FALSE, results='hide'}
+gradeID <- 'my_grade'
+stageID <- 'my_stage'
+p1 <- heatmap.ggplot2(eSet=DAT1,col.clust=TRUE,row.clust=TRUE,
+                      col.lab=c(gradeID,stageID),row.lab="",
+                      heatmap.y.text=TRUE, heatmap.x.text=FALSE,
+                      heatmap.colorlegend.name="RNASeq_expression",
+                      title.text="TCGA BRCA log2 gene expression",
+                      col.legend.name=c(gradeID,stageID), row.legend.name="", 
+                      row.scaling="z-score.capped",z.norm=FALSE, 
+                      cuttree.col=0, cuttree.row=0,
+                      verbose=FALSE, show=TRUE)
+grid.arrange(p1)
+```
+
+We next use the package `gsva` to perform single sample geneset projection.
+
+```{r runGSP, warning=FALSE}
+GSPdir <- gsva(DAT1, getGeneSet(gsp.GeneSet), mx.diff=FALSE, verbose=FALSE, parallel.sz=1)
+## extract the ExpressionSet
+print(dim(GSPdir))
+```
+
+.. and visualize the results. In this toy example, we projected onto
+four genesets only. In reality, one can use an entire geneset
+compendium (e.g., all genesets in MSigDB's
+<a href="http://software.broadinstitute.org/gsea/msigdb/genesets.jsp?collection=CP">c2.cp</a>
+compendium) to obtain
+a richer output.
+
+```{r visualize, message=FALSE, warning=FALSE,results='hide'}
+gradeID <- 'my_grade'
+stageID <- 'my_stage'
+## shorten the geneset names
+featureNames(GSPdir) <- c("WNT_BCATENIN","BCATENIN.CSNK1E","BCATENIN.CTBP1","TGF_BETA")
+p2 <- heatmap.ggplot2(eSet=GSPdir,col.clust=TRUE,row.clust=TRUE,
+                      col.lab=c(gradeID,stageID),row.lab="",
+                      heatmap.y.text=TRUE, heatmap.x.text=FALSE,
+                      heatmap.colorlegend.name="RNASeq_expression",
+                      title.text="TCGA BRCA log2 gene set projection",
+                      col.legend.name=c(gradeID,stageID), row.legend.name="", 
+                      row.scaling="none",z.norm=FALSE, 
+                      cuttree.col=0, cuttree.row=0, 
+                      verbose=FALSE, show=TRUE)
+grid.arrange(p2)
+```
+

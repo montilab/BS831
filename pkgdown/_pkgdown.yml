@@ -1,0 +1,96 @@
+url: https://github.com/montilab/BS831
+
+development:
+  mode: auto
+
+template:
+  params:
+    bootswatch: simplex
+
+authors:
+  Stefano Monti:
+    href: https://github.com/tetomonti
+  Amy Li:
+    href: https://github.com/lia978
+  Eric Reed:
+    href: https://github.com/ericreed
+  Anthony Federico:
+    href: https://github.com/anfederico
+
+navbar:
+  title: "BS831"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Markdowns"
+      menu:
+      - text: Introduction to Genomics Analysis
+      - text: "Efficient Computation in R"
+        href: articles/docs/matrixOp.html
+      - text: "The ExpressionSet Data Object"
+        href: articles/docs/ExpressionSet.html
+      - text: "Probability Distributions"
+        href: articles/docs/Distributions.html
+      - text: "Mixture of Normals"
+        href: articles/docs/Mix_Normals.html
+      - text: -------
+      - text: "Preprocessing and Quality Control"
+      - text: "Data Acquisition and ExpressionSet Basics"
+        href: articles/docs/Microarray_Processing.html
+      - text: "Quality Control"
+        href: articles/docs/microarrayQC.html
+      - text: "Dimensionality Reduction"
+        href: articles/docs/Dimensionality_Reduction.html
+      - text: "Heatmaps"
+        href: articles/docs/Heatmaps.html
+      - text: "Hierarchical Clustering"
+        href: articles/docs/hclust.html
+      - text: "Quantile Normalization"
+        href: articles/docs/quantileNormalization.html
+      - text: -------
+      - text: "Comparative Experiments I: Microarrays and Linear Models"
+      - text: "Sample Size and Statistical Significance"
+        href: articles/docs/SampleSize.html
+      - text: "Multiple-Hypothesis Correction"
+        href: articles/docs/MHTcorrection.html
+      - text: "Linear Regression"
+        href: articles/docs/Linear_Regression.html
+      - text: "Differential Analysis as Linear Regression"
+        href: articles/docs/diffanalLM.html
+      - text: "Gene Expression Differential Analysis with Microarrays"
+        href: articles/docs/Diffanalysis.html
+      - text: "Gene Expression Differential Analysis based on Limma"
+        href: articles/docs/Diffanal_LimmaBC.html
+      - text: -------
+      - text: "Comparative Experiments II: RNA-seq and Generalized Lineary Models"
+      - text: "RNA-Seq Data Scaling and Normalization"
+        href: articles/docs/RNAseq_ScalNorm.html
+      - text: "RNA-seq Differential Expression Analysis with DEseq2, edgeR and limma"
+        href: articles/docs/DiffanalysisRNAseqComparison.html
+      - text: -------
+      - text: "Comparative Experiments III: Differential Enrichment Analysis"
+      - text: "HyperGeometric Enrichment"
+        href: articles/docs/HyperEnrichment.html
+      - text: "KS-based Enrichment"
+        href: articles/docs/KS_Enrichment.html
+      - text: "Gene Set Projection based on KS"
+        href: articles/docs/GeneSetProjectionGSVA.html
+      - text: "Geneset projection based on ASSIGN"
+        href: articles/docs/GeneSetProjectionASSIGN.html
+      - text: -------
+      - text: "Classification"
+      - text: "Feature Redundancy: the Good and the Bad"
+        href: articles/docs/featureRedundancy.html
+      - text: "Classification Using Caret"
+        href: articles/docs/Classification_Caret.html
+      - text: -------
+      - text: "Clustering"
+      - text: "Mapping genesets for KS testing"
+        href: articles/docs/GenesetMapping4KS.html
+      - text: "Clustering and Heatmap Visualization"
+        href: articles/docs/Clustering.html
+    - text: "Reference"
+      href: reference/index.html
+  right:
+    - icon: fa-github
+      href: https://github.com/montilab/BS831

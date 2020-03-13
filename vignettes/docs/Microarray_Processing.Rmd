@@ -1,0 +1,224 @@
+---
+title: "Data Acquisition and ExpressionSet Basics"
+author: "Anthony Federico, Stefano Monti"
+output:
+  html_document:
+    theme: united
+    toc: yes
+    code_folding: show
+    css: "../style/BS831.css" 
+---
+
+In this module, we illustrate how to download gene expression datasets
+from [GEO](http://www.ncbi.nlm.nih.gov/geo).
+
+To this end, we will download and pre-process the gene expression data from the LOAD
+(Late Onset Alzheimer Disease) study in
+<a href="http://www.cell.com/fulltext/S0092-8674(13)00387-5">
+[Zhang et al., Cell 2013]
+</a>. The dataset consists of 690 samples corresponding to three brain
+regions (cerebellum, prefrontal cortex, ) from 230 subjects, including 121 LOAD patients and 109 controls.
+
+```{r include=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
+devtools::load_all(".")
+require(GEOquery)
+require(Biobase)
+overwrite <- FALSE
+```
+
+We start by loading some required packages and functions.
+
+```{r settings, eval=FALSE}
+require(BS831)
+require(GEOquery)
+require(Biobase)
+overwrite <- FALSE
+```
+
+
+# Download data from GEO
+
+We start by downloading the data from GEO. We will then show two
+approaches to adding gene annotation to the expression matrix, one
+based on the use of already available annotation available on GEO, and
+another one based on "de-novo" annotation based on the `biomaRt`
+package.
+
+```{r process.data1}
+## Download expression data from GEO and store in temporary directory
+tmp_dir <- tempdir()
+LOAD <- getGEO(GEO="GSE44772", GSEMatrix=TRUE, destdir=tmp_dir)
+LOAD <- LOAD[[1]] # getGEO returns a list, so we extract the first element
+print(LOAD)       # display summary info for the object
+```
+
+## Use pre-existing Gene Annotation
+
+We first show how to use already available gene annotation
+information. To this end, we manually downloaded to the data/ subfolder the
+[GPL4372.annot](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL4372)
+file from geo, then ran the following command.
+
+```{r download.gene.annotation}
+## read.delim can read compressed files
+fdata <- read.delim(file=file.path(system.file("extdata", package="BS831"), "GPL4372.annot"), skip=27,row.names=1)
+print(colnames(fdata))
+```
+
+There are many more annotation columns than needeed, thus we extract
+some relevant columns, and since we are at it, we also properly sort
+the rows, and rename the columns, for easier handling.
+
+```{r process.data2}
+fdata <- fdata[match.nona(featureNames(LOAD),rownames(fdata)),c("Gene.symbol","Gene.title","Gene.ID")]
+## modifying fdata colnames for ease of handling
+colnames(fdata) <- gsub("Gene.symbol","gene_symbol",colnames(fdata))
+colnames(fdata) <- gsub("Gene.title","gene_title",colnames(fdata))
+colnames(fdata) <- gsub("Gene.ID","GeneID",colnames(fdata)) 
+
+## always be super-cautious, double- and triple-check
+if ( any(featureNames(LOAD)!=rownames(fdata)) ) stop( "row mismatch" )
+
+## finally, update the gene annotation in the ExpressionSet
+LOAD1 <- LOAD
+fData(LOAD1) <- fdata
+
+## save data
+if (overwrite) {
+    saveRDS(LOAD1, file=file.path(OMPATH,"data/LOAD1.RDS"))
+}
+```
+
+## Gene Annotation based on `biomaRt`
+
+We will use the `EntrezGeneID` column in the fData to
+retrieve gene symbols and descriptions with `biomaRt`.
+
+```{r biomaRt}
+## check the annotation columns in fData
+print(colnames(fData(LOAD)))
+
+## we first restrict to rows w/ non-empty EntrezGeneID annotation
+LOAD <- LOAD[!is.na(fData(LOAD)[,"EntrezGeneID"]),]; nrow(LOAD)
+
+## notice that there are replicate entries, but we will deal with them later
+print( length(unique(fData(LOAD)[,"EntrezGeneID"])) )
+
+## use biomaRt databased to retrieve the relevant annotation (type
+## `?useMart` and `?getBM` for details)
+mart <- biomaRt::useMart(biomart="ensembl", dataset="hsapiens_gene_ensembl")
+martMap <- biomaRt::getBM(attributes=c("entrezgene_id","hgnc_symbol","description"),
+                          filters="entrezgene_id",
+                          values=fData(LOAD)[,"EntrezGeneID"],
+                          mart=mart)
+
+## remove entries with empty gene symbol
+nrow(martMap) # before
+martMap <- martMap[martMap[,"hgnc_symbol"]!="",]
+nrow(martMap) # after
+
+## notice that there are some duplicated entrez IDs and gene symbols
+sum(base::duplicated(martMap[,"entrezgene_id"]))     
+sum(base::duplicated(martMap[,"hgnc_symbol"]))
+
+## we adopt the simple (perhaps too simple) approach of taking the
+## first occurence of each EntrezID
+nrow(martMap)
+martMap <- martMap[match(unique(martMap[,"entrezgene_id"]),martMap[,"entrezgene_id"]),]
+nrow(martMap)
+
+## now there are no more replicated EntrezID (but there are still replicate gene symbols)
+sum(base::duplicated(martMap[,"entrezgene_id"]))     
+sum(base::duplicated(martMap[,"hgnc_symbol"]))
+
+## let us now match gene annotation and expression data
+matchIdx <- match.nona( martMap[,"entrezgene_id"], fData(LOAD)[,"EntrezGeneID"] )
+LOAD2 <- LOAD[matchIdx,]
+if ( any(martMap[,"entrezgene_id"]!=fData(LOAD2)[,"EntrezGeneID"]) ) stop( "row mismatch" )
+fData(LOAD2) <- martMap
+
+## save data
+if (overwrite) {
+    saveRDS( LOAD2, file=file.path(OMPATH,"data/LOAD2.RDS") )
+}
+```
+
+## Merge Replicated Entries
+
+This next step is not necessary, as one might want to keep the
+multiple chip probes associated with the same gene symbol separate until
+the end of the analysis. However, if desired, one can merge the rows
+corresponding to multiple probes.
+
+Here, we define a simple function to collapse multiple rows by
+median. The function is based on the R functions `melt` and `dcast`
+defined in the package `reshape2`.
+
+```{r collapseByMedian.function}
+require(reshape2)
+collapseByMedian <- function(eset, rowid)
+{
+    ## require(reshape2)
+
+    ## remove unmapped probe sets
+    genes <- fData(eset)[, rowid]
+    rows.mapped <- !is.na(genes) & genes != ""
+    eset <- eset[rows.mapped,]
+    genes <- fData(eset)[, rowid]
+
+    ## collapse by median value among duplicate probes
+    df <- data.frame(exprs(eset), genes = genes)
+    df.melt <- melt(df, id.vars = "genes")
+    df.median.collapsed <- dcast(df.melt, genes ~ variable, median)
+
+    ## reassemble collapsed eset
+    fdat <- fData(eset)
+    if ( any(is.na(roworder <- match(df.median.collapsed[,'genes'],fdat[,rowid]))) )
+        stop( "something wrong" )
+    fdat.collapsed <- fdat[roworder,]
+    eset <- ExpressionSet(assayData=as.matrix(df.median.collapsed[, colnames(eset)]),
+                          phenoData=AnnotatedDataFrame(pData(eset)),
+                          featureData=AnnotatedDataFrame(fdat.collapsed))
+    return(eset)
+}
+collapseByFun <- function(eset,rowid,method=c("median","mean"))
+{
+    tbl <- data.frame(key=fData(eset)[,rowid],
+                      exprs(eset))
+    tbl1 <- tbl %>% group_by(key) %>% summarize_all(median)
+
+    dat <- as.matrix(tbl1[,-match("key",colnames(tbl1))])
+    rownames(dat) <- tbl1[,match("key",colnames(tbl1))]
+
+    ExpressionSet(assayData=dat,
+                  phenoData=pData(eset)[,match(colnames(dat),sampleNames(eset))],
+                  featureData=fData(eset)[match(rownames(dat),fData(eset)[,rowid]),])
+    
+}
+```
+
+We now apply `collapseByMedian` to both
+LOAD1 (n=`r sum(base::duplicated(fData(LOAD1)[,"gene_symbol"]))` duplicates), and 
+LOAD2 (n=`r sum(base::duplicated(fData(LOAD2)[,"hgnc_symbol"]))` duplicates).
+Notice that running it on a 600+ sample size is somewhat slow.
+
+```{r collapse.load1, eval=FALSE}
+nrow(LOAD1)
+LOAD1.collapsed <- collapseByMedian(LOAD1, rowid="gene_symbol")
+nrow(LOAD1.collapsed)
+if (overwrite) {
+    saveRDS(LOAD1.collapsed,file=file.path(OMPATH,"data/LOAD1.collapsed.RDS"))
+}
+tbl <- data.frame(key=c("a","b","a","b"),col1=1:4,col2=5:8)
+
+```
+
+```{r collapse.load2, eval=FALSE}
+nrow(LOAD2)
+LOAD2.collapsed <- collapseByMedian(LOAD2, rowid="hgnc_symbol")
+nrow(LOAD2.collapsed)
+if (overwrite) {
+    saveRDS(LOAD2.collapsed,file=file.path(OMPATH,"data/LOAD2.collapsed.RDS"))
+}
+```

@@ -1,0 +1,48 @@
+---
+title: "Differential Analysis as Linear Regression"
+author: "Stefano Monti"
+output:
+  html_document:
+    theme: united
+    toc: yes
+    code_folding: show
+    css: "../style/BS831.css" 
+---
+
+This is the code for the plot shown in slide #45 of
+BS831\_class03\_ComparativeExperimentLM.Rmd ("Differential Analysis as linear regression (LM)").
+
+```{r global, echo=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE)
+```
+
+```{r gen.data}
+set.seed(159) # for reproducible results 
+nobs <- 10000 # sample size
+beta0 <- 5    # mean in class 0
+beta1 <- 1.5  # beta0 + this is mean in class 1
+X <- sample(0:1,nobs,replace=TRUE)
+Y <- rnorm(nobs,mean=beta0 + beta1 * X,sd=1)
+
+## or, equivalently
+## Y <- beta0 + beta1 * X + rnorm(nobs,mean=0,sd=1)
+```
+
+```{r plot.data}
+## png(file.path(OMPATH,"Rmodules/figures/diffanalLM.png"))
+par(mar=c(c(5, 4, 4, 5) + 0.1))
+boxplot(Y~X,ylab="Y",pch="-",names=paste("X =",0:1),col="antiquewhite")
+abline(h=c(beta0=beta0,'beta0+beta1'=beta0+beta1),col="red",lty=3,lwd=2)
+
+## notice the use of 'expression' to display mathematical symbols
+axis(side=4,at=c(beta0,beta0+beta1),labels=expression(beta[0],beta[0]+beta[1]),las=1)
+```
+
+We now fit a linear model to the generated data by `lm`.
+
+```{r lm.fit}
+LM <- lm(Y ~ X)
+print(summary(LM))
+```
+
+As you can see, the estimates are quite close to the generating parameters.

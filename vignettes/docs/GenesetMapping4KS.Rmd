@@ -1,0 +1,77 @@
+---
+title: "Mapping genesets for KS testing"
+author: "Amy Li, Eric Reed, Stefano Monti"
+output:
+  html_document:
+    theme: united
+    toc: yes
+    code_folding: show
+    css: "../style/BS831.css" 
+---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
+devtools::load_all(".")
+ngenes <- 10
+```
+
+```{r eval=FALSE}
+require(BS831)
+ngenes <- 10
+```
+
+Let us generate a toy set of `r ngenes` genes with random tScores,
+which we will use to establish a gene ranking and based on
+which we will perform the KS enrichment.
+
+```{r t.scores}
+set.seed(123)
+tScores <- round(rnorm(ngenes,0,1),4)
+names(tScores) <- sprintf("gene%02d",1:ngenes)
+print(tScores)
+```
+
+Notice that the t.score vector is named (i.e., each score is
+labeled by the corresponding gene).
+
+Let's assume the geneset we want to test is the following:
+
+```{r gset}
+gset <- c("gene03","gene05","gene06","gene07")
+```
+
+To establish the geneset members' ranking, and to properly perform the
+KS test, we can proceed in one of two ways.
+
+1. We can sort the t.score vector, find the position of the geneset
+members and call ksGenescore on those positions
+
+```{r sort}
+## sorting the negative of the scores yields decreasing order sort
+## alternatively: sortT <- tScores[order(tScores,decreasing=TRUE)]
+sortT <- sort(-tScores)
+
+## find the geneset members' positions
+idx1 <- match(gset,names(sortT))
+print(idx1) # show those positions (toward the end of the ranking)
+
+## perform ks test
+ksGenescore(ngenes,idx1,do.plot=TRUE,main="by sort")
+```
+
+2. We can compute the rank of the tScores, find the ranks of the
+geneset members, and call ksGenescore on those ranks
+
+```{r rank}
+## computing ranks of minus the scores (to use decreasing order)
+rankT <- rank(-tScores,ties.method="first")
+
+## find the positions of geneset members in the rank list
+idx2 <- match(gset,names(rankT))
+print(rankT[idx2]) # show those ranks
+
+## perform ks test on the ranks
+ksGenescore(ngenes,rankT[idx2],do.plot=TRUE,main="by rank")
+```
+
+

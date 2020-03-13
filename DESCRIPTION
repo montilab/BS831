@@ -1,0 +1,14 @@
+Package: BS831
+Type: Package
+Title: Boston University - Genomics Data Mining
+Version: 1.20.0
+Authors@R: c(person(given="Stefano", family="Monti", email="smonti@bu.edu", role=c("aut","cre")),
+             person(given="Amy", family="Li", role=c("aut")),
+             person(given="Eric", family="Reed", role=c("aut")),
+             person(given="Anthony", family="Federico", role=c("aut")))
+Description: Course Materials for Genomics Data Mining.
+License: GPL-3
+URL: https://github.com/montilab/BS831
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.0.2

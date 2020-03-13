@@ -1,0 +1,92 @@
+---
+title: "Efficient Computation in R"
+author: "Stefano Monti"
+output:
+  html_document:
+    theme: united
+    toc: yes
+    code_folding: show
+    css: "../style/BS831.css" 
+---
+
+```{r global, echo=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE)
+```
+
+Here we show a simple example of the gains in efficiency that can be achieved by taking advantage of matrix operations rather than multiple calls to a function.
+
+In this example, we compare three approaches to computing the row sums
+of a large matrix. In the first (super-inefficient) approach, we make
+use of a double `for` loop. In the second (still slow) approach, we
+make use of the function <code>apply</code>. In the third (most
+efficient) approach, we make use of the cartesian product operator
+`%*%`.
+
+```{r rowSum}
+set.seed(123) # for reproducible results
+N <- 10000000 # 10^7
+X <- matrix(rnorm(N),nrow=N/10,ncol=10) # a 10^6-by-10 matrix
+
+## use of for loop
+forSum <- function(X)
+{
+    rowS <- rep(0,nrow(X))
+    for ( i in 1:nrow(X) )
+        for ( j in 1:ncol(X) )
+            rowS[i] <- rowS[i] + X[i,j]
+    return( rowS )
+}
+T0 <- system.time(tmp0 <- forSum(X))
+print(T0)
+```
+
+```{r rowSum.apply}
+## use of apply function
+T1 <- system.time(tmp1 <- apply(X,1,sum))
+print(T1)
+```
+
+```{r rowSum.inner}
+## use of matrix multiplication
+In <- rep(1,10) # define a unit vector
+T2 <- system.time(tmp2 <- X %*% In)
+print(T2)
+
+## let's measure the speed-up
+T1["sys.self"]/T2["sys.self"] # CPU
+T1["user.self"]/T2["user.self"] # CPU + R/W
+T0["user.self"]/T2["user.self"] # CPU + R/W
+```
+
+As you can see, the matrix-based sum achieves an 80-fold speed-up
+relative to the `apply`-based implementation, and more than a 600-fold
+speed-up relative to the `for loop`-based implementation.
+
+It should be noted that there are actually native R functions for the
+efficient sum of a matrix rows and columns (`rowSums` and
+`colSums`). However, the point of this basic demonstration holds.
+
+```{r colSum.apply}
+## use of apply function
+T3 <- system.time(tmp3 <- apply(X,2,sum))
+print(T3)
+```
+
+```{r colSum.inner}
+## use of matrix multiplication
+In <- rep(1,1000000) # define a unit vector
+T4 <- system.time(tmp4 <- t(X) %*% In)
+print(T4)
+```
+
+```{r colSum.inner2}
+## use of matrix multiplication
+In <- rep(1,1000000) # define a unit vector
+T5 <- system.time(tmp4 <- In %*% X)
+print(T5)
+```
+
+```{r rowSums}
+T6 <- system.time(rowSums(X))
+print(T6)
+```

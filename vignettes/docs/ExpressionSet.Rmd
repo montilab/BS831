@@ -1,0 +1,56 @@
+---
+title: "The ExpressionSet Data Object"
+author: "Stefano Monti"
+output:
+  html_document:
+    theme: united
+    toc: yes
+    code_folding: show
+    css: "../style/BS831.css" 
+---
+
+Simple example of use of the R object `ExpressionSet`,
+ideal for the storage of gene expression or similarly structured omic
+data.
+
+```{r include=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
+devtools::load_all(".")
+require(Biobase)
+```
+
+```{r eval=FALSE}
+require(BS831)
+require(Biobase) # The package with the ExpressionSet definition, among others
+```
+
+An expression set is a data object consisting of three entities: the
+expression matrix (`exprs`), the phenotye data (`pData`), and the
+feature data (`fData`).
+
+![ExpressionSet example](../figs/ExpressionSet.png)
+
+We upload an expression set already available. It corresponds to a subset of samples from a gene expression dataset of head and neck squamous carcinoma (HNSC) primary tissue samples from the TCGA project.
+
+```{r readdata}
+# Load toy dataset
+data(HNSC_RNASeq_toy_ES)
+
+hnsc <- HNSC_RNASeq_toy_ES
+
+dim(hnsc)        # the expression data
+dim(pData(hnsc)) # the phenotypic annotation
+dim(fData(hnsc)) # the genes' annotation
+
+head(pData(hnsc))
+
+head(fData(hnsc))
+```
+
+One of the advantages of using an ExpressionSet is that the three component objects are always properly paired, and subsetting can be carried out straightforwardly.
+```{r subsetting}
+tmp <- hnsc[1:100,1:10]
+dim(tmp)        # the expression data
+dim(pData(tmp)) # the phenotypic annotation
+dim(fData(tmp)) # the genes' annotation
+```

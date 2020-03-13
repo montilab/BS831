@@ -1,0 +1,253 @@
+---
+title: "RNA-Seq Data Scaling and Normalization"
+author: "Eric Reed & Stefano Monti"
+output:
+  html_document:
+    theme: united
+    toc: yes
+    code_folding: show
+    css: "../style/BS831.css" 
+---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
+devtools::load_all(".")
+require(Biobase)
+```
+
+```{r eval=FALSE}
+require(BS831)
+require(Biobase) # the package with the ExpressionSet definition, among others
+```
+
+## Import Head and Neck Cancer Data Set
+
+```{r}
+data(HNSC_htseq_raw_counts_AEvsG1vsG3)
+
+# Read in HNSC data set
+hnsc <- HNSC_htseq_raw_counts_AEvsG1vsG3
+
+# Keep only AE and g1
+hnsc <- hnsc[,hnsc$grade %in% c("AE", "g1")]
+```
+
+## Remove zero counts
+
+```{r}
+# Find sums of counts for each each gene
+geneWiseCounts <- apply(exprs(hnsc), 1, sum)
+head(geneWiseCounts)# What this looks like
+
+# Find genes with at least 1 counts across all samples
+CountGreater0 <- geneWiseCounts > 0
+head(CountGreater0)
+
+# How many genes will be removed (Notice the !)
+sum(!CountGreater0)
+
+# Subset hnsc for CountGreater0 == TRUE
+hnsc <- hnsc[ CountGreater0, ]
+hnsc
+
+# Raw Expression values are counts
+exprs(hnsc)[1:5, 1:5]
+```
+
+## Reads (Fragments) Per Kilobase Million and Transcripts Per Million
+### Transcript Lengths
+
+```{r}
+# Read in table transcript length (and GC content which we don't need)
+len <- read.csv(file.path(system.file("extdata", package="BS831"), "GC_lengths_GRCh38.87.csv"), row.names = 1)
+head(len)
+
+# Subset data for transcripts that are in the transcript length reference file
+hnsc <- hnsc[rownames(hnsc) %in% rownames(len),]
+# Sort data by genes in hnsc
+len <- len[rownames(hnsc),]
+
+# Divide each length by 1000 to get number of kilobases
+len$KB <- len$Length/1000
+```
+
+Reads (Fragments) Per Kilobase Million (RPKM) and Transcripts Per Million (TPM) are metrics to scale gene expression to achieve two goals
+
+1.  Make the expression of genes comparable between samples.
+2.  Make the expression of different genes comparable.
+
+For (1.), the library sizes (number of total reads) will always differ between samples as a technical artifact of RNA sequencing. For (2.), the size of RNA transcripts of each gene is different and we expect more reads to be counted in larger transcripts. 
+
+RPKM and TPM are very similar metrics.  For each gene in each sample ...
+
+$$ RPKM_{gene_i} = \frac{\frac{Counts_{gene_i}}{ \sum^G_{i=1}Counts_{gene_i}}\times 1E6}{Length_{gene_i}/1000} $$
+
+$$ TPM_{gene_i} = \frac{\frac{Counts_{gene_i}}{Length_{gene_i}/1000}}{\sum_{i=1}^G \frac{Counts_{gene_i}}{Length_{gene_i}/1000}} \times 1E6 $$
+Where $G$ is the total number of genes. The difference is subtle, but notice that the library size for RPKM we scale the library size first (sum of raw counts), where for TPM we scale for the transcript size first, and then scale by the the sum of these transformed counts. Only TPM ensures that the scaled library sizes are equal across samples, where the sum of RPKM values differ between samples.
+
+### RPKM (FPKM)
+
+```{r}
+# Create new hnsc object, don't overwrite the previous
+hnscRPKM <- hnsc
+
+# Scale each transcript by the total library size (Total Number of Reads)
+expPKM <- apply( exprs(hnscRPKM), 2, function(x) { x / sum(x) * 1E6} )
+
+# Divide by the transcript length
+exprs(hnscRPKM) <- apply(expPKM, 2, function(x){ x / len$KB })
+exprs(hnscRPKM)[1:5, 1:5]
+
+```
+
+### TPM
+
+```{r}
+# Create new hnsc object, don't overwrite the previous
+hnscTPM <- hnsc
+
+# Divide each gene by transcript length
+expPKB <- apply( exprs(hnscTPM), 2, function(x){ x / len$KB } )
+
+# Divide by the transcript length
+exprs(hnscTPM) <- apply( expPKB, 2, function(x) { x / sum(x) * 1E6} )
+exprs(hnscTPM)[1:5, 1:5]
+
+```
+
+## Comparison of TPM and FPKM
+For TPM, scaled total and mean library sizes are consistent across samples
+```{r}
+
+# Scaled Libary Sizes
+
+## RPKM
+head(colSums(exprs(hnscRPKM)))
+
+# TPM
+head(colSums(exprs(hnscTPM)))
+
+# Mean gene expression
+
+## RPKM
+head(colMeans(exprs(hnscRPKM)))
+
+# TPM
+head(colMeans(exprs(hnscTPM)))
+
+## Plot gene-medians
+hnscRPKMmedian <- apply(exprs(hnscRPKM), 2, median)
+hnscTPMmedian <- apply(exprs(hnscTPM), 2, median)
+plot(hnscRPKMmedian, hnscTPMmedian, xlab = "RPKM", ylab = "TPM", main = "Median Gene TPM versus RPKM")
+```
+
+## Log2 Transform
+
+For general purposes, it is common to log-transorm RNA-Seq count data.  This makes the data resemble a normal distrubution, making it more appropriate for a number of techniques which assume normality, such as Pearson correlation or classic linear modelling.  Log base 2 is a common convention for transforming count data, as the interpretation of the values is relatively straightforwards, i.e. a 1 unit change in $Log_2$ is a two-fold change in expression.  We need to add 1 (a pseudocount) to the expression of each gene before log transforming to ensure that 0 counts aren't transformed to $-\infty$, ($log(0) = -\infty$, $log(1) = 0$).
+
+```{r}
+# Log2 Transform
+
+## RPKM
+hnscRPKM_log2 <- hnscRPKM
+exprs(hnscRPKM_log2) <- log(exprs(hnscRPKM) + 1, 2)
+
+# TPM
+hnscTPM_log2 <- hnscTPM
+exprs(hnscTPM_log2) <- log(exprs(hnscTPM) + 1, 2)
+
+```
+
+### Sample-Level Pearson Correlation
+
+```{r}
+## RPKM
+CORhnscRPKM <- cor(exprs(hnscRPKM))
+
+## Log2(RPKM + 1)
+CORhnscRPKM_log2 <- cor(exprs(hnscRPKM_log2))
+
+## TPM
+CORhnscTPM <- cor(exprs(hnscTPM))
+
+## Log2(TPM + 1)
+CORhnscTPM_log2 <- cor(exprs(hnscTPM_log2))
+
+# Plots
+
+par(mfrow=c(2,2))
+hist(CORhnscRPKM, main = "RPKM", xlab = "", xlim = c(0, 1))
+hist(CORhnscRPKM_log2, main = "log2( RPKM + 1)", xlab = "", xlim = c(0, 1))
+hist(CORhnscTPM, main = "TPM", xlab = "", xlim = c(0, 1))
+hist(CORhnscTPM_log2, main = "log2( TPM + 1)", xlab = "", xlim = c(0, 1))
+```
+
+We observe the correlation between samples is much higher for $log_2$ transformed data, This is because the $log_2$ adheres to the normality assumption of Pearson correlation well.
+
+
+# Trimmed Mean of M-values (TMM) and Relative Log Expression (RLE)
+
+Trimmed mean of M-values (TMM) and Relative Log Expression (RLE), the default scaling method deployed by edgeR and DESeq2, respectively, are more sophisticated approaches.  They are based on the property that RNA-seq does not measure the absolute abundance of transcripts, but rather the relative abundance of transcripts in a sample. This means that quantification of highly expressed genes comes at the cost of quantifying more lowly expressed genes, as they will use up more of the library size.  Each makes the assumption that the majority of genes have similar expression across samples.
+
+## TMM
+
+```{r}
+require(edgeR)
+
+# Normalize expression
+hnscTMM <- hnscTMM_log2  <- hnsc
+DGE <- DGEList(hnscTMM) # Create edgeR specific object
+DGE <- calcNormFactors(DGE, method = "TMM") # Calculate Scaling Factors
+exprs(hnscTMM) <- cpm(DGE,log=FALSE) # Calculate counts per million
+exprs(hnscTMM_log2) <- log(exprs(hnscTMM) + 1, 2) # Calculate log2 counts per million
+
+```
+
+## RLE
+```{r}
+require(DESeq2)
+
+hnscRLE <- hnscRLE_log2  <- hnsc
+dds <- DESeqDataSetFromMatrix(exprs(hnscRLE), pData(hnscRLE), formula( ~ 1)) # Create DEseq2 specific object
+
+dds <- estimateSizeFactors(dds) # Estimate scaling factors
+exprs(hnscRLE) <- counts(dds, normalized=TRUE) # Get counts
+exprs(hnscRLE_log2) <- log(exprs(hnscRLE) + 1, 2) # Calculate log2 counts
+
+```
+
+### Sample-Level Pearson Correlation
+```{r, fig.height=10}
+# Find correlation of TMM and RLE
+
+## TMM
+CORhnscTMM <- cor(exprs(hnscTMM))
+
+## Log2(TMM + 1)
+CORhnscTMM_log2 <- cor(exprs(hnscTMM_log2))
+
+## RLE
+CORhnscRLE <- cor(exprs(hnscRLE))
+
+## Log2(RLE + 1)
+CORhnscRLE_log2 <- cor(exprs(hnscRLE_log2))
+
+
+par(mfrow=c(4,2))
+hist(CORhnscRPKM, main = "RPKM", xlab = "", xlim = c(0, 1))
+hist(CORhnscRPKM_log2, main = "log2(RPKM + 1)", xlab = "", xlim = c(0, 1))
+hist(CORhnscTPM, main = "TPM", xlab = "", xlim = c(0, 1))
+hist(CORhnscTPM_log2, main = "log2(TPM + 1)", xlab = "", xlim = c(0, 1))
+hist(CORhnscTMM, main = "TMM", xlab = "", xlim = c(0, 1))
+hist(CORhnscTMM_log2, main = "log2(TMM + 1)", xlab = "", xlim = c(0, 1))
+hist(CORhnscRLE, main = "RLE", xlab = "", xlim = c(0, 1))
+hist(CORhnscRLE_log2, main = "log2(RLE + 1)", xlab = "", xlim = c(0, 1))
+```
+
+Once again, we observe the correlation between samples is much higher for $log_2$ transformed data, and even moreso for TMM and RLE scaled data.
+
+# Summary
+
+- TPM and RPKM each scale genes by library size and transcript length, but in a different order.
+- TMM and RLE scale based on heuristic assumptions of consistent expression across the majority of genes.
+- Count data may be scaled for more general use than differential expression analysis.

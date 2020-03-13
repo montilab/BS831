@@ -1,0 +1,35 @@
+pandoc: 2.7.3
+pkgdown: 1.4.1
+pkgdown_sha: ~
+articles:
+  Classification_Caret: docs/Classification_Caret.html
+  Clustering: docs/Clustering.html
+  Diffanal_LimmaBC: docs/Diffanal_LimmaBC.html
+  Diffanalysis: docs/Diffanalysis.html
+  DiffanalysisRNAseqComparison: docs/DiffanalysisRNAseqComparison.html
+  Dimensionality_Reduction: docs/Dimensionality_Reduction.html
+  Distributions: docs/Distributions.html
+  ExpressionSet: docs/ExpressionSet.html
+  GeneSetProjectionASSIGN: docs/GeneSetProjectionASSIGN.html
+  GeneSetProjectionGSVA: docs/GeneSetProjectionGSVA.html
+  GenesetMapping4KS: docs/GenesetMapping4KS.html
+  Heatmaps: docs/Heatmaps.html
+  HyperEnrichment: docs/HyperEnrichment.html
+  KS_Enrichment: docs/KS_Enrichment.html
+  Linear_Regression: docs/Linear_Regression.html
+  MHTcorrection: docs/MHTcorrection.html
+  Microarray_Processing: docs/Microarray_Processing.html
+  Mix_Normals: docs/Mix_Normals.html
+  RNAseq_ScalNorm: docs/RNAseq_ScalNorm.html
+  SampleSize: docs/SampleSize.html
+  diffanalLM: docs/diffanalLM.html
+  featureRedundancy: docs/featureRedundancy.html
+  hclust: docs/hclust.html
+  matrixOp: docs/matrixOp.html
+  microarrayQC: docs/microarrayQC.html
+  quantileNormalization: docs/quantileNormalization.html
+  RNAseq_GLM: tutorials/RNAseq_GLM.html
+urls:
+  reference: https://github.com/montilab/BS831/reference
+  article: https://github.com/montilab/BS831/articles
+

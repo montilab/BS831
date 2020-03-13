@@ -1,0 +1,204 @@
+---
+title: "Heatmaps"
+author: "Stefano Monti, Anthony Federico, Amy Li"
+output:
+  html_document:
+    theme: united
+    toc: yes
+    code_folding: show
+    css: "../style/BS831.css" 
+---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
+devtools::load_all(".")
+require(heatmap.plus)
+require(pheatmap)
+require(Biobase)
+require(ggdendro)
+require(scales)
+require(cba)
+require(gtable)
+require(gridExtra)
+library(ComplexHeatmap)
+library(circlize)
+```
+
+```{r eval=FALSE}
+require(BS831)
+require(cba)
+require(heatmap.plus)
+require(pheatmap)
+require(Biobase)
+require(ggdendro)
+require(scales)
+require(gtable)
+require(gridExtra)
+library(ComplexHeatmap)
+library(circlize)
+```
+
+## Visualization of a Gene Expression Dataset: the Drug Matrix 
+
+We will use the DrugMatrix subset previously described for our
+examples. This data corresponds to chemical perturbation experiments,
+whereby rats are exposed to different chemicals, and their liver's RNA
+is profiled. The chemicals are annotated both in terms of their
+carcinogenicity and their genotoxicity, and we will use these two
+phenotypes to color-code the samples in the visualized heatmaps.
+
+```{r drugMatrix, message=FALSE, warning=FALSE}
+data(dm10)
+DM <- variationFilter(dm10, ngenes=500,do.plot=FALSE)
+```
+
+## The Function `heatmap.plus`
+
+We will begin by using `heatmap.plus` to visualize the data. Let us
+first define a simple function to create a color gradient to be used
+for coloring the gene expression heatmaps (this function is already
+defined in the `CBMRtools` package).
+
+```{r colGradient, message=FALSE, warning=FALSE}
+colGradient <- function( cols, length, cmax=255 )
+{
+  ## e.g., to create a white-to-red gradient with 10 levels
+  ##
+  ##   col.gradient(cols=c('white','red'),length=10)
+  ##
+  ## or, to create a blue-to-white-to-red gradients with 9 colors (4 blue's, white, 4 red's)
+  ##
+  ##   col.gradient(cols=c('blue','white','red'),length=9)
+  ##
+  ramp <- colorRamp(cols)
+  rgb( ramp(seq(0,1,length=length)), max=cmax )
+}
+```
+
+Next, let us establish the color coding of the samples in terms of
+their carcinogenicity (NA/negative/positive) and genotoxicity
+(NA/0/1). Notice the use of the function `rainbow` (to generate
+multiple colors), and the use of the function `match` to pair sample
+annotation to colors.
+
+```{r heatplus1, message=FALSE, warning=FALSE}
+## color coding of the samples indicating carcinogenicity status and chemical
+chemicals <- unique(pData(dm10)[,"CHEMICAL"])
+chemPalette <- c("white","green","purple") # we will use the same colors for carc and gtox
+CSC <- cbind(CARC=chemPalette[match(pData(DM)[,"Carcinogen_liv"],c(NA,"NON-CARC","CARCINOGEN"))],
+             GTOX=chemPalette[match(pData(DM)[,"GenTox"],c(NA,0,1))],
+             CHEM=rainbow(length(chemicals))[match(pData(DM)[,"CHEMICAL"],chemicals)])
+
+## color gradient for the expression levels (blue=down-regulated; white=neutral; red=up-regulated)
+bwrPalette <- colGradient(c("blue","white","red"),length=13)
+
+## draw the heatmap (hide row and col labels since they'd be
+## unreadable. Also don't sort rows and columns by hierarchical
+## clustering, by setting Rowv and Colv to 'NA')
+heatmap.plus(exprs(DM),Rowv=NA,Colv=NA,col=bwrPalette,ColSideColors=CSC,labCol=NA,labRow=NA)
+```
+
+We now plot the heatmap with the rows and columns sorted by hierarchical clustering (see `Rmodule_hclust.Rmd`), by _not_ setting the parameters `Rowv` and `Colv`.
+
+```{r heatplus2, message=FALSE, warning=FALSE}
+heatmap.plus(exprs(DM),col=bwrPalette,ColSideColors=CSC,labCol=NA,labRow=NA)
+```
+
+Notice that the color-coding of the expression matrix is somewhat saturated,
+and does not allow for the highlighting of differential expression
+among samples. The subsequent visualization functions have a more
+sophisticated coding of the expression ranges, and will allow for
+better visualization.
+
+## The Function `pheatmap`
+
+We next illustrate the use of the function `pheatmap` from the `pheatmap` package.  This function only requires a numeric matrix as input.  As with `heatmap.plus` it allows for annotation of columns and rows, but with different formatting requirements.  It can perform different clustering methods on rows an columns, either by specifying parameters of the clustering method to use, or by inputting the output of free-standing clustering functions such as `hclust`. Check `?pheatmap` to explore different arguments you can set, there are a lot of them.
+
+First we will format the phenotype annotation for the columns of the heatmap, as well as specify the colors for each category for each variable.
+
+```{r pheatplusannot, message=FALSE, warning=FALSE}
+annot <- pData(DM)[, c("Carcinogen_liv", "GenTox", "CHEMICAL")]
+colnames(annot) <- c("CARC", "GTOX", "CHEM")
+annot$CHEM[annot$CHEM == ""] <- NA
+annot$CHEM <-  factor(annot$CHEM, levels = levels(annot$CHEM)[levels(annot$CHEM)!=""])
+annot$GTOX <- as.factor(annot$GTOX)
+
+annotCol <- list(
+  CARC = chemPalette[-1],
+  GTOX = chemPalette[-1],
+  CHEM = rainbow(length(levels(annot$CHEM)))
+)
+names(annotCol$CARC) <- c("NON-CARC","CARCINOGEN")
+names(annotCol$GTOX) <- c("0","1")
+names(annotCol$CHEM) <- levels(annot$CHEM)
+```
+
+Next, we will create the heatmap, given the expression matrix from DrugMatrix.  Note that the argument `scale = "row"`, specifies that we want to scale each row (or gene) to mean zero, and let the colors denote the number of standard deviations from the mean.
+
+```{r pheatplusrun, message=FALSE, warning=FALSE, fig.align="center", fig.width=10}
+pheatmap(exprs(DM),
+        color=bwrPalette, 
+        annotation_col = annot,
+        annotation_colors = annotCol,
+        show_rownames = FALSE,
+        show_colnames = FALSE,
+        scale = "row")
+```
+
+## The package `ComplexHeatmap`
+
+Here, we illustrate the use of Bioconductor package [`ComplexHeatmap`](https://bioconductor.org/packages/release/bioc/html/ComplexHeatmap.html), one of the most recently developed and most versatile. Its functionalities go well beyond the ones illustrated here.
+
+Here, we show the heatmap ordered by hierarchical clustering (both rows and columns), with the columns split into the four main clusters (as would be determined by `cutree(...,k=4)`).
+
+```{r ComplexHeamap}
+## Scale expression by row 
+print(scale_row)
+DMscaled <- scale_row(DM)
+
+# Take columns you want from phenotype data
+ha.t <- HeatmapAnnotation(CHEMICAL=DMscaled$Carcinogen_liv,
+                          GTOX=as.factor(DMscaled$GenTox),
+                          na_col="ghostwhite",
+                          col=list(CHEMICAL=c("NON-CARC"="green",CARCINOGEN="red"),
+                                   GTOX=c('0'="orange",'1'="purple")))
+
+set.seed(123) ## for reproducibility of the k-means results
+Heatmap(Biobase::exprs(DMscaled),
+        name="expression", 
+        col=colorRamp2(c(-3, 0, 3), c("#072448", "white", "#ff6150")),
+        top_annotation=ha.t, 
+        cluster_rows=TRUE,
+        cluster_columns=TRUE,
+        clustering_distance_rows="euclidean",
+        clustering_method_rows="ward.D",    
+        clustering_distance_columns="euclidean",
+        clustering_method_columns="ward.D", 
+        column_split=4,
+        show_parent_dend_line=TRUE,
+        row_title="",
+        show_column_names=FALSE,
+        show_row_names=FALSE)
+```
+
+In the following example, we use k-means clustering instead to split the dataset into four clusters (`column_km=4`) and then we perform hierarchical clustering within each cluster. To ensure reproducibility of results (since k-means has a random component), we set the random seed first.
+
+```{r ComplexHeatmap.kmeans}
+set.seed(123) ## for reproducibility of the k-means results
+Heatmap(Biobase::exprs(DMscaled),
+        name="expression", 
+        col=colorRamp2(c(-3, 0, 3), c("#072448", "white", "#ff6150")),
+        top_annotation=ha.t, 
+        cluster_rows=TRUE,
+        cluster_columns=TRUE,
+        clustering_distance_rows="euclidean",
+        clustering_method_rows="ward.D",    
+        clustering_distance_columns="euclidean",
+        clustering_method_columns="ward.D", 
+        column_km=4, 
+        show_parent_dend_line=TRUE,
+        row_title="",
+        show_column_names=FALSE,
+        show_row_names=FALSE)
+```
+

@@ -1,0 +1,173 @@
+---
+title: "HyperGeometric Enrichment"
+author: "Stefano Monti"
+output:
+  html_document:
+    theme: united
+    toc: yes
+    code_folding: show
+    css: "../style/BS831.css" 
+---
+
+```{r global, echo=FALSE, include=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE)
+devtools::load_all(".")
+```
+
+```{r eval=FALSE}
+library(BS831)
+```
+
+Here, we show the use of the
+<a href="https://en.wikipedia.org/wiki/Hypergeometric_distribution">
+hyper-geometric distribution</a>
+to test for enrichment of a (biologically relevant) category (e.g., a
+pathway) in a differential gene expression signature. We will show the
+use of the functions `phyper` and `fisher.test`. We will then show the
+definition of a simple script to perform "hyper-enrichment" across
+multiple categories/pathways.
+
+Recall the set-up from the slides (`BS831_class05_ComparativeEnrichment.pptx`).
+![enrichment](../figs/hyper.enrichment.png)
+
+### Loading the Data
+
+We start by loading the package containing the hyperEnrichment
+script. 
+
+We start by loading the code containing the hyperEnrichment
+scripts. 
+
+```{r load_data}
+data(hyper)
+
+print(hyperGsets)
+
+# show the size of the first 10 genesets
+sapply(getGeneSet(hyperGsets)[1:10],length)
+
+# show the size of the signatures
+print(sapply(hyperSig,length))
+
+# let's rename the signatures
+names(hyperSig) <- gsub("UP","REPRESSED",gsub("DN","ACTIVATED",names(hyperSig)))
+```
+
+The genesets (the categories) represent a subset of the genesets
+contained in the MSgigDB's c2.cp compendium. The signatures represent
+the up- and down-regulated genes in oral cancer cell lines where one
+of several regulators (TAZ, YAP, TAZ/YAP, DPAGT1) was knocked down
+(KD).
+
+For example, the "YAP" signature was obtained by performing
+differential analysis on a 6-sample datasets corresponding to
+"knockdown _vs._ control" (3 _vs._ 3) experiments performed on the
+HSC3 oral cancer cell line. The genes significantly down-regulated
+(up-regulated) upon knockdown represent the genes assumed to be
+_activated_ (_repressed_) by TAZ.
+
+### Enrichment test by `phyper`
+
+We first test for enrichment of a single geneset in a single signature
+using the function `phyper` (the cumulative function of the
+hyper-geometric distribution). The background population is set to
+23,467, which represents the number of annotated genes in the dataset
+used to derive the differential signature.
+
+```{r phyper}
+## background population
+backpop <- 23467
+
+## let us extract the signature of YAP-activated genes
+signature <- hyperSig$YAP.ACTIVATED
+
+## and a REACTOME pathway
+pathway <- getGeneSet(hyperGsets)[["REACTOME_TRANSCRIPTION"]]
+
+## let's check the overlap (if any)
+print( overlap <- length(intersect(signature,pathway)) )
+
+## let us take a look at the phyper arguments (call ?phyper for more details)
+print(args(phyper))
+
+## let us apply the function to our data (see figure)
+phyper( q=overlap-1,               # number of red marbles in the draw - 1 (see below)
+        m=length(pathway),         # number of red marbles in urn
+        n=backpop-length(pathway), # number of green marbles in urn 
+        k=length(signature),       # Number of drawn marbles
+        lower.tail=FALSE)          # compute P( X > overlap ), hence the '-1' above
+```
+
+Clearly, the category (pathway) "REACTOME_TRANSCRIPTOME" is highly
+significantly enriched in the signature of YAP-activated genes.
+
+### Enrichment test by `fisher.test`
+
+We then show how we can obtain equivalent results using the
+`fisher.test` function. We first need to properly fill-in a
+contingency table, and then apply the function.
+
+```{r fisher}
+## we need to define the contingency table
+##
+##       | DRAWN   !DRAWN | TOT
+## ------+----------------+----
+## GREEN |  k-q   n-m-k+q | n-m
+##   RED |   q      m-q   |  m
+## ------+----------------+----
+##   TOT |   k      n-k   |  n
+
+contable <- matrix(c(
+    dg=length(signature)-overlap,
+    dr=overlap,
+    ng=backpop-length(signature)-length(pathway)+overlap,
+    nr=length(pathway)-overlap),2,2,dimnames=list(c("GREEN","RED"),c("DRAWN","not DRAWN")))
+
+print(contable)
+
+fisher.test(contable,alt="less")
+```
+
+As you can see, the p-value is the same (p=1.263e-06).
+
+### Defining and applying a "Hyper-Enrichment" function
+
+We here define a (relatively) simple function, `hyperEnrichment`, to
+run hyper-geometric-based enrichment tests on multiple signatures and
+mutiple genesets.
+
+```{r hyperEnrichment}
+## defined in CBMRtools
+print(hyperEnrichment)
+```
+
+We then apply it to the list of oral cancer knockdown signatures and two MSigDB geneset compendia, the set of canonical pathways
+<a href="http://software.broadinstitute.org/gsea/msigdb/genesets.jsp?collection=CP">
+c2.cp</a>
+and a set of hallmark genesets
+<a href="http://software.broadinstitute.org/gsea/msigdb/genesets.jsp?collection=H">
+h.all</a> 
+[<a href="http://www.ncbi.nlm.nih.gov/pubmed/26771021">Liberzon et al., 2015</a>].
+
+```{r run_canonical}
+require(openxlsx) 
+hyperE <- hyperEnrichment(drawn=hyperSig,categories=getGeneSet(hyperGsets),ntotal=backpop) 
+head(hyperE)
+hyperE.fdr25 <- hyperE[hyperE[,'fdr']<=0.25,]
+head(hyperE.fdr25)
+
+## let us save it as a '.xlsx' object for you to inspect
+write.xlsx(hyperE.fdr25, file=file.path(system.file("extdata", package="BS831"), "hyperE.fdr25.xls"))
+```
+
+Let's load a different geneset compendium (hallmark genesets)
+
+```{r run_immune}
+HALL <- new("GeneSet", file.path(system.file("extdata", package="BS831"), "h.all.v6.1.symbols.gmt"))
+# show the size of the first 10 genesets
+sapply(getGeneSet(HALL)[1:10],length)
+hyperHALL <- hyperEnrichment(drawn=hyperSig,categories=getGeneSet(HALL),ntotal=backpop)
+hyperHALL.fdr25 <- hyperHALL[hyperHALL[,'fdr']<=0.25,]
+head(hyperHALL.fdr25)
+```
+

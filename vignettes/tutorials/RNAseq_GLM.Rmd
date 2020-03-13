@@ -1,0 +1,218 @@
+---
+title: "RNA-seq data analysis with `glm`"
+author: "Amy Li, Eric Reed, Stefano Monti"
+output:
+  html_document:
+    theme: united
+    toc: yes
+    code_folding: show
+    css: "../style/BS831.css" 
+---
+
+In this module, we show application of the standard `glm` function to
+perform fitting of generalized linear models to count data from
+RNA-sequencing experiments. We use a zebra fish dataset, containing 4
+sets of experiments (each in quadruplicates), corresponding to fish
+embrios with or without knockdown of the nuclear receptor <a
+href="https://en.wikipedia.org/wiki/Pregnane_X_receptor">PXR</a>, and
+with or without treatment with <a
+href="https://en.wikipedia.org/wiki/Pregnenolone">Pregnenolone</a>.
+
+```{r include=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=FALSE)
+devtools::load_all(".")
+require(Biobase)    # for ExpressionSet data objects
+require(MASS)
+require(DESeq2)
+require(VennDiagram)
+```
+
+```{r eval=FALSE}
+require(BS831)
+require(Biobase)    # for ExpressionSet data objects
+require(MASS)
+require(DESeq2)
+require(VennDiagram)
+```
+
+Let's start by loading and displaying the data
+```{r load.data}
+data(zebrafish_htseq_raw_counts_eSet)
+
+## see script code/createDatasets/createZebra.R for how these datasets were processed
+eset <- zebrafish_htseq_raw_counts_eSet
+sampleNames(eset) <- gsub("Sample_","",sampleNames(eset)) # shorten sample names
+
+par(mar=c(10, 4, 4, 2) + 0.1)
+boxplot((exprs(eset)+1)[sample(nrow(eset),1000),],log="y",las=2,pch="-",col=rainbow(4)[eset$Group],main="within-sample distribution")
+
+eset$readCount <- colSums(exprs(eset))
+par(mar=c(10, 4, 4, 2) + 0.1)
+barplot(eset$readCount,col=rainbow(4)[eset$Group],names=sampleNames(eset),main="reads/sample",las=2)
+```
+We next perform some gene filtering, by first removing genes with too many zeros, and by then log2-transforming and varation filtering (i.e., taking the top 3000 genes by _median absolute deviation_. The script `variationFilter` is defined in the `R/varationFilter.R` file).
+
+```{r filter}
+## remove those genes without at least 1 read per million in at least 'n' samples
+## n = least amount of samples in a condition (4 in example)
+
+removeLowExpression <- function(eset, class_id)
+{
+  min.samples <- min( table(pData(eset)[,class_id]) )
+  rpm <- colSums(exprs(eset))/1000000
+  filter_ind <- t(apply(exprs(eset), 1,function(x) {x >rpm}))
+  filter_ind_rowsums <- apply(filter_ind, 1, sum)
+  return(eset[filter_ind_rowsums > min.samples,])
+}
+esetF <- removeLowExpression(eset = eset, class_id = "Group")
+
+## let us also generate a log-transformed and variation filtered smaller dataset
+esetL2 <- esetF
+exprs(esetL2) <- log2(exprs(esetL2)+1)
+eset3K <- variationFilter(esetL2,ngenes=3000,score='mad',do.plot=TRUE,qnt.lev=.75,min.qnt=5)
+```
+
+Let us know carry out differential analysis based on `glm`. We will
+start by analyzing the wild-type population only, i.e., the samples with `eset$genotype=="control"` (n=8).
+
+```{r glm.wt}
+WT <- eset3K[,eset$genotype=="control"]
+for ( i in 1:ncol(pData(WT)) ) { if (is.factor(pData(WT)[,i])) pData(WT)[,i] <- droplevels(pData(WT)[,i]) }
+
+## let's take max varying gene
+maxG <- which.max(apply(log2(exprs(WT)+1),1,sd))
+par(mar=c(10, 4, 4, 2) + 0.1)
+barplot(exprs(WT)[maxG,],las=2,col=rainbow(4)[WT$Group])
+
+## let us fit different GLM's
+fit1 <- glm( exprs(WT)[maxG,] ~ WT$Group, family=poisson(link="log"))
+fit2 <- glm( exprs(WT)[maxG,] ~ WT$Group + WT$readCount, family=poisson(link="log"))
+fit3 <- glm( exprs(WT)[maxG,] ~ WT$Group + WT$readCount, family=quasipoisson(link="log"))
+
+summary(fit1)
+summary(fit2)
+anova(fit1,fit2,test="Chisq") # highly significant difference in deviance
+
+summary(fit3)
+                              # no difference in deviance, only
+                              # ..difference in the uncertainty (hence,
+anova(fit2,fit3,test="Chisq") # ..significance) of the parameters
+```
+
+Let us now go beyond Poisson and quasipoisson, and fit a glm with
+negative binomial. For this, we need to load a package where the
+function `glm.nb` is defined.
+
+```{r glm.nb}
+require(MASS)
+summary(fit4 <- glm.nb(exprs(WT)[maxG,] ~ WT$Group))
+summary(fit5 <- glm.nb(exprs(WT)[maxG,] ~ WT$Group + WT$readCount))
+
+# it appears that readCount is not significant
+anova(fit4,fit5)
+
+## let us compare the poisson and the nb model by a log-likelihood
+## ..ratio test (to see whether the assumption of over-dispersion is
+## ..warranted - we kind of already now it is, from the comparison
+## ..with the quasipoisson model)
+
+pchisq(2*(logLik(fit4)-logLik(fit1)),df=1,lower.tail=FALSE)
+```
+
+Let us now apply the `glm.nb` model to each of the `r nrow(WT)`
+transcripts. To this end, we define a simple wrapper to call the
+function and extract the parameters of interest, that is, p-value,
+deviance, and dispersion parameters `theta` and `SE.theta`. Notice
+that in the `glm.nb` formulation <a href="http://bit.ly/2nY6q3v">the
+meaning of $\theta$</a> is such that the variance of the estimate is
+given as $\mu + \mu^2/\theta$.
+
+```{r multi.glm.nb}
+## define a simple wrapper to be able to call glm.nb on a matrix' rows
+compact.glm.nb <- function(X,pheno,confounder=NULL) {
+    tmp <- summary(if (is.null(confounder)) glm.nb(X ~ pheno) else glm.nb(X ~ pheno + confounder))
+    c(p=tmp$coefficients[2,"Pr(>|z|)"],deviance=tmp$deviance,theta=tmp$theta,SE.theta=tmp$SE.theta)
+}
+FIT4 <- suppressWarnings(as.data.frame(t(apply(exprs(WT),1,compact.glm.nb,pheno=WT$Group))))
+
+## let us repeat controlling for read count
+FIT5 <- suppressWarnings(as.data.frame(t(apply(exprs(WT),1,compact.glm.nb,pheno=WT$Group,confounder=WT$readCount))))
+```
+
+```{r deseq}
+## load the wrapper for running DESeq2 (among others)
+##
+require(DESeq2)
+require(VennDiagram)
+source( file.path(OMPATH,"code/diffanalWrappers.R") )
+
+## let us compare the p-values returned by the two procedures ..
+FIT6 <- run_deseq(WT,"Group",control="Ctrl_DMSO",treatment="Ctrl_PN")
+plot(FIT4[,"p"],FIT6[,"pvalue"],xlab="glm p-value",ylab="DESeq2 p-value")
+abline(0,1,col="red")
+
+## ..as well as the dispersions
+plot(1/FIT4[,"theta"],FIT6[,"dispersion"],
+     xlab=expression(paste("glm dispersion ",(1/theta))),ylab="DESeq2 dispersion")
+abline(0,1,col="red")
+
+## let us evaluate the overlap in the significant genes
+diffList01 <- list(glm=which(p.adjust(FIT4[,"p"])<=0.01),deseq=which(FIT6[,"padj"]<=0.01))
+venn <- venn.diagram(diffList01,
+                     filename = NULL,
+                     height = 50,
+                     width = 200,
+                     fill=c('pink','lightblue'),
+                     cat.default.pos = "text",
+                     hyper.test=TRUE,
+                     total.population=nrow(FIT4),
+                     lower.tail=FALSE,
+                     main = "Overlap of Signficant genes (FDR<0.01)")
+grid.newpage()
+grid.draw(venn)
+
+diffList05 <- list(glm=which(p.adjust(FIT4[,"p"])<=0.05),deseq=which(FIT6[,"padj"]<=0.05))
+venn <- venn.diagram(diffList05,
+                     filename = NULL,
+                     height = 50,
+                     width = 200,
+                     fill=c('pink','lightblue'),
+                     cat.default.pos = "text",
+                     hyper.test=TRUE,
+                     total.population=nrow(FIT4),
+                     lower.tail=FALSE,
+                     main = "Overlap of Signficant genes (FDR<0.05)")
+grid.newpage()
+grid.draw(venn)
+```
+
+Next, we repeat the differential analysis with respect to pregnenolone
+treatment, but this time across genotypes, i.e., including both
+`eset$genotype=="control"` and `eset$genotype=="PXR"`.
+
+```{r diffanal.glm}
+## let us extract a gene with large(st) variation (it'll make it 
+## ..more likely to be significantly differentially expressed) 
+maxG <- which.max(apply(log2(exprs(eset3K)+1),1,sd))
+par(mar=c(10, 4, 4, 2) + 0.1)
+
+## check the barplot (*definitely* differentially expressed)
+barplot(exprs(eset3K)[maxG,],las=2,col=rainbow(4)[eset3K$Group])
+
+## let us fit models w/o and w/ controlling for "library size" (total read count)
+fit1 <- glm(exprs(eset3K)[maxG,]~eset3K$pregnenolone_treated)  
+fit2 <- glm(exprs(eset3K)[maxG,]~eset3K$pregnenolone_treated + eset3K$readCount)  
+
+anova(fit1,fit2,test="Chisq")
+
+# poisson model [controlling for read counts] and controlling for genotype
+fit3 <- glm(exprs(eset3K)[maxG,]~eset3K$pregnenolone_treated + eset3K$readCount + eset3K$genotype)
+summary(fit3)
+anova(fit2,fit3,test="Chisq")
+```
+
+From the analysis above, it appears controlling for the confounding
+effect of `genotype` increases the fitness of the model (as the result
+of `anova(fit1,fit2,...)` show). However, when we also include the
+read count in the model, then the genotype effect becomes
+insignificant.

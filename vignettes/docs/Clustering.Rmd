@@ -1,0 +1,168 @@
+---
+title: "Clustering and Heatmap Visualization"
+author: "Stefano Monti"
+output:
+  html_document:
+    theme: united
+    toc: yes
+    code_folding: show
+    css: "../style/BS831.css" 
+---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
+devtools::load_all(".")
+require(Biobase)
+require(mclust)
+require(ConsensusClusterPlus)
+require(cba)
+require(pheatmap)
+```
+
+```{r eval=FALSE}
+require(BS831)
+require(Biobase)
+require(mclust)
+#source("http://bioconductor.org/biocLite.R")
+#biocLite("ConsensusClusterPlus")
+require(ConsensusClusterPlus)
+require(cba)
+require(pheatmap)
+```
+
+In this module, we illustrate the use of Hierarchical Clustering,
+Consensus Clustering, and Model Based Clustering (or Probabilistic
+Clustering) based on Finite Mixtures.
+
+Notice that in this case, all three metods correctly partition the
+data, and Consensus Clustering and Probabilistic Clustering select the
+'correct' number of clusters. We put 'correct' between quotes, since
+the known disease state partition is not necessarily the data-driven
+dominant partition (see [Monti et al., Machine Learning
+2003](http://montilab.bumc.bu.edu/~montilab/bibliography/MachineLearning2003_052_0091_ConsensusClustering.pdf),
+Section 4.2.2, and note) for a discussion of this point).
+
+### Loading the Data
+
+We start by uploading the necessary data (a Breast Cancer dataset),
+and restricting the dataset to the 3 largest sample groups.
+
+```{r load.data}
+data(AEDAT.collapsed.mad4k)
+
+eset <- AEDAT.collapsed.mad4k
+table(eset$Characteristics.DiseaseState)
+
+## restrict to 3 classes
+samples.keep <- eset$Characteristics.DiseaseState %in%
+    c("non-basal-like","sporadic basal-like","normal")
+cancerSet <- eset[,samples.keep]
+pheno <- cancerSet$Characteristics.DiseaseState
+table(pheno)
+```
+
+### Hierarchical Clustering and Heatmap
+
+We first apply simple hierarchical clustering to the 4K-gene
+dataset. As it is shown below, the clustering results already
+perfectly recapitulate the known stratification.
+
+```{r hclust}
+## hclustering + heatmap
+assayData <- Biobase::exprs(cancerSet)
+
+## use Eculidean distance for columns/samples
+## use ward as agglomeration rule
+hc01.col <- hcopt(dist(t(assayData)),method="ward.D")
+
+## use 1-correlation as distance for for rows/genes
+## use ward as agglomeration rule
+hc01.row <- hcopt(as.dist(1-cor(t(assayData))),method="ward.D")
+
+## making heatmap
+annot <- data.frame(as.factor(cancerSet$Characteristics.DiseaseState)) 
+rownames(annot) <- colnames(assayData)
+colnames(annot) <- c("DiseaseState")
+
+annotCol <- list(DiseaseState = c("green", "orange", "purple"))
+names(annotCol$DiseaseState) <- levels(annot$DiseaseState)
+                 
+heatmaptitle <- paste("Breast Cancer Dataset: ", "top MAD-filtered 4k genes", sep = "")
+
+pheatmap(assayData,
+         title=heatmaptitle,
+         color=colGradient(c("blue","white","red"),length=15),
+         annotation_col = annot,
+         annotation_colors = annotCol,
+         cluster_rows=hc01.row,
+         cluster_cols=hc01.col,
+         show_rownames = FALSE,
+         show_colnames = FALSE,
+         scale = "row")
+```
+
+### Consensus Clustering and Heatmap
+
+We next apply Consensus Clustering, to try to determine, in a
+data-driven fashion, the number of clusters.
+
+```{r consensus.clustering}
+## next, run consensus clustering
+CCout <- ConsensusClusterPlus(Biobase::exprs(cancerSet),maxK=6,reps=50,pItem=0.8,pFeature=1,
+                              innerLinkage="ward.D", finalLinkage="ward.D",
+                              title="cc",clusterAlg="hc",distance="euclidean",seed=1262118388.71279,
+                              plot=NULL)
+```
+
+Based on the inspection of the consensus clustering plots, we select
+3 as the 'optimal' number of clusters. 
+
+Consensus Clustering partitions the samples according to the
+known disease state.
+
+```{r cc.heatmap}
+## notice the use of a variable (rather then using 3 directly in the following commands)
+nc <- 3
+
+## remake heatmap, include both subtype and cluster assignments for visual comparison
+annot1 <- data.frame(annot,cluster=CCout[[nc]]$consensusClass)
+annotCol$cluster <- rainbow(n=nc)
+names(annotCol$cluster) <- unique(annot1$cluster)
+
+## use cluster tree from consensus clustering for column ordering in heatmap
+clust.col <- CCout[[nc]]$consensusTree
+## determine row ordering based on de-novo clustering
+clust.row <- hcopt(as.dist(1-cor(t(exprs(cancerSet)))),method="ward.D")
+
+##featureNames(cancerSet) <- fData(cancerSet)$hgnc_symbol
+heatmaptitle <- "Heatmap consensus clustering assignment vs. subtype\n top 4k z-score normalized"
+pheatmap(exprs(cancerSet),
+         title=heatmaptitle,
+         color=colGradient(c("blue","white","red"),length=15),
+         annotation_col = annot,
+         annotation_colors = annotCol,
+         cluster_rows=clust.row,
+         cluster_cols=clust.col,
+         show_rownames = FALSE,
+         show_colnames = FALSE,
+         scale = "row")
+```
+
+### Probabilistic Clustering (Finite Mixtures)
+
+Finally, we apply Probabilistic Clustering as implemented in `Mclust`. We
+score models with numbers of clusters in the 1-4 range.
+
+Probabilisti Clustering also selects the 'correct' number of clusters
+(3) and partitions samples according to the known disease state.
+
+```{r MClust} 
+MC <- Mclust(t(Biobase::exprs(cancerSet)),G=1:4)
+summary(MC)
+ 
+## show cluster assignments (and disease state)
+head(data.frame(MC$classification,pData(cancerSet)$Characteristics.DiseaseState))
+
+## contingency table
+print(ftable(MC$classification,pData(cancerSet)$Characteristics.DiseaseState))
+```
