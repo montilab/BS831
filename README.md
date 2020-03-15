@@ -24,15 +24,15 @@ in the use of <a href="https://rmarkdown.rstudio.com/">R markdown</a>
 the redaction of analysis reports.
 </p>
 
-<div style="text-align: justify"> 
+<p align="justify">
 The course is organized in seven modules covering: 1) Introduction to
 Genomics Analysis; 2) Data Preprocessing and Quality Control; 3)
 Comparative Experiments based on Microarrays and Linear Models (LM);
 Comparative Experiments based on RNA-sequencing and Generalized Linear
 Models (GLM); 5) Comparative Experiments based on Differential Enrichment
 Analysis; 6) Classification; and 7) Clustering and Class Discovery.
-</div>
-X
+</p>
+
 ## Documentation
 
 Please visit <https://montilab.github.io/BS831/>
