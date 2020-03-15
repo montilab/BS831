@@ -10,16 +10,17 @@ expression in different biological conditions, development of
 prognostic and diagnostic models for molecular classification, and the
 identification of new disease taxonomies based on their molecular
 profile. These topics will be covered using real examples, extensively
-documented hands-on's (see Markdowns' menu), class discussion and
-critical readings. Principles of reproducible research will be
-emphasized, and participants will become proficient in the use of the
-statistical language <a href="https://cran.r-project.org/">R</a> (an
-advanced beginners’ knowledge of the language is expected) and
-associated packages (including <a
-href="https://bioconductor.org/">Bioconductor</a>, and in the use of
-<a href="https://rmarkdown.rstudio.com/">R markdown>/a> (and/or <a
-href="https://jupyter.org/">electronic notebooks</a>) for the
-redaction of analysis reports.
+documented hands-on's (see <a
+href="https://rmarkdown.rstudio.com/">Markdowns' menu</a>), class
+discussion and critical readings. Principles of reproducible research
+will be emphasized, and participants will become proficient in the use
+of the statistical language <a
+href="https://cran.r-project.org/">R</a> (an advanced beginners’
+knowledge of the language is expected) and associated packages
+(including <a href="https://bioconductor.org/">Bioconductor</a>, and
+in the use of <a href="https://rmarkdown.rstudio.com/">R markdown>/a>
+(and/or <a href="https://jupyter.org/">electronic notebooks</a>) for
+the redaction of analysis reports.
 
 The course is organized in seven modules covering: 1) Introduction to
 Genomics Analysis; 2) Data Preprocessing and Quality Control; 3)
