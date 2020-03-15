@@ -11,7 +11,7 @@ prognostic and diagnostic models for molecular classification, and the
 identification of new disease taxonomies based on their molecular
 profile. These topics will be covered using real examples, extensively
 documented hands-on's (see <a
-href="https://rmarkdown.rstudio.com/">Markdowns' menu</a>), class
+href="https://montilab.github.io/BS831/">Markdowns' menu</a>), class
 discussion and critical readings. Principles of reproducible research
 will be emphasized, and participants will become proficient in the use
 of the statistical language <a
