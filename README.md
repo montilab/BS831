@@ -13,12 +13,13 @@ profile. These topics will be covered using real examples, extensively
 documented hands-on's (see Markdowns' menu), class discussion and
 critical readings. Principles of reproducible research will be
 emphasized, and participants will become proficient in the use of the
-statistical language (R)[https://cran.r-project.org/] (an advanced
-beginners’ knowledge of the language is expected) and associated
-packages (including (Bioconductor)[https://bioconductor.org/]), and in
-the use of (R markdown)[https://rmarkdown.rstudio.com/] (and/or
-(electronic notebooks)[https://jupyter.org/]) for the redaction of
-analysis reports.
+statistical language <a href="https://cran.r-project.org/">R</a> (an
+advanced beginners’ knowledge of the language is expected) and
+associated packages (including <a
+href="https://bioconductor.org/">Bioconductor</a>, and in the use of
+(R markdown)[https://rmarkdown.rstudio.com/] (and/or <a
+href="https://jupyter.org/">electronic notebooks</a>) for the
+redaction of analysis reports.
 
 The course is organized in seven modules covering: 1) Introduction to
 Genomics Analysis; 2) Data Preprocessing and Quality Control; 3)
