@@ -1,6 +1,7 @@
 # BS831
 Course Materials for Genomics Data Mining
 
+<div style="text-align: justify"> 
 The goal of this course is for the participants to develop a good
 understanding and hands-on skills in the design and analysis of
 ‘omics’ data from microarray and high-throughput sequencing
@@ -28,7 +29,7 @@ Comparative Experiments based on Microarrays and Linear Models (LM);
 Comparative Experiments based on RNA-sequencing and Generalized Linear
 Models (GLM); 5) Comparative Experiments based on Differential Enrichment
 Analysis; 6) Classification; and 7) Clustering and Class Discovery.
-
+</div>
 
 ## Documentation
 
