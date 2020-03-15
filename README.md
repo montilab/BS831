@@ -25,12 +25,12 @@ the redaction of analysis reports.
 </p>
 
 <p align="justify">
-The course is organized in seven modules covering: 1) Introduction to
-Genomics Analysis; 2) Data Preprocessing and Quality Control; 3)
+The course is organized in seven modules covering: __1)__ Introduction to
+Genomics Analysis; __2)__ Data Preprocessing and Quality Control; __3)__
 Comparative Experiments based on Microarrays and Linear Models (LM);
-Comparative Experiments based on RNA-sequencing and Generalized Linear
-Models (GLM); 5) Comparative Experiments based on Differential Enrichment
-Analysis; 6) Classification; and 7) Clustering and Class Discovery.
+__4)__ Comparative Experiments based on RNA-sequencing and Generalized Linear
+Models (GLM); __5)__ Comparative Experiments based on Differential Enrichment
+Analysis; __6)__ Classification; and __7)__ Clustering and Class Discovery.
 </p>
 
 ## Documentation
