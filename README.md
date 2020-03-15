@@ -1,5 +1,5 @@
 # BS831
-Course Materials for Genomics Data Mining and Statistics
+Course Material for **_Genomics Data Mining and Statistics_**
 
 ## Documentation
 
