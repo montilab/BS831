@@ -1,6 +1,36 @@
 # BS831
 Course Materials for Genomics Data Mining
 
+## Documentation
+
+Please visit <https://montilab.github.io/BS831/>
+
+## Requirements
+
+## Installation
+
+Install the the package from Github.
+
+```r
+devtools::install_github("montilab/BS831")
+```
+
+Developer notes on rebuilding documentation.
+```r
+library(pkgdown)
+
+# Use lazy=FALSE to rebuild entire site
+build_site(pkg=".", lazy=TRUE)
+
+# Only rebuild changed articles
+build_articles(pkg=".", lazy=TRUE)
+
+# Rebuild one article
+build_article(name, pkg=".", lazy=FALSE)
+```
+
+## Course Description
+
 <p align="justify">
 The goal of this course is for the participants to develop a good
 understanding and hands-on skills in the design and analysis of
@@ -32,31 +62,3 @@ Comparative Experiments based on Microarrays and Linear Models (LM);
 Models (GLM); <b>5)</b> Comparative Experiments based on Differential Enrichment
 Analysis; <b>6)</b> Classification; and <b>7)</b> Clustering and Class Discovery.
 </p>
-
-## Documentation
-
-Please visit <https://montilab.github.io/BS831/>
-
-## Requirements
-
-## Installation
-
-Install the the package from Github.
-
-```r
-devtools::install_github("montilab/BS831")
-```
-
-Developer notes on rebuilding documentation.
-```r
-library(pkgdown)
-
-# Use lazy=FALSE to rebuild entire site
-build_site(pkg=".", lazy=TRUE)
-
-# Only rebuild changed articles
-build_articles(pkg=".", lazy=TRUE)
-
-# Rebuild one article
-build_article(name, pkg=".", lazy=FALSE)
-```
