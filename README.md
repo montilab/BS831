@@ -1,7 +1,7 @@
 # BS831
 Course Materials for Genomics Data Mining
 
-<div style="text-align: justify"> 
+<p align="justify">
 The goal of this course is for the participants to develop a good
 understanding and hands-on skills in the design and analysis of
 ‘omics’ data from microarray and high-throughput sequencing
@@ -22,7 +22,9 @@ knowledge of the language is expected) and associated packages
 in the use of <a href="https://rmarkdown.rstudio.com/">R markdown</a>
 (and/or <a href="https://jupyter.org/">electronic notebooks</a>) for
 the redaction of analysis reports.
+</p>
 
+<div style="text-align: justify"> 
 The course is organized in seven modules covering: 1) Introduction to
 Genomics Analysis; 2) Data Preprocessing and Quality Control; 3)
 Comparative Experiments based on Microarrays and Linear Models (LM);
@@ -30,7 +32,7 @@ Comparative Experiments based on RNA-sequencing and Generalized Linear
 Models (GLM); 5) Comparative Experiments based on Differential Enrichment
 Analysis; 6) Classification; and 7) Clustering and Class Discovery.
 </div>
-
+X
 ## Documentation
 
 Please visit <https://montilab.github.io/BS831/>
