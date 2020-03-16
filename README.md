@@ -1,5 +1,5 @@
 # BS831
-Course Materials for Genomics Data Mining
+Course Material for **_Genomics Data Mining and Statistics_**
 
 ## Documentation
 
@@ -48,7 +48,7 @@ will be emphasized, and participants will become proficient in the use
 of the statistical language <a
 href="https://cran.r-project.org/">R</a> (an advanced beginners’
 knowledge of the language is expected) and associated packages
-(including <a href="https://bioconductor.org/">Bioconductor</a>, and
+(including <a href="https://bioconductor.org/">Bioconductor</a>), and
 in the use of <a href="https://rmarkdown.rstudio.com/">R markdown</a>
 (and/or <a href="https://jupyter.org/">electronic notebooks</a>) for
 the redaction of analysis reports.
