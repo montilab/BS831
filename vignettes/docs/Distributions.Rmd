@@ -18,19 +18,23 @@ distribution is defined by the four functions `rnorm`, `pnorm`,
 `dnorm`, and `qnorm`.
 
 Let us generate a sample (X) of 100 points from a standard normal
-(mean 0 and stdev 1); visualize it as a boxplot; generate a second
-sample (Y) of points that are linearly related to the first sample.
+(mean 0 and stdev 1); visualize it as a boxplot and a histogram; generate a second
+sample (Y) of points that are linearly related to the first sample (based on the 
+linear equation $y = 2x + \epsilon$, with $\epsilon \sim N(0,1)$.
 
 ```{r norm0}
 N <- 100 
 X <- rnorm(N,mean=0,sd=1)
+par(mfrow=c(1,2))
 boxplot(X)
+hist(X)
+par(mfrow=c(1,1))
 
 Y <- 2 + X + rnorm(N)
 plot(X,Y,pch=20)
 abline(2,1,col="red") # plot a line with intercept 2 and slope 1
-abline(h=0,lty=3) # show the origin
-abline(v=0,lty=3) # ..
+abline(h=0,lty=3)     # show the origin
+abline(v=0,lty=3)     # ..
 ```
 
 Let us now plot the well-known bell-shaped curve and the corresponding CDF.
@@ -45,14 +49,14 @@ plot(X,pnorm(X),pch=20)
 
 Notice that in the above code, the points plotted are evenly spaced,
 which is not optimal, since we would like to have higher resolution
-where most of the density lies. Furthermore, I needed to know where
-most of a distribution mass lies. Otherwise, I might end up with a
-truncated plot.
+where most of the density lies. Furthermore, we need to a-priori know where
+most of a distribution mass lies, so as to generate an adequate set of X coordinates. 
+Otherwise, we might end up with a truncated plot, as shown in the examples below.
 
 ```{r plot2}
 X <- seq(-4,4,.1)
-plot(X,dnorm(X,mean=0,sd=3),pch=20)
-plot(X,dnorm(X,mean=3,sd=1),pch=20)
+plot(X,dnorm(X,mean=0,sd=3),pch=20) # too narrow range
+plot(X,dnorm(X,mean=3,sd=1),pch=20) # range skewed to the left
 ```
 
 To take care of this, we can define a slightly more sophisticated
@@ -63,7 +67,7 @@ distribution's quantiles.
 plot.distn <- function(qfun, dfun, n, type="l", lty=1, add=FALSE, xlab=NULL, ylab=NULL, main=NULL, col="black", silent=TRUE, ...)
 {
   p <- (1:(n-1))/n
-  q <- qfun(p,...)
+  q <- qfun(p,...) # generate the set of X-coordinates based on the distribution quantiles
   
   if ( add )
     lines( q, dfun(q,...), lty=lty, col=col )

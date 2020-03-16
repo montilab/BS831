@@ -12,12 +12,13 @@ output:
 In this module, we illustrate how to download gene expression datasets
 from [GEO](http://www.ncbi.nlm.nih.gov/geo).
 
-To this end, we will download and pre-process the gene expression data from the LOAD
-(Late Onset Alzheimer Disease) study in
-<a href="http://www.cell.com/fulltext/S0092-8674(13)00387-5">
-[Zhang et al., Cell 2013]
-</a>. The dataset consists of 690 samples corresponding to three brain
-regions (cerebellum, prefrontal cortex, ) from 230 subjects, including 121 LOAD patients and 109 controls.
+To this end, we will download and pre-process the gene expression data
+from the LOAD (Late Onset Alzheimer Disease) study in <a
+href="http://www.cell.com/fulltext/S0092-8674(13)00387-5"> [Zhang et
+al., Cell 2013] </a>. The dataset consists of gene expression data of
+postmortem brain tissues from three brain regions (PC: prefrontal
+cortex; VC: visual cortex; and CB: cerebellum) from 129 LOAD patients
+and 101 healthy controls for a total of 690 profiles.
 
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
@@ -71,6 +72,7 @@ some relevant columns, and since we are at it, we also properly sort
 the rows, and rename the columns, for easier handling.
 
 ```{r process.data2}
+## see R/misc.R for a definition of the 'match.nona' function
 fdata <- fdata[match.nona(featureNames(LOAD),rownames(fdata)),c("Gene.symbol","Gene.title","Gene.ID")]
 ## modifying fdata colnames for ease of handling
 colnames(fdata) <- gsub("Gene.symbol","gene_symbol",colnames(fdata))

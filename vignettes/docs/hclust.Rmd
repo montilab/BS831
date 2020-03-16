@@ -68,7 +68,7 @@ different color coding or other changes that would not affect the
 clustering).
 
 Notice that the heatmap color is somewhat saturated. In the module
-`Rmodule_heatmap.Rmd` we present additional visualization functions
+`R/Heatmaps.Rmd` we present additional visualization functions
 that do a better job at color-coding the heatmap.
 
 ```{r hclust}
