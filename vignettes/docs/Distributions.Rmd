@@ -6,7 +6,7 @@ output:
     theme: united
     toc: yes
     code_folding: show
-    css: "../style/BS831.css" 
+    css: "../style/BS831.css"
 ---
 
 Let us generate data and plot from few examples of probability
