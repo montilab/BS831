@@ -163,7 +163,6 @@ ha.t <- HeatmapAnnotation(CHEMICAL=DMscaled$Carcinogen_liv,
                           col=list(CHEMICAL=c("NON-CARC"="green",CARCINOGEN="red"),
                                    GTOX=c('0'="orange",'1'="purple")))
 
-set.seed(123) ## for reproducibility of the k-means results
 Heatmap(Biobase::exprs(DMscaled),
         name="expression", 
         col=colorRamp2(c(-3, 0, 3), c("#072448", "white", "#ff6150")),

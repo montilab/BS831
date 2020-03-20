@@ -1,0 +1,38 @@
+---
+title: "Template"
+author: "First Last"
+date: 
+output:
+  html_document:
+    theme: united
+    code_folding: hide
+    toc: yes
+---
+
+```{r global, echo=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE)
+```
+
+```{r settings}
+require(GEOquery)
+require(Biobase)
+OMPATH <- Sys.getenv("OMPATH") # this could be defined in .Renviron or .Rprofile. See Introduction
+```
+
+# Section 1
+
+## Subsection 1.1
+
+```{r code.chunk, cache=FALSE} 
+## cache=TRUE can be used with chunks where heavy computation is
+## performed, so that if you need to 'recompile' the cached results of
+## that chunk will be reused. However, not sure how 'smart' Rstudio is
+## at detecting whether "upstream changes" have occurred.
+
+## Setting a variable to show its reference outside a chunk
+N <- 20
+```
+
+If you want to reference a variable outside a code chunk, you can use 
+the inline construct. E.g., the variabel `N` has value `r N`.
+
