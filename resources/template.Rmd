@@ -1,0 +1,23 @@
+---
+title: "My Title"
+author: "First Last"
+output:
+  html_document:
+    theme: united
+    code_folding: hide
+    css: ../style/BS831.css
+    toc: yes
+    toc_float: no
+    toc_depth: 4
+---
+
+
+```{r global, echo=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE)
+```
+
+```{r settings}
+## require() or library() statements
+require(Biobase)
+```
+
