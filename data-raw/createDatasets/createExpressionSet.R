@@ -27,7 +27,7 @@ ESET <- ExpressionSet(assayData=EXP,
                       featureData=AnnotatedDataFrame(FDAT))
 
 ## scramble EXP row and column order
-EXP1 <- EXP[sample(1:nrow(EXP)),]
+EXP1 <- EXP[sample(1:nrow(EXP)),sample(1:ncol(EXP))]
 
 write.table(EXP1,file=file.path(OMPATH,"data/ESet_exprs.xls"))
 write.table(FDAT,file=file.path(OMPATH,"data/ESet_fData.xls"))
