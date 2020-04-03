@@ -9,7 +9,7 @@ output:
     css: "../style/BS831.css" 
 ---
 
-This is the code for the plot shown in slide #42 of BS831\_class03\_ComparativeExperiment.Rmd.
+This is a simple example, where we generate data from a given linear model (with known intercept and slope), and then we apply linear regression to estimate the parameters of the data generating model.
 
 ```{r global, echo=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE)
@@ -20,7 +20,7 @@ set.seed(159) # for reproducible results
 nobs <- 1000   # sample size
 beta0 <- 1     # true intercept
 beta1 <- 0.15  # true slope
-## simulate an imaginary dependent variable (e.g., age between 18-75)
+## simulate an imaginary dependent variable (e.g., age between 15-75)
 X <- sample(15:75,nobs,replace=TRUE)
 Y <- rnorm(nobs,mean=beta0 + beta1 * X,sd=1)
 
