@@ -24,21 +24,17 @@ require(limma)
 require(VennDiagram)
 ```
 
-Here, we show few examples of gene expression (GE) differential
-analysis based on the use of the functions `t.test` and
-<code>lm</code>, as well as the package `limma`, which
-implements a "moderated" t-test with pooled variance (see <a
+In this module, we explore the use of different R functions to perform differential analysis.
+In particular, we show few examples of gene expression (GE) differential analysis based on the use of the functions `t.test` and `lm`, as well as the package `limma`, which implements a "moderated" t-test with pooled variance (see <a
 href="http://bioconductor.case.edu/bioconductor/2.10/bioc/vignettes/limma/inst/doc/usersguide.pdf">documentation</a>).
 
-[ttest](figures/diffanal.ttest.png")
-
-![ttest](../figs/diffanal.ttest.png)
-
 We also recall how to perform differential analysis by fitting a
-linear model, and the relationship of this approach to use of the t-test.
+linear model, and the relationship of this approach to the use of the t-test.
 
-![lm](../figs/diffanal.lm.png)
-### Differential expression analysis using <code>t-test</code>
+<img src="../figs/diffanal.ttest.png" width="50%" height="50%" />
+<img src="../figs/diffanal.lm.png" width="50%" height="50%" />
+
+## Differential expression analysis using `t.test`
 
 We start by uploading a Breast Cancer dataset (in
 `ExpressionSet` format), and by showing the use of the
@@ -73,8 +69,8 @@ table(cancerSet$diseaseState)
 ```
 
 We have extracted the data of interest into the object
-<code>cancerSet</code>. We are now ready to use the
-<code>t.test</code> function. We first show its use applied to a
+`cancerSet`. We are now ready to use the
+`t.test` function. We first show its use applied to a
 single gene.
 
 ```{r ttest}
@@ -152,7 +148,7 @@ ttestRes1$t.fdr <- p.adjust(ttestRes1$t.pvalue, method = "BH")
 head(ttestRes1)
 ```
 
-#### Heatmap visualization
+### Heatmap visualization
 We now show how to visualize the top markers for each class by means
 of the <code>heatmap.plus</code> function. We are using our own
 <code>my.heatmap</code> function (defined in `code/heatmap.R`), which is a simple wrapper adding few
@@ -174,9 +170,9 @@ CSC <- cbind(CSC,CSC) # ColSideColors needs to be a matrix
 my.heatmap(datOut,Colv=NA,Rowv=NA,ColSideColors=CSC)
 ```
 
-### Differential expression analysis using <code>lm</code>
+## Differential expression analysis using `lm`
 
-We now show the use of the function <code>lm</code> (for linear model)
+We now show the use of the function `lm` (for linear model)
 to perform the same analysis. As discussed in class, we can regress
 the expression of a gene on the phenotype variable (in this case, a
 binary variable). Below, we apply it to a single gene first, and show
@@ -209,9 +205,7 @@ plot(ttestRes1$t.score.t,ttestRes2$t.score,pch=20,xlab="t.test scores",ylab="lm 
 all.equal(-ttestRes1$t.score.t,ttestRes2$t.score)
 ```
 
-Finally, let us use the package <code>limma</code> for the same purpose.
-
-### Differential expression analysis using the <code>limma</code> package
+## Differential expression analysis using the `limma` package
 
 With this package, we are performing differential analysis taking the
 "linear regression" approach (i.e., by regressing each gene's
@@ -254,10 +248,10 @@ topGenes.down <- subset(limmaRes.sig, t>=0)$hgnc_symbol
 #saveRDS(topGenes.down, paste(out.dir, "/", "topGenes.down.RDS", sep = ""))
 ```
 
-**Comparing t-test and limma results**
+## Comparing t-test and limma results
 
 ```{r compare DE}
-#comparing t-test results to limma results
+## comparing t-test results to limma results
 combinedRes <- cbind(limmaRes, ttestRes1[match(limmaRes$hgnc_symbol, rownames(ttestRes1)),])
 plot(combinedRes$t, combinedRes$t.score.t,
  xlab = "limma t-statistic", ylab = "t-test t-statistic", pch = 20, cex = 0.5)
@@ -266,7 +260,7 @@ plot(combinedRes$P.Value, combinedRes$t.pvalue,
 plot(combinedRes$adj.P.Val, combinedRes$t.fdr,
  xlab = "limma fdr", ylab = "t-test fdr", pch = 20, cex =0.5)
 
-#limma performs eBayes shrinkage of variance estimates, resulting in moderated t-statistics
+## limma performs eBayes shrinkage of variance estimates, resulting in moderated t-statistics
 empS <- apply(exprs(cancerSet), 1, var)
 par(mar=c(5,5,2,2))
 n <- length(empS)
@@ -275,7 +269,7 @@ plot(1,1,xlim=c(0,14),ylim=c(0,1),type="n",
 axis(2,at=c(0.9,0.1),c("shrunken \n variance","sample \n variance"),las=2)
 segments(fit$s2.post, rep(.9, n),empS,rep(.1,n))
 
-#what is the overlap between t-ttest and limma derived significant genes? (top1k)
+## what is the overlap between t-ttest and limma derived significant genes? (top1k)
 top1k.ttest <- rownames(combinedRes)[order(combinedRes$t.fdr, decreasing = FALSE)[1:1000]]
 top1k.limma <- rownames(combinedRes)[order(combinedRes$adj.P.Val, decreasing = FALSE)[1:1000]]
 top1k <- list(top1k.ttest = top1k.ttest, top1k.limma = top1k.limma)
@@ -285,8 +279,7 @@ grid.newpage()
 grid.draw(p)
 ```
 
-
-**Modelling with covariates**
+## Modelling with covariates
 
 ```{r newESET}
 data(breast_loi_133p2)
@@ -308,7 +301,7 @@ BC$LN_status <- c("negative","positive")[BC$LN_status+1]
 pData(BC) <- pData(BC)[, c("LN_status", "age")]
 ```
 
-**Model without age covariate**
+### Model without age covariate
 ```{r limmaNEW}
 #Next, we'll add age as a covariate
 
@@ -328,7 +321,7 @@ limmaRes <- topTable(fit, adjust.method="BH", n=Inf, sort.by="P")
 head(limmaRes)
 ```
 
-**Model with age covariate**
+### Model with age covariate
 ```{r limmaCOV}
 #Next, we'll add age as a covariate
 
@@ -356,7 +349,7 @@ limmaResA <- topTable(fitA, adjust.method = "BH", n = Inf, sort.by = "P", coef =
 head(limmaResA)
 ```
 
-**Model with age:LN_status interaction**
+### Model with age:LN_status interaction
 ```{r limmaInter}
 #Next, we'll model the interaction between age and LN_status
 designI <- model.matrix(~ 0 + factor(LN_status) + age + factor(LN_status):age, data = pData(BC))
