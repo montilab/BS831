@@ -9,8 +9,8 @@ output:
     css: "../style/BS831.css" 
 ---
 
-This is the code for the plot shown in slide #45 of
-BS831\_class03\_ComparativeExperimentLM.Rmd ("Differential Analysis as linear regression (LM)").
+This is the code for the plot shown in slide #48 of
+BS831\_class03\_ComparativeExperimentLM.Rmd ("Differential Analysis as linear regression (LM)").
 
 ```{r global, echo=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE)
@@ -29,7 +29,6 @@ Y <- rnorm(nobs,mean=beta0 + beta1 * X,sd=1)
 ```
 
 ```{r plot.data}
-## png(file.path(OMPATH,"Rmodules/figures/diffanalLM.png"))
 par(mar=c(c(5, 4, 4, 5) + 0.1))
 boxplot(Y~X,ylab="Y",pch="-",names=paste("X =",0:1),col="antiquewhite")
 abline(h=c(beta0=beta0,'beta0+beta1'=beta0+beta1),col="red",lty=3,lwd=2)
