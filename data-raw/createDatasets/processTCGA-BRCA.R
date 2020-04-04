@@ -1,5 +1,6 @@
 require(Biobase)
 source( file.path(Sys.getenv("CBMRtools"),"CBMRtools/R/variationFilter.R") )
+source( file.path(Sys.getenv("CBMRtools"),"CBMRtools/R/misc.R") )
 OMPATH <- Sys.getenv("OMPATH")
 
 ## researchData is equivalent to CBMrepositoryData on SCC
@@ -15,6 +16,6 @@ sIDX <- c(sample(sampleNames(brca[,brca$pam50=="LumA"]),size=N,replace=FALSE),
           sample(sampleNames(brca[,brca$pam50=="Her2"]),size=N,replace=FALSE),
           sample(sampleNames(brca[,brca$pam50=="Basal"]),size=N,replace=FALSE))
 
-brca25  <- variationFilter(brca,ngenes=5000,score="mad")[,IDX]
+brca25  <- variationFilter(brca,ngenes=5000,score="mad",do.plot=TRUE)[,sIDX]
 brca25$pam50 <- droplevels(brca25$pam50)
 saveRDS( brca25, file.path(OMPATH,"data/TCGA-BRCA25-2018_11_01_DESeq2_log2_eSet.rds") )
