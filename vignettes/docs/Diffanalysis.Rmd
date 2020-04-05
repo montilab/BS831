@@ -9,19 +9,25 @@ output:
     css: "../style/BS831.css" 
 ---
 
-```{r global, echo=FALSE,message=FALSE, warning=FALSE}
+```{r global, echo=FALSE,message=FALSE, warning=FALSE, eval=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE)
 devtools::load_all(".")
 require(Biobase)
 require(limma)
 require(VennDiagram)
+require(vennr) # see github.com/montilab/vennr
 ```
 
-```{eval=FALSE}
+```{r settings,message=FALSE, warning=FALSE, eval=TRUE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE)
 require(BS831)
 require(Biobase) 
 require(limma)
 require(VennDiagram)
+require(ComplexHeatmap)
+require(circlize)
+require(ggplot2)
+require(vennr) # see github.com/montilab/vennr
 ```
 
 In this module, we explore the use of different R functions to perform differential analysis.
@@ -36,36 +42,29 @@ linear model, and the relationship of this approach to the use of the t-test.
 
 ## Differential expression analysis using `t.test`
 
-We start by uploading a Breast Cancer dataset (in
-`ExpressionSet` format), and by showing the use of the
-function `t.test`. Below, we just carry out some "data
-cleaning" to simplify data handling: we simplify the sampe annotation
-(`pData`), and we extract the two disease states with
-larger number of samples.
+We start by uploading a subset of the TCGA Breast Cancer dataset (in `ExpressionSet` format), and by showing the use of the function `t.test`. Below, we just carry out some "data cleaning" to simplify data handling, and limit the datasets to two molecular subclasses, Luminal A and Basal. These are two of the five classes of the "Pam50" molecular classification of Breast Cancer [[Sorlie et al., PNAS 2001](https://www.pnas.org/content/98/19/10869)].
+
+```{r load.data, echo=FALSE}
+eset <- readRDS(file.path(Sys.getenv("OMPATH"),"data/TCGA.BRCA25.rds"))
+```
+
+```{r load.data.dummy, eval=FALSE}
+## load the ExpressionSet object
+data(TCGA.BRCA25)
+eset <- TCGA.BRCA25
+```
 
 ```{r dataprep}
-## load the ExpressionSet object
-## see Rmodule_HandsOn_01_microarray_processing.Rmd for how this file was generated
-data(AEDAT.collapsed.mad4k)
+## show the dataset composition (in terms of phenotypic classes)
+print(table(eset$pam50))
 
-eset <- AEDAT.collapsed.mad4k
-
-## cleaning up/simplifying the annotation file (the original is a bit messy)
-pData(eset) <- pData(eset)[,c("Characteristics.Individual","Characteristics.DiseaseState")]
-colnames(pData(eset)) <- c("individual","diseaseState")
-
-## show the data, the annotation, and the stratification by diseaseState
-dim(eset)
-head(pData(eset))
-table(eset$diseaseState)
-
-## Let us limit the analysis to the two most numerous diseaseState's
-samples.keep <- eset$diseaseState %in% c("non-basal-like","sporadic basal-like")
-cancerSet <- eset[,samples.keep]
+## Let us limit the analysis to two sub-classes: Luminal A and Basal
+cancerSet <- eset[,eset$pam50 %in% c("LumA","Basal")]
+cancerSet$pam50 <- droplevels(cancerSet$pam50)
 
 ## let's order samples by the phenotype
-cancerSet <- cancerSet[,order(cancerSet$diseaseState)]
-table(cancerSet$diseaseState)
+cancerSet <- cancerSet[,order(cancerSet$pam50)]
+print( table(cancerSet$pam50) )
 ```
 
 We have extracted the data of interest into the object
@@ -76,21 +75,21 @@ single gene.
 ```{r ttest}
 
 ## split the data into the two diseaseState groups
-group1 <- exprs(cancerSet)[, cancerSet$diseaseState=="non-basal-like"]
-group2 <- exprs(cancerSet)[, cancerSet$diseaseState=="sporadic basal-like"]
+group1 <- exprs(cancerSet)[, cancerSet$pam50=="LumA"]
+group2 <- exprs(cancerSet)[, cancerSet$pam50=="Basal"]
 dim(group1)                   # show the size of group1
 dim(group2)                   # show the size of group2
-table(cancerSet$diseaseState) # show the size concordance with the phenotype annotation
+table(cancerSet$pam50) # show the size concordance with the phenotype annotation
 
 ## for ease of use let's define the variable pheno (although this can be error prone)
-pheno <- as.factor(cancerSet$diseaseState)
+pheno <- as.factor(cancerSet$pam50)
 
 ## use gene symbols to index the rows (rather than the entrez IDs)
 rownames(group1) <- fData(cancerSet)$hgnc_symbol
 rownames(group2) <- fData(cancerSet)$hgnc_symbol
 
 ## show few entries of group1 (the fist 5 genes in the first 5 samples)
-group1[1:5,1:5]
+group1[1:5,1:3]
 
 ## let us show the use of t.test on a single gene (the 1st)
 T1 <- t.test(x=group1[1,],y=group2[1,],alternative="two.sided")
@@ -118,13 +117,12 @@ rownames(ttestRes) <- rownames(group1)
 ```
 
 In the application above, we made use of the
-<code>t.test(x,y,...)</code> version of the command. However, the use
-of the <code>t.test(formula,...)</code> version of the command turns
+`t.test(x,y,...)` version of the command. However, the use
+of the `t.test(formula,...)` version of the command turns
 out to be simpler and more elegant, as it does not require to split
 the dataset into two groups.
 
 ```{r multi.ttest2}
-
 ## application to a single gene but using the formula
 T3 <- t.test(exprs(cancerSet)[1,] ~ pheno)
 print(T3) # same results as before
@@ -149,25 +147,30 @@ head(ttestRes1)
 ```
 
 ### Heatmap visualization
-We now show how to visualize the top markers for each class by means
-of the <code>heatmap.plus</code> function. We are using our own
-<code>my.heatmap</code> function (defined in `code/heatmap.R`), which is a simple wrapper adding few
-extra features (including the change of the default color palette).
+We now show how to visualize the top markers for each class by means of the `Heatmap` function defined in the `ComplexHeatmap` package.
 
 ```{r heatmap}
 ## let us sort the output by t-score
 ttestOrd <- order(ttestRes1[,'t.score.t'],decreasing=TRUE)
-head(ttestRes1[ttestOrd,])
 
 ## let us visualize the top 50 and bottom 50 genes
 hiIdx <- ttestOrd[1:50]
 loIdx <- ttestOrd[nrow(ttestRes1):(nrow(ttestRes1)-49)]
 datOut <- exprs(cancerSet)[c(hiIdx,loIdx),]
+datScaled <- t(scale(t(datOut))) # row scale the matrix for better visualization
 
-## create a color bar to show sample labels (green=non-basal, orange=basal)
-CSC <- rep(c("green","orange"),times=c(ncol(group1),ncol(group2)))
-CSC <- cbind(CSC,CSC) # ColSideColors needs to be a matrix
-my.heatmap(datOut,Colv=NA,Rowv=NA,ColSideColors=CSC)
+ha.t <- HeatmapAnnotation(pam50=cancerSet$pam50,
+                          col=list(pam50=c(LumA="green",Basal="red")))
+
+Heatmap(datScaled,
+        name="expression", 
+        col=colorRamp2(c(-3, 0, 3), c("darkblue", "white", "darkred")),
+        top_annotation=ha.t, 
+        cluster_rows=FALSE,
+        cluster_columns=FALSE,
+        row_title="",
+        show_column_names=FALSE,
+        show_row_names=FALSE)
 ```
 
 ## Differential expression analysis using `lm`
@@ -217,49 +220,78 @@ datasets, where the variance estimates of individual genes can be
 extremely noisy, and pooling multiple genes allows for "borrowing" of
 information.
 
+Fitting a `limma` model includes the following steps:
+
+1. Definition of the "design matrix"
+
+2. Definition of the "contrast." 
+
+3. Fitting of the linear model.
+
+4. Fitting the contrast.
+
+5. Bayesian "moderation" of the genes' standard errors towards a common value.
+
+6. Extract the relevant differential analysis information (fold-change, p-value, etc.)
+
+Depending on the design matrix definition, steps 2 and 4 might or might not be needed. In particular, if the result of interest is  captured by a single model parameter, than the definition and fitting of the contrast can be skipped.
+
+To be more specific, a standard linear model for the differential analysis with respect to a gene can be specified in one of two ways. 
+
+(@standard_eq)
+$$Y_{gene} = \beta_0 + \beta_1 X_{pheno}$$
+
+where $X$ takes the values $0$ and $1$, depending on whether the sample belongs to class 0 or 1. Or,
+
+(@contrast_eq)
+$$Y_{gene} = \beta_0X_{0}+ \beta_1X_1$$
+
+where $X_0X_1 = 01$ for samples in class 0, and $X_0X_1=10$ for samples in class 1. 
+
+It should be clear that in Equation (@standard_eq), the parameter $\beta_1$ captures the relevant difference, while in Equation (@contrast_eq), the difference $\beta_0-\beta_1$ captures the differential value of interest. Thus, in the first formualation, we will not need to define a contrast, while in the second formulation we do. 
+
+In the following code chunk, we use the model of Equation (@contrast_eq), hence we need to define and fit the contrast.
 ```{r limma}
-#differential expression analysis using limma
-
-design <- model.matrix(~0 + factor(pheno))
+## 1. Definition of the "design matrix"
+design <- model.matrix(~0 + factor(pheno)) 
 colnames(design)
-colnames(design) <- c("nonbasallike", "sporadicbasallike")
-head(design)
-
-contrast.matrix <- makeContrasts(nonbasallike-sporadicbasallike, levels = design)
+colnames(design) <- c("LumA", "Basal")
+print(unique(design)) # show the 'coding' for the two classes
+## 2. Definition of the "contrast"
+contrast.matrix <- makeContrasts(LumA-Basal, levels = design)
+## 3. Fitting the model
 fit <- lmFit(cancerSet, design)
+## 4. Fitting the contrast
 fit <- contrasts.fit(fit,contrast.matrix)
+## 5. Bayesian "moderation"
 fit <- eBayes(fit)
 head(fit$coefficients)
-#get full differential expression output table, sorted by p-value
+
+## 6. extract the relevant differential analysis information, sorted by p-value
 limmaRes <- topTable(fit, adjust.method = "BH", n = Inf, sort.by = "P")
-#subset to genes with adjusted p-value cutoff
-adjpcutoff <- 0.001
-limmaRes.sig <- subset(limmaRes, adj.P.Val < adjpcutoff)
-nrow(limmaRes.sig)
-head(limmaRes.sig)
-
-topGenes <- limmaRes.sig$hgnc_symbol
-topGenes.up <- subset(limmaRes.sig, t<0)$hgnc_symbol
-topGenes.down <- subset(limmaRes.sig, t>=0)$hgnc_symbol
-
-#out.dir <- paste(OMPATH,"data/results",sep="")
-#saveRDS(topGenes, paste(out.dir, "/", "topGenes.RDS", sep = ""))
-#saveRDS(topGenes.up, paste(out.dir, "/", "topGenes.up.RDS", sep = ""))
-#saveRDS(topGenes.down, paste(out.dir, "/", "topGenes.down.RDS", sep = ""))
 ```
 
 ## Comparing t-test and limma results
 
-```{r compare DE}
+```{r compareDE}
 ## comparing t-test results to limma results
-combinedRes <- cbind(limmaRes, ttestRes1[match(limmaRes$hgnc_symbol, rownames(ttestRes1)),])
-plot(combinedRes$t, combinedRes$t.score.t,
- xlab = "limma t-statistic", ylab = "t-test t-statistic", pch = 20, cex = 0.5)
-plot(combinedRes$P.Value, combinedRes$t.pvalue,
- xlab = "limma p-value", ylab = "t-test pvalue", pch = 20, cex = 0.5)
-plot(combinedRes$adj.P.Val, combinedRes$t.fdr,
- xlab = "limma fdr", ylab = "t-test fdr", pch = 20, cex =0.5)
+combinedRes <- data.frame(limmaRes, ttestRes1[match(limmaRes$hgnc_symbol, rownames(ttestRes1)),],
+                          check.names=FALSE)
+ggplot(combinedRes, aes(x=t,y=t.score.t)) +
+    geom_point() +
+    labs(x="limma t-statistic",y="t.test t-statistic")
 
+ggplot(combinedRes, aes(x=P.Value,y=t.pvalue)) +
+    geom_point() +
+    labs(x="limma p-value",y="t.test p-value")
+
+ggplot(combinedRes, aes(x=adj.P.Val,y=t.fdr)) +
+    geom_point() +
+    labs(x="limma FDR",y="t.test FDR")
+```
+
+As noted above, `limma` performs shrinkage of the variance estimates, by borrowing information across similar genes. Here, we show the effect of that shrinkage.
+```{r compareSD}
 ## limma performs eBayes shrinkage of variance estimates, resulting in moderated t-statistics
 empS <- apply(exprs(cancerSet), 1, var)
 par(mar=c(5,5,2,2))
@@ -268,15 +300,21 @@ plot(1,1,xlim=c(0,14),ylim=c(0,1),type="n",
      xlab="variance estimates",ylab="",yaxt="n")
 axis(2,at=c(0.9,0.1),c("shrunken \n variance","sample \n variance"),las=2)
 segments(fit$s2.post, rep(.9, n),empS,rep(.1,n))
+```
+
+Finally, we compare the two analyses based on the number of genes found to be significant by the two methods, and we look at the overlap.
+```{r count.and.overlap}
+print(data.frame("p=0.05"=c(limma=sum(combinedRes$adj.P.Val<=0.05),ttest=sum(combinedRes$t.fdr<=0.05)),
+                 "p=0.01"=c(limma=sum(combinedRes$adj.P.Val<=0.01),ttest=sum(combinedRes$t.fdr<=0.01)),
+                 check.names=FALSE))
 
 ## what is the overlap between t-ttest and limma derived significant genes? (top1k)
-top1k.ttest <- rownames(combinedRes)[order(combinedRes$t.fdr, decreasing = FALSE)[1:1000]]
-top1k.limma <- rownames(combinedRes)[order(combinedRes$adj.P.Val, decreasing = FALSE)[1:1000]]
-top1k <- list(top1k.ttest = top1k.ttest, top1k.limma = top1k.limma)
+qThresh <- 0.01
+top.ttest <- rownames(combinedRes)[combinedRes$t.fdr<=qThresh]
+top.limma <- rownames(combinedRes)[combinedRes$adj.P.Val<=qThresh]
+topGenes <- list(top.ttest = top.ttest, top.limma = top.limma)
 
-p <- venn.diagram(x = top1k, filename = NULL)
-grid.newpage()
-grid.draw(p)
+vennr(topGenes)
 ```
 
 ## Modelling with covariates

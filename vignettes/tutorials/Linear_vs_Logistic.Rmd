@@ -1,0 +1,125 @@
+---
+title: "Linear vs. Logistic Regression"
+author: "Stefano Monti & Anthony Federico"
+date: "4/4/2020"
+output:
+  html_document:
+    theme: united
+    code_folding: show
+    css: ../style/BS831.css
+    toc: yes
+    toc_float: no
+    toc_depth: 4
+---
+
+Here, we compare application of linear and logistic regression to perform differential analysis.
+Linear regression is in general preferable to logistic regression since the former has a closed formed solution, while the latter does not, and must rely on an iterative numerical method to estimate the model's coefficients. Thus, in general there is no reason to use logistic regression when linear regression can be used.
+
+Below, we show a simple application of the two methods to the analysis of a subset of the TCGA Breast Cancer (BrCa) dataset. We compare the methods both in terms of execution time and model estimates.
+
+```{r global, echo=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE)
+```
+
+```{r settings}
+## require() or library() statements
+require(Biobase)
+require(ggplot2)
+OMPATH <- Sys.getenv("OMPATH")
+```
+
+## Loading the Data
+
+```{r read.data}
+brca <- readRDS(file.path(OMPATH,"data/TCGA.BRCA25.rds"))
+```
+
+```{r load.data, eval=FALSE, echo=FALSE}
+## use this when module is added to the github
+data(TCGA.BRCA25)
+brca <- TCGA.BRCA25
+```
+
+We extract two classes, "Luminal A" and "Basal", for the subsequent analyses.
+
+```{r process.data}
+## select two classes
+brca2 <- brca[,brca$pam50 %in% c("LumA","Basal")]
+brca2$pam50 <- droplevels(brca2$pam50)
+table(brca2$pam50)
+```
+
+## Linear _vs._ Logistic Regression
+
+Now, we use a linear model and a logistic regression model and compare the results of the two. We define two simple functions to encapsulate the relevant steps.
+
+### A multi-gene `lm` wrapper
+
+```{r multi.lm}
+multi.lm <- function(eset,pheno) {
+    X <- pData(eset)[,pheno]
+    data.frame(t(apply(exprs(eset),1,function(Y) {
+        out <- summary(lm( Y ~ X))
+        out$coefficients[2,c("t value","Pr(>|t|)")]
+    })),check.names=FALSE)
+}
+```
+
+### A multi-gene logistic function wrapper
+
+Logistic regression is an instance of generalized linear model (glm) using a binomial distribution and a 'logit' link function.
+
+```{r multi.logistic}
+multi.logistic <- function(eset,pheno) {
+    Y <- (0:1)[pData(eset)[,pheno]]
+    data.frame(t(apply(exprs(eset),1,function(X) {
+        out <- summary(glm(Y ~ X, family=binomial(link='logit')))
+        out$coefficients[2,c("z value","Pr(>|z|)")]
+    })),check.names=FALSE)
+}
+```
+
+We next apply the wrapper functions to our BrCa dataset. We first compare their computation time.
+
+### Computation Time
+
+```{r lm.vs.logistic.time, warning=TRUE}
+## run linear regression
+Tlin <- system.time( resultsLin <- multi.lm(brca2,pheno="pam50") )
+head(resultsLin) # show few results
+
+## run logistic regression
+Tlog <- system.time( resultsLog <- multi.logistic(brca2,pheno="pam50") )
+head(resultsLog) # show few results
+
+## how much faster is linear compared to logistic?
+Tlog["sys.self"]/Tlin["sys.self"]
+```
+Linear regression appears to be `r round(Tlog["sys.self"]/Tlin["sys.self"],2)` times faster than logistic regression. Also, notice that for some of the genes, the iterative estimation procedure did not converge (with the message "glm.fit: algorithm did not converge"), and some genes perfectly separate the phenotypic classes (with the message "_glm.fit: fitted probabilities numerically 0 or 1 occurred_"), which leads to _inflated_ coefficient estimates.
+
+### Estimates
+We now compare the scores (t value and z value), and the p-values.
+```{r lm.vs.logistic.scores}
+DF <- data.frame(resultsLin,resultsLog)
+colnames(DF) <- c("lm.t","lm.pval","logistic.z","logistic.pval")
+
+ggplot(DF,aes(x=lm.t,y=logistic.z)) +
+    geom_point() +
+    geom_smooth()
+
+## identify the genes with biggest p-value differences
+idx <- DF$logistic.pval-DF$lm.pval > .05
+sum(idx)
+DF[idx,]
+
+## plot the p-values and highlight the biggest differences
+ggplot(DF,aes(x=lm.pval,y=logistic.pval)) +
+    geom_point() +
+    geom_point(data=DF[idx,],aes(x=lm.pval,y=logistic.pval,col="red")) +
+    labs(col="difference>0.05")
+```
+
+
+
+
+
