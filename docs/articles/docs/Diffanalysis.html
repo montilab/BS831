@@ -345,7 +345,8 @@
         <span class="kw">col</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/pkg/circlize/man/colorRamp2.html">colorRamp2</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">3</span>), <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"darkblue"</span>, <span class="st">"white"</span>, <span class="st">"darkred"</span>)),
         <span class="kw">top_annotation</span><span class="kw">=</span><span class="no">ha.t</span>,
         <span class="kw">cluster_rows</span><span class="kw">=</span><span class="fl">FALSE</span>,
-        <span class="kw">cluster_columns</span><span class="kw">=</span><span class="fl">FALSE</span>,
+        <span class="kw">cluster_columns</span><span class="kw">=</span><span class="fl">TRUE</span>,
+        <span class="kw">column_split</span><span class="kw">=</span><span class="fl">2</span>,
         <span class="kw">row_title</span><span class="kw">=</span><span class="st">""</span>,
         <span class="kw">show_column_names</span><span class="kw">=</span><span class="fl">FALSE</span>,
         <span class="kw">show_row_names</span><span class="kw">=</span><span class="fl">FALSE</span>)</pre></body></html></div>
@@ -409,7 +410,7 @@
 <li><p>Definition of the “design matrix”</p></li>
 <li><p>Definition of the “contrast.”</p></li>
 <li><p>Fitting of the linear model.</p></li>
-<li><p>Fitting the contrast.</p></li>
+<li><p>Fitting of the contrast.</p></li>
 <li><p>Bayesian “moderation” of the genes’ standard errors towards a common value.</p></li>
 <li><p>Extract the relevant differential analysis information (fold-change, p-value, etc.)</p></li>
 </ol>
@@ -422,20 +423,46 @@
 <ol start="2" class="example" style="list-style-type: decimal">
 <li><span class="math display">\[Y_{gene} = \beta_0X_{0}+ \beta_1X_1\]</span></li>
 </ol>
-<p>where <span class="math inline">\(X_0X_1 = 01\)</span> for samples in class 0, and <span class="math inline">\(X_0X_1=10\)</span> for samples in class 1.</p>
-<p>It should be clear that in Equation (1), the parameter <span class="math inline">\(\beta_1\)</span> captures the relevant difference, while in Equation (2), the difference <span class="math inline">\(\beta_0-\beta_1\)</span> captures the differential value of interest. Thus, in the first formualation, we will not need to define a contrast, while in the second formulation we do.</p>
+<p>where <span class="math inline">\(X_0,X_1 = 1,0\)</span> for samples in class 0, and <span class="math inline">\(X_0,X_1=0,1\)</span> for samples in class 1.</p>
+<p>It should be noted that in Equation (1), the parameter <span class="math inline">\(\beta_1\)</span> captures the relevant differential expression, while in Equation (2), the difference <span class="math inline">\(\beta_0-\beta_1\)</span> captures the differential value of interest. Thus, in the first model specification we do not need to define a contrast, while in the second we do.</p>
+<p>In the following code chunk, we use the model of Equation (1), hence we don’t need to fit a contrast and we need to extract the parameter <span class="math inline">\(\beta_1\)</span> (basal) instead.</p>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## 1. Definition of the "design matrix"</span>
+<span class="no">design</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html">model.matrix</a></span>(~<span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="no">pheno</span>))
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">design</span>)</pre></body></html></div>
+<pre><code>## [1] "(Intercept)"        "factor(pheno)Basal"</code></pre>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## simplify names</span>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">design</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"intercept"</span>, <span class="st">"basal"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="no">design</span>)) <span class="co"># show the 'coding' for the two classes</span></pre></body></html></div>
+<pre><code>##    intercept basal
+## 1          1     0
+## 26         1     1</code></pre>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## 3. Fitting the model</span>
+<span class="no">fit</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/lmFit.html">lmFit</a></span>(<span class="no">cancerSet</span>, <span class="no">design</span>)
+<span class="co">## 5. Bayesian "moderation"</span>
+<span class="no">fit</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html">eBayes</a></span>(<span class="no">fit</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fit</span>$<span class="no">coefficients</span>)</pre></body></html></div>
+<pre><code>##           intercept     basal
+## CLEC3A     6.912276 -4.877809
+## DSCAM-AS1  4.556425 -3.761019
+## SCGB2A2   13.565551 -7.013866
+## KCNJ3      7.455226 -5.262762
+## GSTM1      6.988551 -1.564535
+## CST9       5.007894 -4.534310</code></pre>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## 6. extract the relevant differential analysis information, sorted by p-value</span>
+<span class="no">limmaRes1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/toptable.html">topTable</a></span>(<span class="no">fit</span>, <span class="kw">coef</span><span class="kw">=</span><span class="st">"basal"</span>,<span class="kw">adjust.method</span> <span class="kw">=</span> <span class="st">"BH"</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">Inf</span>, <span class="kw">sort.by</span> <span class="kw">=</span> <span class="st">"P"</span>)</pre></body></html></div>
 <p>In the following code chunk, we use the model of Equation (2), hence we need to define and fit the contrast.</p>
 <div class="sourceCode"><html><body><pre class="r"><span class="co">## 1. Definition of the "design matrix"</span>
 <span class="no">design</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html">model.matrix</a></span>(~<span class="fl">0</span> + <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="no">pheno</span>))
 <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">design</span>)</pre></body></html></div>
 <pre><code>## [1] "factor(pheno)LumA"  "factor(pheno)Basal"</code></pre>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">design</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"LumA"</span>, <span class="st">"Basal"</span>)
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## simplify names</span>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">design</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"LumA"</span>, <span class="st">"Basal"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="no">design</span>)) <span class="co"># show the 'coding' for the two classes</span></pre></body></html></div>
 <pre><code>##    LumA Basal
 ## 1     1     0
 ## 26    0     1</code></pre>
 <div class="sourceCode"><html><body><pre class="r"><span class="co">## 2. Definition of the "contrast"</span>
-<span class="no">contrast.matrix</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/makeContrasts.html">makeContrasts</a></span>(<span class="no">LumA</span>-<span class="no">Basal</span>, <span class="kw">levels</span> <span class="kw">=</span> <span class="no">design</span>)
+<span class="no">contrast.matrix</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/makeContrasts.html">makeContrasts</a></span>(<span class="no">Basal</span>-<span class="no">LumA</span>, <span class="kw">levels</span> <span class="kw">=</span> <span class="no">design</span>)
 <span class="co">## 3. Fitting the model</span>
 <span class="no">fit</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/lmFit.html">lmFit</a></span>(<span class="no">cancerSet</span>, <span class="no">design</span>)
 <span class="co">## 4. Fitting the contrast</span>
@@ -444,21 +471,26 @@
 <span class="no">fit</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html">eBayes</a></span>(<span class="no">fit</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fit</span>$<span class="no">coefficients</span>)</pre></body></html></div>
 <pre><code>##            Contrasts
-##             LumA - Basal
-##   CLEC3A        4.877809
-##   DSCAM-AS1     3.761019
-##   SCGB2A2       7.013866
-##   KCNJ3         5.262762
-##   GSTM1         1.564535
-##   CST9          4.534310</code></pre>
+##             Basal - LumA
+##   CLEC3A       -4.877809
+##   DSCAM-AS1    -3.761019
+##   SCGB2A2      -7.013866
+##   KCNJ3        -5.262762
+##   GSTM1        -1.564535
+##   CST9         -4.534310</code></pre>
 <div class="sourceCode"><html><body><pre class="r"><span class="co">## 6. extract the relevant differential analysis information, sorted by p-value</span>
-<span class="no">limmaRes</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/toptable.html">topTable</a></span>(<span class="no">fit</span>, <span class="kw">adjust.method</span> <span class="kw">=</span> <span class="st">"BH"</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">Inf</span>, <span class="kw">sort.by</span> <span class="kw">=</span> <span class="st">"P"</span>)</pre></body></html></div>
+<span class="no">limmaRes2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/toptable.html">topTable</a></span>(<span class="no">fit</span>, <span class="kw">adjust.method</span> <span class="kw">=</span> <span class="st">"BH"</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">Inf</span>, <span class="kw">sort.by</span> <span class="kw">=</span> <span class="st">"P"</span>)</pre></body></html></div>
+<p>As you can see below, the two model specifications yield the same results.</p>
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span>(<span class="no">limmaRes1</span>$<span class="no">t</span>,<span class="no">limmaRes2</span>$<span class="no">t</span>)</pre></body></html></div>
+<pre><code>## [1] TRUE</code></pre>
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span>(<span class="no">limmaRes1</span>$<span class="no">P.Value</span>,<span class="no">limmaRes2</span>$<span class="no">P.Value</span>)</pre></body></html></div>
+<pre><code>## [1] TRUE</code></pre>
 </div>
 <div id="comparing-t-test-and-limma-results" class="section level2">
 <h2 class="hasAnchor">
 <a href="#comparing-t-test-and-limma-results" class="anchor"></a>Comparing t-test and limma results</h2>
 <div class="sourceCode"><html><body><pre class="r"><span class="co">## comparing t-test results to limma results</span>
-<span class="no">combinedRes</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="no">limmaRes</span>, <span class="no">ttestRes1</span>[<span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="no">limmaRes</span>$<span class="no">hgnc_symbol</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">ttestRes1</span>)),],
+<span class="no">combinedRes</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="no">limmaRes1</span>, <span class="no">ttestRes1</span>[<span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="no">limmaRes1</span>$<span class="no">hgnc_symbol</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">ttestRes1</span>)),],
                           <span class="kw">check.names</span><span class="kw">=</span><span class="fl">FALSE</span>)
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">combinedRes</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span><span class="kw">=</span><span class="no">t</span>,<span class="kw">y</span><span class="kw">=</span><span class="no">t.score.t</span>)) +
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>() +
@@ -489,15 +521,15 @@
 <pre><code>##       p=0.05 p=0.01
 ## limma   2559   1992
 ## ttest   2545   1968</code></pre>
-<div class="sourceCode"><html><body><pre class="r"><span class="co">## what is the overlap between t-ttest and limma derived significant genes? (top1k)</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## what is the overlap between t-ttest and limma derived significant genes?</span>
 <span class="no">qThresh</span> <span class="kw">&lt;-</span> <span class="fl">0.01</span>
 <span class="no">top.ttest</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">combinedRes</span>)[<span class="no">combinedRes</span>$<span class="no">t.fdr</span><span class="kw">&lt;=</span><span class="no">qThresh</span>]
 <span class="no">top.limma</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">combinedRes</span>)[<span class="no">combinedRes</span>$<span class="no">adj.P.Val</span><span class="kw">&lt;=</span><span class="no">qThresh</span>]
 <span class="no">topGenes</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">top.ttest</span> <span class="kw">=</span> <span class="no">top.ttest</span>, <span class="kw">top.limma</span> <span class="kw">=</span> <span class="no">top.limma</span>)
 
 <span class="fu"><a href="https://rdrr.io/pkg/vennr/man/vennr.html">vennr</a></span>(<span class="no">topGenes</span>)</pre></body></html></div>
-<div id="htmlwidget-f5ce3dc0fe716a250e04" style="width:700px;height:432.632880098888px;" class="vennr html-widget"></div>
-<script type="application/json" data-for="htmlwidget-f5ce3dc0fe716a250e04">{"x":{"data":[{"sets":["top.ttest"],"size":1968,"label":"top.ttest (22)"},{"sets":["top.limma"],"size":1992,"label":"top.limma (46)"},{"sets":["top.limma","top.ttest"],"size":1946,"label":"1946"}],"settings":{"fontSize":"14px","fontFamily":"Helvetica,Arial,sans-serif"}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-78bad143d3e1a853490f" style="width:700px;height:432.632880098888px;" class="vennr html-widget"></div>
+<script type="application/json" data-for="htmlwidget-78bad143d3e1a853490f">{"x":{"data":[{"sets":["top.ttest"],"size":1968,"label":"top.ttest (22)"},{"sets":["top.limma"],"size":1992,"label":"top.limma (46)"},{"sets":["top.limma","top.ttest"],"size":1946,"label":"1946"}],"settings":{"fontSize":"14px","fontFamily":"Helvetica,Arial,sans-serif"}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="modelling-with-covariates" class="section level2">
 <h2 class="hasAnchor">

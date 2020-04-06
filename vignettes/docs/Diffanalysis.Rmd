@@ -9,7 +9,7 @@ output:
     css: "../style/BS831.css" 
 ---
 
-```{r global, echo=FALSE,message=FALSE, warning=FALSE, eval=FALSE}
+```{r global, echo=FALSE,message=FALSE, warning=FALSE, eval=TRUE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE)
 devtools::load_all(".")
 require(Biobase) 
@@ -21,7 +21,7 @@ require(ggplot2)
 require(vennr) # see github.com/montilab/vennr
 ```
 
-```{r settings,message=FALSE, warning=FALSE, eval=TRUE}
+```{r settings,message=FALSE, warning=FALSE, eval=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE)
 require(BS831)
 require(Biobase) 
@@ -47,7 +47,7 @@ linear model, and the relationship of this approach to the use of the t-test.
 
 We start by uploading a subset of the TCGA Breast Cancer dataset (in `ExpressionSet` format), and by showing the use of the function `t.test`. Below, we just carry out some "data cleaning" to simplify data handling, and limit the datasets to two molecular subclasses, Luminal A and Basal. These are two of the five classes of the "Pam50" molecular classification of Breast Cancer [[Sorlie et al., PNAS 2001](https://www.pnas.org/content/98/19/10869)].
 
-```{r load.data, echo=FALSE}
+```{r load.data, echo=FALSE, eval=TRUE}
 eset <- readRDS(file.path(Sys.getenv("OMPATH"),"data/TCGA.BRCA25.rds"))
 ```
 
@@ -170,7 +170,8 @@ Heatmap(datScaled,
         col=colorRamp2(c(-3, 0, 3), c("darkblue", "white", "darkred")),
         top_annotation=ha.t, 
         cluster_rows=FALSE,
-        cluster_columns=FALSE,
+        cluster_columns=TRUE,
+        column_split=2,
         row_title="",
         show_column_names=FALSE,
         show_row_names=FALSE)
@@ -231,7 +232,7 @@ Fitting a `limma` model includes the following steps:
 
 3. Fitting of the linear model.
 
-4. Fitting the contrast.
+4. Fitting of the contrast.
 
 5. Bayesian "moderation" of the genes' standard errors towards a common value.
 
@@ -249,19 +250,39 @@ where $X$ takes the values $0$ and $1$, depending on whether the sample belongs 
 (@contrast_eq)
 $$Y_{gene} = \beta_0X_{0}+ \beta_1X_1$$
 
-where $X_0X_1 = 01$ for samples in class 0, and $X_0X_1=10$ for samples in class 1. 
+where $X_0,X_1 = 1,0$ for samples in class 0, and $X_0,X_1=0,1$ for samples in class 1. 
 
-It should be clear that in Equation (@standard_eq), the parameter $\beta_1$ captures the relevant difference, while in Equation (@contrast_eq), the difference $\beta_0-\beta_1$ captures the differential value of interest. Thus, in the first formualation, we will not need to define a contrast, while in the second formulation we do. 
+It should be noted that in Equation (@standard_eq), the parameter $\beta_1$ captures the relevant differential expression, while in Equation (@contrast_eq), the difference $\beta_0-\beta_1$ captures the differential value of interest. Thus, in the first model specification we do not need to define a contrast, while in the second we do. 
+
+In the following code chunk, we use the model of Equation (@standard_eq), hence we don't need to fit a contrast and we need to extract the parameter $\beta_1$ (basal) instead.
+
+```{r limma1}
+## 1. Definition of the "design matrix"
+design <- model.matrix(~factor(pheno)) 
+colnames(design)
+## simplify names
+colnames(design) <- c("intercept", "basal")
+print(unique(design)) # show the 'coding' for the two classes
+## 3. Fitting the model
+fit <- lmFit(cancerSet, design)
+## 5. Bayesian "moderation"
+fit <- eBayes(fit)
+head(fit$coefficients)
+
+## 6. extract the relevant differential analysis information, sorted by p-value
+limmaRes1 <- topTable(fit, coef="basal",adjust.method = "BH", n = Inf, sort.by = "P")
+```
 
 In the following code chunk, we use the model of Equation (@contrast_eq), hence we need to define and fit the contrast.
-```{r limma}
+```{r limma2}
 ## 1. Definition of the "design matrix"
 design <- model.matrix(~0 + factor(pheno)) 
 colnames(design)
+## simplify names
 colnames(design) <- c("LumA", "Basal")
 print(unique(design)) # show the 'coding' for the two classes
 ## 2. Definition of the "contrast"
-contrast.matrix <- makeContrasts(LumA-Basal, levels = design)
+contrast.matrix <- makeContrasts(Basal-LumA, levels = design)
 ## 3. Fitting the model
 fit <- lmFit(cancerSet, design)
 ## 4. Fitting the contrast
@@ -271,14 +292,20 @@ fit <- eBayes(fit)
 head(fit$coefficients)
 
 ## 6. extract the relevant differential analysis information, sorted by p-value
-limmaRes <- topTable(fit, adjust.method = "BH", n = Inf, sort.by = "P")
+limmaRes2 <- topTable(fit, adjust.method = "BH", n = Inf, sort.by = "P")
+```
+
+As you can see below, the two model specifications yield the same results.
+```{r standard.vs.contrast}
+all.equal(limmaRes1$t,limmaRes2$t)
+all.equal(limmaRes1$P.Value,limmaRes2$P.Value)
 ```
 
 ## Comparing t-test and limma results
 
 ```{r compareDE}
 ## comparing t-test results to limma results
-combinedRes <- data.frame(limmaRes, ttestRes1[match(limmaRes$hgnc_symbol, rownames(ttestRes1)),],
+combinedRes <- data.frame(limmaRes1, ttestRes1[match(limmaRes1$hgnc_symbol, rownames(ttestRes1)),],
                           check.names=FALSE)
 ggplot(combinedRes, aes(x=t,y=t.score.t)) +
     geom_point() +
@@ -311,7 +338,7 @@ print(data.frame("p=0.05"=c(limma=sum(combinedRes$adj.P.Val<=0.05),ttest=sum(com
                  "p=0.01"=c(limma=sum(combinedRes$adj.P.Val<=0.01),ttest=sum(combinedRes$t.fdr<=0.01)),
                  check.names=FALSE))
 
-## what is the overlap between t-ttest and limma derived significant genes? (top1k)
+## what is the overlap between t-ttest and limma derived significant genes?
 qThresh <- 0.01
 top.ttest <- rownames(combinedRes)[combinedRes$t.fdr<=qThresh]
 top.limma <- rownames(combinedRes)[combinedRes$adj.P.Val<=qThresh]
