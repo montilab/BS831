@@ -12,9 +12,12 @@ output:
 ```{r global, echo=FALSE,message=FALSE, warning=FALSE, eval=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE)
 devtools::load_all(".")
-require(Biobase)
+require(Biobase) 
 require(limma)
 require(VennDiagram)
+require(ComplexHeatmap)
+require(circlize)
+require(ggplot2)
 require(vennr) # see github.com/montilab/vennr
 ```
 
