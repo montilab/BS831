@@ -45,33 +45,64 @@ linear model, and the relationship of this approach to the use of the t-test.
 
 ## Differential expression analysis using `t.test`
 
-We start by uploading a Breast Cancer dataset already restricted to only two tumor categories, _basal_ and _nonbasal_, described in [[Richardson et al., PNAS 2006](http://europepmc.org/article/MED/16473279)].
+We start by uploading the LOAD dataset (see `Microarray_Processing.Rmd`) in `ExpressionSet` format and by showing the use of the function `t.test`. Below, we just carry out some "data cleaning" to simplify data handling. The original dataset consists of gene expression data of postmortem brain tissues from three brain regions (PC: prefrontal cortex; VC: visual cortex; and CB: cerebellum) from 129 LOAD patients and 101 healthy controls for a total of 690 profiles. For the subsequent analyses, we limit the dataset to one of the three brain regions profiled (cerebellum).
 
-```{r load.data}
-## load the ExpressionSet object
-data(renamedBreastDB)
-cancerSet <- renamedBreastDB
-head(pData(cancerSet))
-table(cancerSet$diseaseState)
+```{r LOAD.data, echo=FALSE, eval=TRUE}
+LOAD <- readRDS( file.path(Sys.getenv("OMPATH"),"data/LOAD1.RDS"))
 ```
 
-We have extracted the data of interest into the object `cancerSet`. We are now ready to use the `t.test` function. We first show its use applied to a single gene.
+```{r LOAD.data.dummy, eval=FALSE}
+## load the ExpressionSet object
+data(LOAD)
+```
+
+```{r dataprep}
+## show the dataset composition (in terms of phenotypic classes)
+print(table(LOAD$characteristics_ch2,LOAD$description))
+
+## Let us limit the analysis to cerebellum only and rows w/ non-empty gene symbols
+LOADcrb <- LOAD[fData(LOAD)$gene_symbol!="",LOAD$description %in% c("cerebellum")]
+
+## And let us rename the phenotype a bit more intuitively
+colnames(pData(LOADcrb)) <- gsub("characteristics_ch2","load",colnames(pData(LOADcrb)))
+LOADcrb$load <- factor(c("load","cntl")[match(LOADcrb$load,c("disease: A","disease: N"))])
+
+## let's order samples by the phenotype
+LOADcrb <- LOADcrb[,order(LOADcrb$load)]
+print( table(LOADcrb$load) )
+```
+
+### Elimination of Duplicates
+
+The dataset contains multiple probes (rows) corresponding to the same gene. Here, for simplicity, we keep only one probe per gene, and we take this as an opportunity to show how to make this selection based on gene variation (with higher variation being preferable). We do this by first sorting the rows by decreasing MAD, and by then picking the first occurence of each gene symbol. We also perform gene filtering and pick the top 3000 genes. This is too drastic a filter for differential analysis, but we do it to speed up computation, as this analysis is for illustrative purposes.
+
+```{r duplicate.removal}
+MAD <- apply(exprs(LOADcrb),1,mad)
+LOAD0 <- LOADcrb[order(MAD,decreasing = TRUE),]
+LOAD1 <- LOAD0[match(unique(fData(LOAD0)$gene_symbol),fData(LOAD0)$gene_symbol),]
+LOAD1 <- LOAD1[1:3000,]
+featureNames(LOAD1) <- fData(LOAD1)$gene_symbol
+## make sure we succeeded
+if ( length(unique(fData(LOAD1)$gene_symbol))!=nrow(LOAD1) ) stop( "non-unique gene symbols")
+```
+
+We have extracted the data of interest into the object `LOAD1`. We are now ready to use the `t.test` function. We first show its use applied to a single gene.
 
 ```{r ttest}
 
 ## split the data into the two diseaseState groups
-group1 <- exprs(cancerSet)[, cancerSet$diseaseState=="nonbasal"]
-group2 <- exprs(cancerSet)[, cancerSet$diseaseState=="basal"]
-dim(group1)                   # show the size of group1
-dim(group2)                   # show the size of group2
-table(cancerSet$diseaseState) # show the size concordance with the phenotype annotation
+group1 <- exprs(LOAD1)[, LOAD1$load=="cntl"]
+group2 <- exprs(LOAD1)[, LOAD1$load=="load"]
+dim(group1)         # show the size of group1
+dim(group2)         # show the size of group2
+table(LOAD1$load) # show the size concordance with the phenotype annotation
 
 ## for ease of use let's define the variable pheno (although this can be error prone)
-pheno <- as.factor(cancerSet$diseaseState)
+pheno <- LOAD1$load
 
 ## use gene symbols to index the rows (rather than the entrez IDs)
-rownames(group1) <- fData(cancerSet)$hgnc_symbol
-rownames(group2) <- fData(cancerSet)$hgnc_symbol
+rownames(group1) <- fData(LOAD1)$gene_symbol
+rownames(group2) <- fData(LOAD1)$gene_symbol
 
 ## show few entries of group1 (the fist 5 genes in the first 5 samples)
 group1[1:5,1:3]
@@ -101,27 +132,23 @@ ttestRes <- data.frame(t(sapply(1:nrow(group1),
 rownames(ttestRes) <- rownames(group1)
 ```
 
-In the application above, we made use of the
-`t.test(x,y,...)` version of the command. However, the use
-of the `t.test(formula,...)` version of the command turns
-out to be simpler and more elegant, as it does not require to split
-the dataset into two groups.
+In the application above, we made use of the `t.test(x,y,...)` version of the command. However, the use of the `t.test(formula,...)` version of the command turns out to be simpler and more elegant, as it does not require to split the dataset into two groups.
 
 ```{r multi.ttest2}
 ## application to a single gene but using the formula
-T3 <- t.test(exprs(cancerSet)[1,] ~ pheno)
+T3 <- t.test(exprs(LOAD1)[1,] ~ pheno)
 print(T3) # same results as before
 T3$statistic==T1$statistic
 
 ## application to all genes (coerce output into data.frame for easier handling)
 ttestRes1 <- as.data.frame(
-  t(apply(exprs(cancerSet),1,
+  t(apply(exprs(LOAD1),1,
           function(y) {
             out <- t.test(y~pheno,var.equal=TRUE)
             c(t.score=out$statistic,t.pvalue=out$p.value)
             })))
 ## use the gene names to index the rows (for interpretability)
-rownames(ttestRes1) <- fData(cancerSet)$hgnc_symbol
+rownames(ttestRes1) <- fData(LOAD1)$gene_symbol
 
 ## let us add to the output data.frame an extra column reporting the FDR
 ## .. (i.e., the MHT-corrected p-value)
@@ -141,18 +168,31 @@ ttestOrd <- order(ttestRes1[,'t.score.t'],decreasing=TRUE)
 ## let us visualize the top 50 and bottom 50 genes
 hiIdx <- ttestOrd[1:50]
 loIdx <- ttestOrd[nrow(ttestRes1):(nrow(ttestRes1)-49)]
-datOut <- exprs(cancerSet)[c(hiIdx,loIdx),]
+datOut <- exprs(LOAD1)[c(hiIdx,loIdx),]
 datScaled <- t(scale(t(datOut))) # row scale the matrix for better visualization
 
-ha.t <- HeatmapAnnotation(diseaseState=cancerSet$diseaseState,
-                          col=list(diseaseState=c(nonbasal="green",basal="red")))
+ha.t <- HeatmapAnnotation(LOAD=LOAD1$load,
+                          col=list(LOAD=c(cntl="green",load="red")))
 
 Heatmap(datScaled,
         name="expression", 
         col=colorRamp2(c(-3, 0, 3), c("darkblue", "white", "darkred")),
         top_annotation=ha.t, 
         cluster_rows=FALSE,
+        cluster_columns=FALSE,
+        row_title="",
+        show_column_names=FALSE,
+        show_row_names=FALSE)
+```
+
+```{r clustered.heatmap, eval=FALSE, echo=FALSE}
+Heatmap(datScaled,
+        name="expression", 
+        col=colorRamp2(c(-3, 0, 3), c("darkblue", "white", "darkred")),
+        top_annotation=ha.t, 
+        cluster_rows=FALSE,
         cluster_columns=TRUE,
+        clustering_method_columns = "ward.D",
         column_split=2,
         row_title="",
         show_column_names=FALSE,
@@ -170,20 +210,21 @@ variance. We then apply it to all the genes in the dataset.
 
 ```{r lmdiffanal}
 ## application to a single gene
-LM1 <- lm(exprs(cancerSet)[1,] ~ pheno)
+LM1 <- lm(exprs(LOAD1)[1,] ~ pheno)
 summary(LM1)
 
 ## same p-value as for T2 above
 all.equal(T2$p.value,summary(LM1)$coefficients[2,"Pr(>|t|)"])
 
 ## application to all genes
-ttestRes2 <- as.data.frame(t(apply(exprs(cancerSet),1,
-                                   function(y) {
-                                       out <- summary(lm(y~pheno))$coefficients
-                                       c(t.score=out[2,"t value"],t.pvalue=out[2,"Pr(>|t|)"])
-                                   })))
+ttestRes2 <- as.data.frame(
+    t(apply(exprs(LOAD1),1,
+            function(y) {
+                out <- summary(lm(y~pheno))$coefficients
+                c(t.score=out[2,"t value"],t.pvalue=out[2,"Pr(>|t|)"])
+            })))
 ## use the gene names to index the rows (for interpretability)
-rownames(ttestRes2) <- fData(cancerSet)$hgnc_symbol
+rownames(ttestRes2) <- fData(LOAD1)$gene_symbol
 
 ## let us add to the output data.frame an extra column reportding the FDR
 ## .. (i.e., the MHT-corrected p-value)
@@ -240,41 +281,41 @@ In the following code chunk, we use the model of Equation (@standard_eq), hence 
 
 ```{r limma1}
 ## 1. Definition of the "design matrix"
-design1 <- model.matrix(~factor(pheno)) 
-colnames(design1)
+design <- model.matrix(~factor(pheno)) 
+colnames(design)
 ## simplify names
-colnames(design1) <- c("intercept", "basal")
-print(unique(design1)) # show the 'coding' for the two classes
+colnames(design) <- c("intercept", "load")
+print(unique(design)) # show the 'coding' for the two classes
 ## 3. Fitting the model
-fit1 <- lmFit(cancerSet, design1)
+fit <- lmFit(LOAD1, design)
 ## 5. Bayesian "moderation"
-fit1 <- eBayes(fit1)
-head(fit1$coefficients)
+fit <- eBayes(fit)
+head(fit$coefficients)
 
 ## 6. extract the relevant differential analysis information, sorted by p-value
-limmaRes1 <- topTable(fit1, coef="basal",adjust.method = "BH", n = Inf, sort.by = "P")
+limmaRes1 <- topTable(fit, coef="load",adjust.method = "BH", n = Inf, sort.by = "P")
 ```
 
 In the following code chunk, we use the model of Equation (@contrast_eq), hence we need to define and fit the contrast.
 ```{r limma2}
 ## 1. Definition of the "design matrix"
-design2 <- model.matrix(~0 + factor(pheno)) 
-colnames(design2)
+design <- model.matrix(~0 + factor(pheno)) 
+colnames(design)
 ## simplify names
-colnames(design2) <- c("nonbasal", "basal")
-print(unique(design2)) # show the 'coding' for the two classes
+colnames(design) <- levels(pheno)
+print(unique(design)) # show the 'coding' for the two classes
 ## 2. Definition of the "contrast"
-contrast.matrix <- makeContrasts(basal-nonbasal, levels = design2)
+contrast.matrix <- makeContrasts(load-cntl, levels = design)
 ## 3. Fitting the model
-fit2 <- lmFit(cancerSet, design2)
+fit <- lmFit(LOAD1, design)
 ## 4. Fitting the contrast
-fit2 <- contrasts.fit(fit2,contrast.matrix)
+fit <- contrasts.fit(fit,contrast.matrix)
 ## 5. Bayesian "moderation"
-fit2 <- eBayes(fit2)
-head(fit2$coefficients)
+fit <- eBayes(fit)
+head(fit$coefficients)
 
 ## 6. extract the relevant differential analysis information, sorted by p-value
-limmaRes2 <- topTable(fit2, adjust.method = "BH", n = Inf, sort.by = "P")
+limmaRes2 <- topTable(fit, adjust.method = "BH", n = Inf, sort.by = "P")
 ```
 
 As you can see below, the two model specifications yield the same results.
@@ -287,7 +328,7 @@ all.equal(limmaRes1$P.Value,limmaRes2$P.Value)
 
 ```{r compareDE}
 ## comparing t-test results to limma results
-combinedRes <- data.frame(limmaRes1, ttestRes1[match(limmaRes1$hgnc_symbol, rownames(ttestRes1)),],
+combinedRes <- data.frame(limmaRes1, ttestRes1[match(limmaRes1$gene_symbol, rownames(ttestRes1)),],
                           check.names=FALSE)
 ggplot(combinedRes, aes(x=t,y=t.score.t)) +
     geom_point() +
@@ -305,13 +346,13 @@ ggplot(combinedRes, aes(x=adj.P.Val,y=t.fdr)) +
 As noted above, `limma` performs shrinkage of the variance estimates, by borrowing information across similar genes. Here, we show the effect of that shrinkage.
 ```{r compareSD}
 ## limma performs eBayes shrinkage of variance estimates, resulting in moderated t-statistics
-empS <- apply(exprs(cancerSet), 1, var)
+empS <- apply(exprs(LOAD1), 1, var)
 par(mar=c(5,5,2,2))
 n <- length(empS)
-plot(1,1,xlim=c(0,14),ylim=c(0,1),type="n",
+plot(1,1,xlim=c(0,1.1),ylim=c(0,1),type="n",
      xlab="variance estimates",ylab="",yaxt="n")
 axis(2,at=c(0.9,0.1),c("shrunken \n variance","sample \n variance"),las=2)
-segments(fit2$s2.post, rep(.9, n),empS,rep(.1,n))
+segments(fit$s2.post, rep(.9, n),empS,rep(.1,n))
 ```
 
 Finally, we compare the two analyses based on the number of genes found to be significant by the two methods, and we look at the overlap.
@@ -331,12 +372,10 @@ vennr(topGenes)
 
 ## Modelling with covariates
 
-We here show how to perform differential analysis while controlling for the confounding effects of covariates. To this end, we use a different breast cancer dataset, which reports several phenotypic annotations for each patient [[Loi et al., PNAS 2010](https://www.ncbi.nlm.nih.gov/pubmed/17401012)]. In this analysis, we will look for markers of lymph node (LN) status, `LN_status`, while controlling for age.
-
 ```{r newESET}
 data(breast_loi_133p2)
 
-## load the ExpressionSet object
+## LOAD1 the ExpressionSet object
 BC <- breast_loi_133p2
 pData(BC)[1:5,1:6] # show some data annotation
 
@@ -403,7 +442,7 @@ head(limmaResA)
 
 ### Model with age:LN_status interaction
 ```{r limmaInter}
-## Next, we'll model the interaction between age and LN_status
+#Next, we'll model the interaction between age and LN_status
 designI <- model.matrix(~ 0 + factor(LN_status) + age + factor(LN_status):age, data = pData(BC))
 colnames(designI)
 colnames(designI) <- c("negative", "positive", "age", "positiveIage")
@@ -412,23 +451,22 @@ head(designI)
 contrast.matrixI<- makeContrasts(positive-negative, levels = designI)
 fitI <- lmFit(BC, designI)
 
-## Difference in expression between LN_status = positive and LN_status = negative individuals
+# Difference in expression between LN_status = positive and LN_status = negative individuals
 fitIC <- contrasts.fit(fitI,contrast.matrixI)
 fitIC <- eBayes(fitIC)
 head(fitIC$coefficients)
-## get full differential expression output table, sorted by p-value
+#get full differential expression output table, sorted by p-value
 limmaResIC <- topTable(fitIC, adjust.method = "BH", n = Inf, sort.by = "P")
 head(limmaResIC)
 
-## Effect of age on LN_status = negative individuals
+# Effect of age on LN_status = negative individuals
 fitIA <- eBayes(fitI)
 head(fitI$coefficients)
 #get full differential expression output table, sorted by p-value
 limmaResIA <- topTable(fitIA, adjust.method = "BH", n = Inf, sort.by = "P", coef = "age")
 head(limmaResIA)
 
-## Difference in effect of Age between LN_status = positive and LN_status = negative participants
+# Difference in effect of Age between LN_status = positive and LN_status = negative participants
 limmaResIP <- topTable(fitIA, adjust.method = "BH", n = Inf, sort.by = "P", coef = "positiveIage")
 head(limmaResIP)
 ```
-

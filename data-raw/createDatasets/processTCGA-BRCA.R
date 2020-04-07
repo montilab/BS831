@@ -19,4 +19,4 @@ sIDX <- c(sample(sampleNames(brca[,brca$pam50=="LumA"]),size=N,replace=FALSE),
 brca25  <- variationFilter(brca,ngenes=5000,score="mad",do.plot=TRUE)[,sIDX]
 brca25$pam50 <- droplevels(brca25$pam50)
 saveRDS( brca25, file.path(OMPATH,"data/TCGA.BRCA25.rds") )
-save(brca25,"data/TCGA.BRCA25.rda")
+save(brca25,file="data/TCGA.BRCA25.rda")

@@ -45,29 +45,47 @@ linear model, and the relationship of this approach to the use of the t-test.
 
 ## Differential expression analysis using `t.test`
 
-We start by uploading a Breast Cancer dataset already restricted to only two tumor categories, _basal_ and _nonbasal_, described in [[Richardson et al., PNAS 2006](http://europepmc.org/article/MED/16473279)].
+We start by uploading a subset of the TCGA Breast Cancer dataset (in `ExpressionSet` format), and by showing the use of the function `t.test`. Below, we just carry out some "data cleaning" to simplify data handling, and limit the datasets to two molecular subclasses, Luminal A and Basal. These are two of the five classes of the "Pam50" molecular classification of Breast Cancer [[Sorlie et al., PNAS 2001](https://www.pnas.org/content/98/19/10869)].
 
-```{r load.data}
-## load the ExpressionSet object
-data(renamedBreastDB)
-cancerSet <- renamedBreastDB
-head(pData(cancerSet))
-table(cancerSet$diseaseState)
+```{r load.data, echo=FALSE, eval=TRUE}
+eset <- readRDS(file.path(Sys.getenv("OMPATH"),"data/TCGA.BRCA25.rds"))
 ```
 
-We have extracted the data of interest into the object `cancerSet`. We are now ready to use the `t.test` function. We first show its use applied to a single gene.
+```{r load.data.dummy, eval=FALSE}
+## load the ExpressionSet object
+data(TCGA.BRCA25)
+eset <- TCGA.BRCA25
+```
+
+```{r dataprep}
+## show the dataset composition (in terms of phenotypic classes)
+print(table(eset$pam50))
+
+## Let us limit the analysis to two sub-classes: Luminal A and Basal
+cancerSet <- eset[,eset$pam50 %in% c("LumA","Basal")]
+cancerSet$pam50 <- droplevels(cancerSet$pam50)
+
+## let's order samples by the phenotype
+cancerSet <- cancerSet[,order(cancerSet$pam50)]
+print( table(cancerSet$pam50) )
+```
+
+We have extracted the data of interest into the object
+`cancerSet`. We are now ready to use the
+`t.test` function. We first show its use applied to a
+single gene.
 
 ```{r ttest}
 
 ## split the data into the two diseaseState groups
-group1 <- exprs(cancerSet)[, cancerSet$diseaseState=="nonbasal"]
-group2 <- exprs(cancerSet)[, cancerSet$diseaseState=="basal"]
+group1 <- exprs(cancerSet)[, cancerSet$pam50=="LumA"]
+group2 <- exprs(cancerSet)[, cancerSet$pam50=="Basal"]
 dim(group1)                   # show the size of group1
 dim(group2)                   # show the size of group2
-table(cancerSet$diseaseState) # show the size concordance with the phenotype annotation
+table(cancerSet$pam50) # show the size concordance with the phenotype annotation
 
 ## for ease of use let's define the variable pheno (although this can be error prone)
-pheno <- as.factor(cancerSet$diseaseState)
+pheno <- as.factor(cancerSet$pam50)
 
 ## use gene symbols to index the rows (rather than the entrez IDs)
 rownames(group1) <- fData(cancerSet)$hgnc_symbol
@@ -144,8 +162,8 @@ loIdx <- ttestOrd[nrow(ttestRes1):(nrow(ttestRes1)-49)]
 datOut <- exprs(cancerSet)[c(hiIdx,loIdx),]
 datScaled <- t(scale(t(datOut))) # row scale the matrix for better visualization
 
-ha.t <- HeatmapAnnotation(diseaseState=cancerSet$diseaseState,
-                          col=list(diseaseState=c(nonbasal="green",basal="red")))
+ha.t <- HeatmapAnnotation(pam50=cancerSet$pam50,
+                          col=list(pam50=c(LumA="green",Basal="red")))
 
 Heatmap(datScaled,
         name="expression", 
@@ -240,41 +258,41 @@ In the following code chunk, we use the model of Equation (@standard_eq), hence 
 
 ```{r limma1}
 ## 1. Definition of the "design matrix"
-design1 <- model.matrix(~factor(pheno)) 
-colnames(design1)
+design <- model.matrix(~factor(pheno)) 
+colnames(design)
 ## simplify names
-colnames(design1) <- c("intercept", "basal")
-print(unique(design1)) # show the 'coding' for the two classes
+colnames(design) <- c("intercept", "basal")
+print(unique(design)) # show the 'coding' for the two classes
 ## 3. Fitting the model
-fit1 <- lmFit(cancerSet, design1)
+fit <- lmFit(cancerSet, design)
 ## 5. Bayesian "moderation"
-fit1 <- eBayes(fit1)
-head(fit1$coefficients)
+fit <- eBayes(fit)
+head(fit$coefficients)
 
 ## 6. extract the relevant differential analysis information, sorted by p-value
-limmaRes1 <- topTable(fit1, coef="basal",adjust.method = "BH", n = Inf, sort.by = "P")
+limmaRes1 <- topTable(fit, coef="basal",adjust.method = "BH", n = Inf, sort.by = "P")
 ```
 
 In the following code chunk, we use the model of Equation (@contrast_eq), hence we need to define and fit the contrast.
 ```{r limma2}
 ## 1. Definition of the "design matrix"
-design2 <- model.matrix(~0 + factor(pheno)) 
-colnames(design2)
+design <- model.matrix(~0 + factor(pheno)) 
+colnames(design)
 ## simplify names
-colnames(design2) <- c("nonbasal", "basal")
-print(unique(design2)) # show the 'coding' for the two classes
+colnames(design) <- c("LumA", "Basal")
+print(unique(design)) # show the 'coding' for the two classes
 ## 2. Definition of the "contrast"
-contrast.matrix <- makeContrasts(basal-nonbasal, levels = design2)
+contrast.matrix <- makeContrasts(Basal-LumA, levels = design)
 ## 3. Fitting the model
-fit2 <- lmFit(cancerSet, design2)
+fit <- lmFit(cancerSet, design)
 ## 4. Fitting the contrast
-fit2 <- contrasts.fit(fit2,contrast.matrix)
+fit <- contrasts.fit(fit,contrast.matrix)
 ## 5. Bayesian "moderation"
-fit2 <- eBayes(fit2)
-head(fit2$coefficients)
+fit <- eBayes(fit)
+head(fit$coefficients)
 
 ## 6. extract the relevant differential analysis information, sorted by p-value
-limmaRes2 <- topTable(fit2, adjust.method = "BH", n = Inf, sort.by = "P")
+limmaRes2 <- topTable(fit, adjust.method = "BH", n = Inf, sort.by = "P")
 ```
 
 As you can see below, the two model specifications yield the same results.
@@ -311,7 +329,7 @@ n <- length(empS)
 plot(1,1,xlim=c(0,14),ylim=c(0,1),type="n",
      xlab="variance estimates",ylab="",yaxt="n")
 axis(2,at=c(0.9,0.1),c("shrunken \n variance","sample \n variance"),las=2)
-segments(fit2$s2.post, rep(.9, n),empS,rep(.1,n))
+segments(fit$s2.post, rep(.9, n),empS,rep(.1,n))
 ```
 
 Finally, we compare the two analyses based on the number of genes found to be significant by the two methods, and we look at the overlap.
@@ -330,8 +348,6 @@ vennr(topGenes)
 ```
 
 ## Modelling with covariates
-
-We here show how to perform differential analysis while controlling for the confounding effects of covariates. To this end, we use a different breast cancer dataset, which reports several phenotypic annotations for each patient [[Loi et al., PNAS 2010](https://www.ncbi.nlm.nih.gov/pubmed/17401012)]. In this analysis, we will look for markers of lymph node (LN) status, `LN_status`, while controlling for age.
 
 ```{r newESET}
 data(breast_loi_133p2)
@@ -403,7 +419,7 @@ head(limmaResA)
 
 ### Model with age:LN_status interaction
 ```{r limmaInter}
-## Next, we'll model the interaction between age and LN_status
+#Next, we'll model the interaction between age and LN_status
 designI <- model.matrix(~ 0 + factor(LN_status) + age + factor(LN_status):age, data = pData(BC))
 colnames(designI)
 colnames(designI) <- c("negative", "positive", "age", "positiveIage")
@@ -412,23 +428,22 @@ head(designI)
 contrast.matrixI<- makeContrasts(positive-negative, levels = designI)
 fitI <- lmFit(BC, designI)
 
-## Difference in expression between LN_status = positive and LN_status = negative individuals
+# Difference in expression between LN_status = positive and LN_status = negative individuals
 fitIC <- contrasts.fit(fitI,contrast.matrixI)
 fitIC <- eBayes(fitIC)
 head(fitIC$coefficients)
-## get full differential expression output table, sorted by p-value
+#get full differential expression output table, sorted by p-value
 limmaResIC <- topTable(fitIC, adjust.method = "BH", n = Inf, sort.by = "P")
 head(limmaResIC)
 
-## Effect of age on LN_status = negative individuals
+# Effect of age on LN_status = negative individuals
 fitIA <- eBayes(fitI)
 head(fitI$coefficients)
 #get full differential expression output table, sorted by p-value
 limmaResIA <- topTable(fitIA, adjust.method = "BH", n = Inf, sort.by = "P", coef = "age")
 head(limmaResIA)
 
-## Difference in effect of Age between LN_status = positive and LN_status = negative participants
+# Difference in effect of Age between LN_status = positive and LN_status = negative participants
 limmaResIP <- topTable(fitIA, adjust.method = "BH", n = Inf, sort.by = "P", coef = "positiveIage")
 head(limmaResIP)
 ```
-
