@@ -11,7 +11,8 @@
 <script src="../../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
-<script src="../../pkgdown.js"></script><meta property="og:title" content="KS-based Enrichment">
+<script src="../../pkgdown.js"></script><link href="../../extra.css" rel="stylesheet">
+<script src="../../extra.js"></script><meta property="og:title" content="KS-based Enrichment">
 <meta property="og:description" content="BS831">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -175,7 +176,7 @@
 
     
     
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">BS831</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">BS831</span>)</pre></body></html></div>
 <div id="introduction" class="section level3">
 <h3 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h3>
@@ -186,7 +187,7 @@
 <h3 class="hasAnchor">
 <a href="#comparing-two-distributions" class="anchor"></a>Comparing two distributions</h3>
 <p>Here are few examples of use of the function. Comparing a random sample (from a Gaussian) to an actual distribution (uniform):</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">123</span>)                   <span class="co"># for reproducible results</span>
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">123</span>)                   <span class="co"># for reproducible results</span>
 <span class="no">x</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="fl">100</span>,<span class="kw">mean</span><span class="kw">=</span><span class="fl">0</span>,<span class="kw">sd</span><span class="kw">=</span><span class="fl">1</span>)     <span class="co"># sample 100 random observations from a standard Gaussian</span>
 <span class="fu"><a href="https://rdrr.io/r/stats/ks.test.html">ks.test</a></span>(<span class="no">x</span>,<span class="st">"punif"</span>,<span class="kw">min</span><span class="kw">=</span>-<span class="fl">3</span>,<span class="kw">max</span><span class="kw">=</span><span class="fl">3</span>) <span class="co"># test for difference from a uniform distribution U[-3;3]</span></pre></body></html></div>
 <pre><code>## 
@@ -197,7 +198,7 @@
 ## alternative hypothesis: two-sided</code></pre>
 <p>The function returns a score, the D statistic (between 0 and 1, with larger values indicating larger differences), and a p-value.</p>
 <p>Next, we compare a random sample (from a Gaussian) to another random sample (from a Uniform):</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">123</span>)                   <span class="co"># for reproducible results</span>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">123</span>)                   <span class="co"># for reproducible results</span>
 <span class="no">x</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="fl">100</span>,<span class="kw">mean</span><span class="kw">=</span><span class="fl">0</span>,<span class="kw">sd</span><span class="kw">=</span><span class="fl">1</span>)     <span class="co"># sample 100 random observations from a standard Gaussian</span>
 <span class="no">y</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="fl">100</span>,<span class="kw">min</span><span class="kw">=</span>-<span class="fl">3</span>,<span class="kw">max</span><span class="kw">=</span><span class="fl">3</span>)    <span class="co"># sample 100 random observations from a Uniform in [-3,3]</span>
 <span class="fu"><a href="https://rdrr.io/r/stats/ks.test.html">ks.test</a></span>(<span class="no">x</span>,<span class="no">y</span>)                    <span class="co"># test for difference between the two samples</span></pre></body></html></div>
@@ -220,7 +221,7 @@
 </ol>
 <p>If the geneset (Oxidative Stress) were <em>not</em> enriched with respect to the phenotype of interest (tumor vs. normal), we would expect the ranks of the geneset’s genes to be uniformly distributed between 1 and 1,000. If they are skewed to the left (beginning of the sorted list, large positive t-score), then we would conclude that they are enriched in the ‘tumor’ class. If they are skewed to the right (end of the sorted list, large negative t-score), we would conclude that they are enriched in the ‘normal’ class.</p>
 <p>Let us assume that our geneset contains 10 genes, and let us assume we have already established their ranks with respect to a given phenotype, and let us denote with <em>x</em> the vector of their ranks. Here is how we can use <code>ks.test</code> to assess “skewedness”:</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">123</span>)
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">123</span>)
 <span class="no">x</span> <span class="kw">&lt;-</span> <span class="fl">1</span>:<span class="fl">10</span>     <span class="co"># the genes in the genesets have rank 1 to 10 (i.e., they have the 10 largest t-scores)</span>
 <span class="fu"><a href="https://rdrr.io/r/stats/ks.test.html">ks.test</a></span>(<span class="no">x</span>,<span class="st">"punif"</span>,<span class="kw">min</span><span class="kw">=</span><span class="fl">1</span>,<span class="kw">max</span><span class="kw">=</span><span class="fl">1000</span>) <span class="co"># test for their skewdness against a U[1;1000]</span></pre></body></html></div>
 <pre><code>## 
@@ -229,7 +230,7 @@
 ## data:  x
 ## D = 0.99099, p-value &lt; 2.2e-16
 ## alternative hypothesis: two-sided</code></pre>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/stats/ks.test.html">ks.test</a></span>(<span class="no">x</span>,<span class="fl">1</span>:<span class="fl">1000</span>)                 <span class="co"># test them against an actual vector of 1000</span></pre></body></html></div>
+<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/stats/ks.test.html">ks.test</a></span>(<span class="no">x</span>,<span class="fl">1</span>:<span class="fl">1000</span>)                 <span class="co"># test them against an actual vector of 1000</span></pre></body></html></div>
 <pre><code>## 
 ##  Two-sample Kolmogorov-Smirnov test
 ## 
@@ -238,7 +239,7 @@
 ## alternative hypothesis: two-sided</code></pre>
 <p>In the first call to <code>ks.test</code> above, we used the one-sample test against a ‘punif’ distribution. In the 2nd call, we used the two-sample test with the second sample represented by the sorted list 1-to-1000. The latter formulation is more appropriate to take into account the ‘sample size’, i.e., the lenght of the sorted gene list (in these examples, our dataset has 1000 genes (more realistically, if using a whole-transcriptome profiling platform, such as Affymetrix or RNAseq, the length of the list will be closer to 20,000).</p>
 <p>The sample size affects the extent of the statistical significance. Notice how the p-value becomes progressively smaller as the sample size increases:</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">x</span> <span class="kw">&lt;-</span> <span class="fl">1</span>:<span class="fl">10</span>          <span class="co"># the genes to be tested have rank 1 to 10 (10 largest t-scores)</span>
+<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">x</span> <span class="kw">&lt;-</span> <span class="fl">1</span>:<span class="fl">10</span>          <span class="co"># the genes to be tested have rank 1 to 10 (10 largest t-scores)</span>
 <span class="fu"><a href="https://rdrr.io/r/stats/ks.test.html">ks.test</a></span>(<span class="no">x</span>,<span class="fl">1</span>:<span class="fl">100</span>)   <span class="co"># test them against a sample size of 100</span></pre></body></html></div>
 <pre><code>## 
 ##  Two-sample Kolmogorov-Smirnov test
@@ -246,14 +247,14 @@
 ## data:  x and 1:100
 ## D = 0.9, p-value = 8.036e-07
 ## alternative hypothesis: two-sided</code></pre>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/stats/ks.test.html">ks.test</a></span>(<span class="no">x</span>,<span class="fl">1</span>:<span class="fl">1000</span>)  <span class="co"># test them against a sample size of 1000</span></pre></body></html></div>
+<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/stats/ks.test.html">ks.test</a></span>(<span class="no">x</span>,<span class="fl">1</span>:<span class="fl">1000</span>)  <span class="co"># test them against a sample size of 1000</span></pre></body></html></div>
 <pre><code>## 
 ##  Two-sample Kolmogorov-Smirnov test
 ## 
 ## data:  x and 1:1000
 ## D = 0.99, p-value = 7.452e-09
 ## alternative hypothesis: two-sided</code></pre>
-<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/stats/ks.test.html">ks.test</a></span>(<span class="no">x</span>,<span class="fl">1</span>:<span class="fl">10000</span>) <span class="co"># test them against a sample size of 10000</span></pre></body></html></div>
+<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/stats/ks.test.html">ks.test</a></span>(<span class="no">x</span>,<span class="fl">1</span>:<span class="fl">10000</span>) <span class="co"># test them against a sample size of 10000</span></pre></body></html></div>
 <pre><code>## 
 ##  Two-sample Kolmogorov-Smirnov test
 ## 
@@ -261,7 +262,7 @@
 ## D = 0.999, p-value = 4.377e-09
 ## alternative hypothesis: two-sided</code></pre>
 <p>Henceforth, we will only use the two-sample option. Below, we test a set of 10 genes ranked toward the end of the sorted list, toward the middle, and a set actually randomly distributed.</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">x</span> <span class="kw">&lt;-</span> <span class="fl">991</span>:<span class="fl">1000</span> <span class="co"># the genes are last in the ranking (10 most negative t-scores)</span>
+<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">x</span> <span class="kw">&lt;-</span> <span class="fl">991</span>:<span class="fl">1000</span> <span class="co"># the genes are last in the ranking (10 most negative t-scores)</span>
 <span class="fu"><a href="https://rdrr.io/r/stats/ks.test.html">ks.test</a></span>(<span class="no">x</span>,<span class="fl">1</span>:<span class="fl">1000</span>)</pre></body></html></div>
 <pre><code>## 
 ##  Two-sample Kolmogorov-Smirnov test
@@ -269,7 +270,7 @@
 ## data:  x and 1:1000
 ## D = 0.99, p-value = 7.452e-09
 ## alternative hypothesis: two-sided</code></pre>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">x</span> <span class="kw">&lt;-</span> <span class="fl">496</span>:<span class="fl">505</span>  <span class="co"># the genes are smack in the middle of the ranking</span>
+<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="no">x</span> <span class="kw">&lt;-</span> <span class="fl">496</span>:<span class="fl">505</span>  <span class="co"># the genes are smack in the middle of the ranking</span>
 <span class="fu"><a href="https://rdrr.io/r/stats/ks.test.html">ks.test</a></span>(<span class="no">x</span>,<span class="fl">1</span>:<span class="fl">0000</span>)</pre></body></html></div>
 <pre><code>## 
 ##  Two-sample Kolmogorov-Smirnov test
@@ -277,7 +278,7 @@
 ## data:  x and 1:0
 ## D = 1, p-value = 0.0303
 ## alternative hypothesis: two-sided</code></pre>
-<div class="sourceCode"><html><body><pre class="r"><span class="no">x</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="fl">10</span>,<span class="kw">min</span><span class="kw">=</span><span class="fl">1</span>,<span class="kw">max</span><span class="kw">=</span><span class="fl">1000</span>) <span class="co"># the genes' ranks are actually uniformly distributed</span>
+<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">x</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="fl">10</span>,<span class="kw">min</span><span class="kw">=</span><span class="fl">1</span>,<span class="kw">max</span><span class="kw">=</span><span class="fl">1000</span>) <span class="co"># the genes' ranks are actually uniformly distributed</span>
 <span class="fu"><a href="https://rdrr.io/r/stats/ks.test.html">ks.test</a></span>(<span class="no">x</span>,<span class="fl">1</span>:<span class="fl">1000</span>)</pre></body></html></div>
 <pre><code>## 
 ##  Two-sample Kolmogorov-Smirnov test
@@ -293,7 +294,7 @@
 <p>We defined a simple script (in <code>BS831/R/ksGenescore.R</code>) that builds upon <code>ks.test</code> but is specifically tailored to testing for the skewdness of the distribution of a set of ‘genes’ toward the beginning or the end of a sorted list. The script also plots the enrichment score, and returns a signed statistic indicating whether the set of genes is skewed to the left (&gt;0) or to the right (&lt;0). Since we are always testing one geneset against a given sample size, the input arguments are modified, with the first argument denoting the sample size (i.e., the length of the sorted list) and the second argument denoting the vector of genes’ ranks.</p>
 <p>Few examples of use of <code>ks.genescore</code> follow. For visualization purposes, we use a reduced sample size of 100 (to better see the tickmarks corresponding to the genes’ ranks).</p>
 <p>Testing whether 10 genes fall randomly in the 1:100 range.</p>
-<div class="sourceCode"><html><body><pre class="r"><span class="co"># skewed to the left</span>
+<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="co"># skewed to the left</span>
 <span class="fu">ksGenescore</span>(<span class="fl">100</span>,<span class="fl">1</span>:<span class="fl">10</span>,<span class="kw">do.plot</span><span class="kw">=</span><span class="fl">TRUE</span>)</pre></body></html></div>
 <p><img src="KS_Enrichment_files/figure-html/ksGenescore-1.png" width="700"></p>
 <pre><code>## 
@@ -302,7 +303,7 @@
 ## data:  1:n.x and y
 ## D = 0.9, p-value = 8.036e-07
 ## alternative hypothesis: two-sided</code></pre>
-<div class="sourceCode"><html><body><pre class="r"><span class="co"># skewed to the right</span>
+<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="co"># skewed to the right</span>
 <span class="fu">ksGenescore</span>(<span class="fl">100</span>,<span class="fl">91</span>:<span class="fl">100</span>,<span class="kw">do.plot</span><span class="kw">=</span><span class="fl">TRUE</span>)</pre></body></html></div>
 <p><img src="KS_Enrichment_files/figure-html/ksGenescore-2.png" width="700"></p>
 <pre><code>## 
@@ -311,7 +312,7 @@
 ## data:  1:n.x and y
 ## D = -0.9, p-value = 8.036e-07
 ## alternative hypothesis: two-sided</code></pre>
-<div class="sourceCode"><html><body><pre class="r"><span class="co"># skewed to the center</span>
+<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="co"># skewed to the center</span>
 <span class="fu">ksGenescore</span>(<span class="fl">100</span>,<span class="fl">46</span>:<span class="fl">55</span>,<span class="kw">do.plot</span><span class="kw">=</span><span class="fl">TRUE</span>)</pre></body></html></div>
 <p><img src="KS_Enrichment_files/figure-html/ksGenescore-3.png" width="700"></p>
 <pre><code>## 
@@ -320,7 +321,7 @@
 ## data:  1:n.x and y
 ## D = -0.45, p-value = 0.05035
 ## alternative hypothesis: two-sided</code></pre>
-<div class="sourceCode"><html><body><pre class="r"><span class="co"># randomly distributed</span>
+<div class="sourceCode" id="cb28"><html><body><pre class="r"><span class="co"># randomly distributed</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">6719</span>); <span class="fu">ksGenescore</span>(<span class="fl">100</span>,<span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="fl">10</span>,<span class="kw">min</span><span class="kw">=</span><span class="fl">1</span>,<span class="kw">max</span><span class="kw">=</span><span class="fl">100</span>),<span class="kw">do.plot</span><span class="kw">=</span><span class="fl">TRUE</span>)</pre></body></html></div>
 <p><img src="KS_Enrichment_files/figure-html/ksGenescore-4.png" width="700"></p>
 <pre><code>## 

@@ -1,0 +1,6 @@
+.dropdown-menu{
+    height: auto;
+    max-height: 50em;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}

@@ -6,19 +6,20 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Linear Regression • BS831</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
-<script src="../../pkgdown.js"></script><meta property="og:title" content="Linear Regression">
-<meta property="og:description" content="">
-<meta name="twitter:card" content="summary">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../../bootstrap-toc.css">
+<script src="../../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
+<script src="../../pkgdown.js"></script><link href="../../extra.css" rel="stylesheet">
+<script src="../../extra.js"></script><meta property="og:title" content="Linear Regression">
+<meta property="og:description" content="BS831">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body>
+<body data-spy="scroll" data-target="#toc">
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -164,7 +165,7 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Linear Regression</h1>
+      <h1 data-toc-skip>Linear Regression</h1>
                         <h4 class="author">Stefano Monti</h4>
             
       
@@ -175,27 +176,27 @@
 
     
     
-<p>This is the code for the plot shown in slide #42 of BS831_class03_ComparativeExperiment.Rmd.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">159</span>) <span class="co"># for reproducible results </span></span>
-<span id="cb1-2"><a href="#cb1-2"></a>nobs &lt;-<span class="st"> </span><span class="dv">1000</span>   <span class="co"># sample size</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a>beta0 &lt;-<span class="st"> </span><span class="dv">1</span>     <span class="co"># true intercept</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a>beta1 &lt;-<span class="st"> </span><span class="fl">0.15</span>  <span class="co"># true slope</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="co">## simulate an imaginary dependent variable (e.g., age between 18-75)</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a>X &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(<span class="dv">15</span><span class="op">:</span><span class="dv">75</span>,nobs,<span class="dt">replace=</span><span class="ot">TRUE</span>)</span>
-<span id="cb1-7"><a href="#cb1-7"></a>Y &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(nobs,<span class="dt">mean=</span>beta0 <span class="op">+</span><span class="st"> </span>beta1 <span class="op">*</span><span class="st"> </span>X,<span class="dt">sd=</span><span class="dv">1</span>)</span>
-<span id="cb1-8"><a href="#cb1-8"></a></span>
-<span id="cb1-9"><a href="#cb1-9"></a><span class="co">## or, equivalently</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a><span class="co">## Y &lt;- beta0 + beta1 * X + rnorm(nobs,mean=0,sd=1)</span></span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">## png(file.path(OMPATH,"Rmodules/figures/diffanalLM.png"))</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="kw"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="dt">mar=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">5</span>) <span class="op">+</span><span class="st"> </span><span class="fl">0.1</span>))</span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(X,Y,<span class="dt">pch=</span><span class="dv">20</span>,<span class="dt">xlab=</span><span class="st">"age"</span>,<span class="dt">ylab=</span><span class="st">"expression"</span>)</span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="kw"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span>(beta0,beta1,<span class="dt">col=</span><span class="st">"red"</span>,<span class="dt">lty=</span><span class="dv">3</span>,<span class="dt">lwd=</span><span class="dv">2</span>)</span></code></pre></div>
+<p>This is a simple example, where we generate data from a given linear model (with known intercept and slope), and then we apply linear regression to estimate the parameters of the data generating model.</p>
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">159</span>) <span class="co"># for reproducible results </span>
+<span class="no">nobs</span> <span class="kw">&lt;-</span> <span class="fl">1000</span>   <span class="co"># sample size</span>
+<span class="no">beta0</span> <span class="kw">&lt;-</span> <span class="fl">1</span>     <span class="co"># true intercept</span>
+<span class="no">beta1</span> <span class="kw">&lt;-</span> <span class="fl">0.15</span>  <span class="co"># true slope</span>
+<span class="co">## simulate an imaginary dependent variable (e.g., age between 15-75)</span>
+<span class="no">X</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(<span class="fl">15</span>:<span class="fl">75</span>,<span class="no">nobs</span>,<span class="kw">replace</span><span class="kw">=</span><span class="fl">TRUE</span>)
+<span class="no">Y</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="no">nobs</span>,<span class="kw">mean</span><span class="kw">=</span><span class="no">beta0</span> + <span class="no">beta1</span> * <span class="no">X</span>,<span class="kw">sd</span><span class="kw">=</span><span class="fl">1</span>)
+
+<span class="co">## or, equivalently</span>
+<span class="co">## Y &lt;- beta0 + beta1 * X + rnorm(nobs,mean=0,sd=1)</span></pre></body></html></div>
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="co">## png(file.path(OMPATH,"Rmodules/figures/diffanalLM.png"))</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">5</span>, <span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">5</span>) + <span class="fl">0.1</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">X</span>,<span class="no">Y</span>,<span class="kw">pch</span><span class="kw">=</span><span class="fl">20</span>,<span class="kw">xlab</span><span class="kw">=</span><span class="st">"age"</span>,<span class="kw">ylab</span><span class="kw">=</span><span class="st">"expression"</span>)
+<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span>(<span class="no">beta0</span>,<span class="no">beta1</span>,<span class="kw">col</span><span class="kw">=</span><span class="st">"red"</span>,<span class="kw">lty</span><span class="kw">=</span><span class="fl">3</span>,<span class="kw">lwd</span><span class="kw">=</span><span class="fl">2</span>)</pre></body></html></div>
 <p><img src="Linear_Regression_files/figure-html/plot.data-1.png" width="700"></p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">## notice the use of 'expression' to display mathematical symbols</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="co">##text(50,2,labels=expression(Y=beta[0]+beta[1]*X),las=1)</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><html><body><pre class="r">## notice the use of 'expression' to display mathematical symbols
+##text(50,2,labels=expression(Y=beta[0]+beta[1]*X),las=1)</pre></body></html></div>
 <p>We now fit a linear model to the generated data by <code>lm</code>.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>LM &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span>(Y <span class="op">~</span><span class="st"> </span>X)</span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(LM))</span></code></pre></div>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">LM</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span>(<span class="no">Y</span> ~ <span class="no">X</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">LM</span>))</pre></body></html></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = Y ~ X)
@@ -217,7 +218,7 @@
 <p>As you can see, the estimates are quite close to the generating parameters.</p>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
       </div>
 
@@ -226,11 +227,11 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://github.com/tetomonti">Stefano Monti</a>, <a href="https://github.com/lia978">Amy Li</a>, <a href="https://github.com/ericreed">Eric Reed</a>, <a href="https://github.com/anfederico">Anthony Federico</a>.</p>
+  <p>Developed by <a href="https://github.com/tetomonti">Stefano Monti</a>, <a href="https://github.com/anfederico">Anthony Federico</a>, <a href="https://github.com/ericreed">Eric Reed</a>, <a href="https://github.com/lia978">Amy Li</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
 </div>
 
       </footer>

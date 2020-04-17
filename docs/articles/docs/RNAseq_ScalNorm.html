@@ -6,19 +6,20 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RNA-Seq Data Scaling and Normalization • BS831</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
-<script src="../../pkgdown.js"></script><meta property="og:title" content="RNA-Seq Data Scaling and Normalization">
-<meta property="og:description" content="">
-<meta name="twitter:card" content="summary">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../../bootstrap-toc.css">
+<script src="../../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
+<script src="../../pkgdown.js"></script><link href="../../extra.css" rel="stylesheet">
+<script src="../../extra.js"></script><meta property="og:title" content="RNA-Seq Data Scaling and Normalization">
+<meta property="og:description" content="BS831">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body>
+<body data-spy="scroll" data-target="#toc">
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -164,7 +165,7 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>RNA-Seq Data Scaling and Normalization</h1>
+      <h1 data-toc-skip>RNA-Seq Data Scaling and Normalization</h1>
                         <h4 class="author">Eric Reed &amp; Stefano Monti</h4>
             
       
@@ -175,42 +176,42 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(BS831)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(Biobase) <span class="co"># the package with the ExpressionSet definition, among others</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">BS831</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">Biobase</span>) <span class="co"># the package with the ExpressionSet definition, among others</span></pre></body></html></div>
 <div id="import-head-and-neck-cancer-data-set" class="section level2">
 <h2 class="hasAnchor">
 <a href="#import-head-and-neck-cancer-data-set" class="anchor"></a>Import Head and Neck Cancer Data Set</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(HNSC_htseq_raw_counts_AEvsG1vsG3)</span>
-<span id="cb2-2"><a href="#cb2-2"></a></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="co"># Read in HNSC data set</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>hnsc &lt;-<span class="st"> </span>HNSC_htseq_raw_counts_AEvsG1vsG3</span>
-<span id="cb2-5"><a href="#cb2-5"></a></span>
-<span id="cb2-6"><a href="#cb2-6"></a><span class="co"># Keep only AE and g1</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a>hnsc &lt;-<span class="st"> </span>hnsc[,hnsc<span class="op">$</span>grade <span class="op">%in%</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"AE"</span>, <span class="st">"g1"</span>)]</span></code></pre></div>
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">HNSC_htseq_raw_counts_AEvsG1vsG3</span>)
+
+<span class="co"># Read in HNSC data set</span>
+<span class="no">hnsc</span> <span class="kw">&lt;-</span> <span class="no">HNSC_htseq_raw_counts_AEvsG1vsG3</span>
+
+<span class="co"># Keep only AE and g1</span>
+<span class="no">hnsc</span> <span class="kw">&lt;-</span> <span class="no">hnsc</span>[,<span class="no">hnsc</span>$<span class="no">grade</span> <span class="kw">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"AE"</span>, <span class="st">"g1"</span>)]</pre></body></html></div>
 </div>
 <div id="remove-zero-counts" class="section level2">
 <h2 class="hasAnchor">
 <a href="#remove-zero-counts" class="anchor"></a>Remove zero counts</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># Find sums of counts for each each gene</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>geneWiseCounts &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnsc), <span class="dv">1</span>, sum)</span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(geneWiseCounts)<span class="co"># What this looks like</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="co"># Find sums of counts for each each gene</span>
+<span class="no">geneWiseCounts</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnsc</span>), <span class="fl">1</span>, <span class="no">sum</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">geneWiseCounts</span>)<span class="co"># What this looks like</span></pre></body></html></div>
 <pre><code>## ENSG00000186132 ENSG00000182584 ENSG00000174799 ENSG00000251025 ENSG00000116691 
 ##           38822           17274           55657               1          163764 
 ## ENSG00000204982 
 ##             174</code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># Find genes with at least 1 counts across all samples</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>CountGreater0 &lt;-<span class="st"> </span>geneWiseCounts <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(CountGreater0)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="co"># Find genes with at least 1 counts across all samples</span>
+<span class="no">CountGreater0</span> <span class="kw">&lt;-</span> <span class="no">geneWiseCounts</span> <span class="kw">&gt;</span> <span class="fl">0</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">CountGreater0</span>)</pre></body></html></div>
 <pre><code>## ENSG00000186132 ENSG00000182584 ENSG00000174799 ENSG00000251025 ENSG00000116691 
 ##            TRUE            TRUE            TRUE            TRUE            TRUE 
 ## ENSG00000204982 
 ##            TRUE</code></pre>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># How many genes will be removed (Notice the !)</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="op">!</span>CountGreater0)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="co"># How many genes will be removed (Notice the !)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(!<span class="no">CountGreater0</span>)</pre></body></html></div>
 <pre><code>## [1] 3219</code></pre>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># Subset hnsc for CountGreater0 == TRUE</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a>hnsc &lt;-<span class="st"> </span>hnsc[ CountGreater0, ]</span>
-<span id="cb9-3"><a href="#cb9-3"></a>hnsc</span></code></pre></div>
+<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="co"># Subset hnsc for CountGreater0 == TRUE</span>
+<span class="no">hnsc</span> <span class="kw">&lt;-</span> <span class="no">hnsc</span>[ <span class="no">CountGreater0</span>, ]
+<span class="no">hnsc</span></pre></body></html></div>
 <pre><code>## ExpressionSet (storageMode: lockedEnvironment)
 ## assayData: 31203 features, 80 samples 
 ##   element names: exprs 
@@ -228,8 +229,8 @@
 ##   fvarMetadata: labelDescription
 ## experimentData: use 'experimentData(object)'
 ## Annotation: RNASeq raw counts</code></pre>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># Raw Expression values are counts</span></span>
-<span id="cb11-2"><a href="#cb11-2"></a><span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnsc)[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="co"># Raw Expression values are counts</span>
+<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnsc</span>)[<span class="fl">1</span>:<span class="fl">5</span>, <span class="fl">1</span>:<span class="fl">5</span>]</pre></body></html></div>
 <pre><code>##                 sample150 sample383 sample172 sample431 sample435
 ## ENSG00000186132       429       343       671       253       675
 ## ENSG00000182584       179       392       224        81       157
@@ -243,9 +244,9 @@
 <div id="transcript-lengths" class="section level3">
 <h3 class="hasAnchor">
 <a href="#transcript-lengths" class="anchor"></a>Transcript Lengths</h3>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="co"># Read in table transcript length (and GC content which we don't need)</span></span>
-<span id="cb13-2"><a href="#cb13-2"></a>len &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="dt">package=</span><span class="st">"BS831"</span>), <span class="st">"GC_lengths_GRCh38.87.csv"</span>), <span class="dt">row.names =</span> <span class="dv">1</span>)</span>
-<span id="cb13-3"><a href="#cb13-3"></a><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(len)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="co"># Read in table transcript length (and GC content which we don't need)</span>
+<span class="no">len</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="kw">package</span><span class="kw">=</span><span class="st">"BS831"</span>), <span class="st">"GC_lengths_GRCh38.87.csv"</span>), <span class="kw">row.names</span> <span class="kw">=</span> <span class="fl">1</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">len</span>)</pre></body></html></div>
 <pre><code>##                 Length        GC
 ## ENSG00000000003   4535 0.4165380
 ## ENSG00000000005   1610 0.4248447
@@ -253,13 +254,13 @@
 ## ENSG00000000457   6883 0.4137731
 ## ENSG00000000460   5967 0.4298643
 ## ENSG00000000938   3474 0.5731146</code></pre>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="co"># Subset data for transcripts that are in the transcript length reference file</span></span>
-<span id="cb15-2"><a href="#cb15-2"></a>hnsc &lt;-<span class="st"> </span>hnsc[<span class="kw"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(hnsc) <span class="op">%in%</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(len),]</span>
-<span id="cb15-3"><a href="#cb15-3"></a><span class="co"># Sort data by genes in hnsc</span></span>
-<span id="cb15-4"><a href="#cb15-4"></a>len &lt;-<span class="st"> </span>len[<span class="kw"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(hnsc),]</span>
-<span id="cb15-5"><a href="#cb15-5"></a></span>
-<span id="cb15-6"><a href="#cb15-6"></a><span class="co"># Divide each length by 1000 to get number of kilobases</span></span>
-<span id="cb15-7"><a href="#cb15-7"></a>len<span class="op">$</span>KB &lt;-<span class="st"> </span>len<span class="op">$</span>Length<span class="op">/</span><span class="dv">1000</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="co"># Subset data for transcripts that are in the transcript length reference file</span>
+<span class="no">hnsc</span> <span class="kw">&lt;-</span> <span class="no">hnsc</span>[<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">hnsc</span>) <span class="kw">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">len</span>),]
+<span class="co"># Sort data by genes in hnsc</span>
+<span class="no">len</span> <span class="kw">&lt;-</span> <span class="no">len</span>[<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">hnsc</span>),]
+
+<span class="co"># Divide each length by 1000 to get number of kilobases</span>
+<span class="no">len</span>$<span class="no">KB</span> <span class="kw">&lt;-</span> <span class="no">len</span>$<span class="no">Length</span>/<span class="fl">1000</span></pre></body></html></div>
 <p>Reads (Fragments) Per Kilobase Million (RPKM) and Transcripts Per Million (TPM) are metrics to scale gene expression to achieve two goals</p>
 <ol style="list-style-type: decimal">
 <li>Make the expression of genes comparable between samples.</li>
@@ -273,15 +274,15 @@
 <div id="rpkm-fpkm" class="section level3">
 <h3 class="hasAnchor">
 <a href="#rpkm-fpkm" class="anchor"></a>RPKM (FPKM)</h3>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="co"># Create new hnsc object, don't overwrite the previous</span></span>
-<span id="cb16-2"><a href="#cb16-2"></a>hnscRPKM &lt;-<span class="st"> </span>hnsc</span>
-<span id="cb16-3"><a href="#cb16-3"></a></span>
-<span id="cb16-4"><a href="#cb16-4"></a><span class="co"># Scale each transcript by the total library size (Total Number of Reads)</span></span>
-<span id="cb16-5"><a href="#cb16-5"></a>expPKM &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>( <span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscRPKM), <span class="dv">2</span>, <span class="cf">function</span>(x) { x <span class="op">/</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(x) <span class="op">*</span><span class="st"> </span><span class="fl">1E6</span>} )</span>
-<span id="cb16-6"><a href="#cb16-6"></a></span>
-<span id="cb16-7"><a href="#cb16-7"></a><span class="co"># Divide by the transcript length</span></span>
-<span id="cb16-8"><a href="#cb16-8"></a><span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscRPKM) &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(expPKM, <span class="dv">2</span>, <span class="cf">function</span>(x){ x <span class="op">/</span><span class="st"> </span>len<span class="op">$</span>KB })</span>
-<span id="cb16-9"><a href="#cb16-9"></a><span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscRPKM)[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="co"># Create new hnsc object, don't overwrite the previous</span>
+<span class="no">hnscRPKM</span> <span class="kw">&lt;-</span> <span class="no">hnsc</span>
+
+<span class="co"># Scale each transcript by the total library size (Total Number of Reads)</span>
+<span class="no">expPKM</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>( <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscRPKM</span>), <span class="fl">2</span>, <span class="kw">function</span>(<span class="no">x</span>) { <span class="no">x</span> / <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">x</span>) * <span class="fl">1E6</span>} )
+
+<span class="co"># Divide by the transcript length</span>
+<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscRPKM</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="no">expPKM</span>, <span class="fl">2</span>, <span class="kw">function</span>(<span class="no">x</span>){ <span class="no">x</span> / <span class="no">len</span>$<span class="no">KB</span> })
+<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscRPKM</span>)[<span class="fl">1</span>:<span class="fl">5</span>, <span class="fl">1</span>:<span class="fl">5</span>]</pre></body></html></div>
 <pre><code>##                 sample150  sample383 sample172 sample431 sample435
 ## ENSG00000186132 1.8531030  2.9281822 3.4937031 2.0747846 3.3318040
 ## ENSG00000182584 0.5901988  2.5544244 0.8902551 0.5070380 0.5915321
@@ -292,15 +293,15 @@
 <div id="tpm" class="section level3">
 <h3 class="hasAnchor">
 <a href="#tpm" class="anchor"></a>TPM</h3>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="co"># Create new hnsc object, don't overwrite the previous</span></span>
-<span id="cb18-2"><a href="#cb18-2"></a>hnscTPM &lt;-<span class="st"> </span>hnsc</span>
-<span id="cb18-3"><a href="#cb18-3"></a></span>
-<span id="cb18-4"><a href="#cb18-4"></a><span class="co"># Divide each gene by transcript length</span></span>
-<span id="cb18-5"><a href="#cb18-5"></a>expPKB &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>( <span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscTPM), <span class="dv">2</span>, <span class="cf">function</span>(x){ x <span class="op">/</span><span class="st"> </span>len<span class="op">$</span>KB } )</span>
-<span id="cb18-6"><a href="#cb18-6"></a></span>
-<span id="cb18-7"><a href="#cb18-7"></a><span class="co"># Divide by the transcript length</span></span>
-<span id="cb18-8"><a href="#cb18-8"></a><span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscTPM) &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>( expPKB, <span class="dv">2</span>, <span class="cf">function</span>(x) { x <span class="op">/</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(x) <span class="op">*</span><span class="st"> </span><span class="fl">1E6</span>} )</span>
-<span id="cb18-9"><a href="#cb18-9"></a><span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscTPM)[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="co"># Create new hnsc object, don't overwrite the previous</span>
+<span class="no">hnscTPM</span> <span class="kw">&lt;-</span> <span class="no">hnsc</span>
+
+<span class="co"># Divide each gene by transcript length</span>
+<span class="no">expPKB</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>( <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscTPM</span>), <span class="fl">2</span>, <span class="kw">function</span>(<span class="no">x</span>){ <span class="no">x</span> / <span class="no">len</span>$<span class="no">KB</span> } )
+
+<span class="co"># Divide by the transcript length</span>
+<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscTPM</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>( <span class="no">expPKB</span>, <span class="fl">2</span>, <span class="kw">function</span>(<span class="no">x</span>) { <span class="no">x</span> / <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">x</span>) * <span class="fl">1E6</span>} )
+<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscTPM</span>)[<span class="fl">1</span>:<span class="fl">5</span>, <span class="fl">1</span>:<span class="fl">5</span>]</pre></body></html></div>
 <pre><code>##                 sample150  sample383 sample172 sample431 sample435
 ## ENSG00000186132  5.996336  7.6391141 10.667817  7.139777 10.336981
 ## ENSG00000182584  1.909786  6.6640455  2.718342  1.744826  1.835239
@@ -313,67 +314,67 @@
 <h2 class="hasAnchor">
 <a href="#comparison-of-tpm-and-fpkm" class="anchor"></a>Comparison of TPM and FPKM</h2>
 <p>For TPM, scaled total and mean library sizes are consistent across samples</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="co"># Scaled Libary Sizes</span></span>
-<span id="cb20-2"><a href="#cb20-2"></a></span>
-<span id="cb20-3"><a href="#cb20-3"></a><span class="co">## RPKM</span></span>
-<span id="cb20-4"><a href="#cb20-4"></a><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscRPKM)))</span></code></pre></div>
+<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="co"># Scaled Libary Sizes</span>
+
+<span class="co">## RPKM</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscRPKM</span>)))</pre></body></html></div>
 <pre><code>## sample150 sample383 sample172 sample431 sample435 sample038 
 ##  309039.2  383314.4  327499.3  290595.2  322318.9  345974.5</code></pre>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="co"># TPM</span></span>
-<span id="cb22-2"><a href="#cb22-2"></a><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscTPM)))</span></code></pre></div>
+<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="co"># TPM</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscTPM</span>)))</pre></body></html></div>
 <pre><code>## sample150 sample383 sample172 sample431 sample435 sample038 
 ##     1e+06     1e+06     1e+06     1e+06     1e+06     1e+06</code></pre>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="co"># Mean gene expression</span></span>
-<span id="cb24-2"><a href="#cb24-2"></a></span>
-<span id="cb24-3"><a href="#cb24-3"></a><span class="co">## RPKM</span></span>
-<span id="cb24-4"><a href="#cb24-4"></a><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscRPKM)))</span></code></pre></div>
+<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="co"># Mean gene expression</span>
+
+<span class="co">## RPKM</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscRPKM</span>)))</pre></body></html></div>
 <pre><code>## sample150 sample383 sample172 sample431 sample435 sample038 
 ##  9.937271 12.325617 10.530864  9.344196 10.364284 11.124940</code></pre>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="co"># TPM</span></span>
-<span id="cb26-2"><a href="#cb26-2"></a><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscTPM)))</span></code></pre></div>
+<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="co"># TPM</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscTPM</span>)))</pre></body></html></div>
 <pre><code>## sample150 sample383 sample172 sample431 sample435 sample038 
 ##  32.15537  32.15537  32.15537  32.15537  32.15537  32.15537</code></pre>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="co">## Plot gene-medians</span></span>
-<span id="cb28-2"><a href="#cb28-2"></a>hnscRPKMmedian &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscRPKM), <span class="dv">2</span>, median)</span>
-<span id="cb28-3"><a href="#cb28-3"></a>hnscTPMmedian &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscTPM), <span class="dv">2</span>, median)</span>
-<span id="cb28-4"><a href="#cb28-4"></a><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(hnscRPKMmedian, hnscTPMmedian, <span class="dt">xlab =</span> <span class="st">"RPKM"</span>, <span class="dt">ylab =</span> <span class="st">"TPM"</span>, <span class="dt">main =</span> <span class="st">"Median Gene TPM versus RPKM"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb28"><html><body><pre class="r"><span class="co">## Plot gene-medians</span>
+<span class="no">hnscRPKMmedian</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscRPKM</span>), <span class="fl">2</span>, <span class="no">median</span>)
+<span class="no">hnscTPMmedian</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscTPM</span>), <span class="fl">2</span>, <span class="no">median</span>)
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">hnscRPKMmedian</span>, <span class="no">hnscTPMmedian</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">"RPKM"</span>, <span class="kw">ylab</span> <span class="kw">=</span> <span class="st">"TPM"</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"Median Gene TPM versus RPKM"</span>)</pre></body></html></div>
 <p><img src="RNAseq_ScalNorm_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 </div>
 <div id="log2-transform" class="section level2">
 <h2 class="hasAnchor">
 <a href="#log2-transform" class="anchor"></a>Log2 Transform</h2>
 <p>For general purposes, it is common to log-transorm RNA-Seq count data. This makes the data resemble a normal distrubution, making it more appropriate for a number of techniques which assume normality, such as Pearson correlation or classic linear modelling. Log base 2 is a common convention for transforming count data, as the interpretation of the values is relatively straightforwards, i.e. a 1 unit change in <span class="math inline">\(Log_2\)</span> is a two-fold change in expression. We need to add 1 (a pseudocount) to the expression of each gene before log transforming to ensure that 0 counts aren’t transformed to <span class="math inline">\(-\infty\)</span>, (<span class="math inline">\(log(0) = -\infty\)</span>, <span class="math inline">\(log(1) = 0\)</span>).</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="co"># Log2 Transform</span></span>
-<span id="cb29-2"><a href="#cb29-2"></a></span>
-<span id="cb29-3"><a href="#cb29-3"></a><span class="co">## RPKM</span></span>
-<span id="cb29-4"><a href="#cb29-4"></a>hnscRPKM_log2 &lt;-<span class="st"> </span>hnscRPKM</span>
-<span id="cb29-5"><a href="#cb29-5"></a><span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscRPKM_log2) &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscRPKM) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">2</span>)</span>
-<span id="cb29-6"><a href="#cb29-6"></a></span>
-<span id="cb29-7"><a href="#cb29-7"></a><span class="co"># TPM</span></span>
-<span id="cb29-8"><a href="#cb29-8"></a>hnscTPM_log2 &lt;-<span class="st"> </span>hnscTPM</span>
-<span id="cb29-9"><a href="#cb29-9"></a><span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscTPM_log2) &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscTPM) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="co"># Log2 Transform</span>
+
+<span class="co">## RPKM</span>
+<span class="no">hnscRPKM_log2</span> <span class="kw">&lt;-</span> <span class="no">hnscRPKM</span>
+<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscRPKM_log2</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscRPKM</span>) + <span class="fl">1</span>, <span class="fl">2</span>)
+
+<span class="co"># TPM</span>
+<span class="no">hnscTPM_log2</span> <span class="kw">&lt;-</span> <span class="no">hnscTPM</span>
+<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscTPM_log2</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscTPM</span>) + <span class="fl">1</span>, <span class="fl">2</span>)</pre></body></html></div>
 <div id="sample-level-pearson-correlation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#sample-level-pearson-correlation" class="anchor"></a>Sample-Level Pearson Correlation</h3>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="co">## RPKM</span></span>
-<span id="cb30-2"><a href="#cb30-2"></a>CORhnscRPKM &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscRPKM))</span>
-<span id="cb30-3"><a href="#cb30-3"></a></span>
-<span id="cb30-4"><a href="#cb30-4"></a><span class="co">## Log2(RPKM + 1)</span></span>
-<span id="cb30-5"><a href="#cb30-5"></a>CORhnscRPKM_log2 &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscRPKM_log2))</span>
-<span id="cb30-6"><a href="#cb30-6"></a></span>
-<span id="cb30-7"><a href="#cb30-7"></a><span class="co">## TPM</span></span>
-<span id="cb30-8"><a href="#cb30-8"></a>CORhnscTPM &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscTPM))</span>
-<span id="cb30-9"><a href="#cb30-9"></a></span>
-<span id="cb30-10"><a href="#cb30-10"></a><span class="co">## Log2(TPM + 1)</span></span>
-<span id="cb30-11"><a href="#cb30-11"></a>CORhnscTPM_log2 &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscTPM_log2))</span>
-<span id="cb30-12"><a href="#cb30-12"></a></span>
-<span id="cb30-13"><a href="#cb30-13"></a><span class="co"># Plots</span></span>
-<span id="cb30-14"><a href="#cb30-14"></a></span>
-<span id="cb30-15"><a href="#cb30-15"></a><span class="kw"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="dt">mfrow=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
-<span id="cb30-16"><a href="#cb30-16"></a><span class="kw"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(CORhnscRPKM, <span class="dt">main =</span> <span class="st">"RPKM"</span>, <span class="dt">xlab =</span> <span class="st">""</span>, <span class="dt">xlim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
-<span id="cb30-17"><a href="#cb30-17"></a><span class="kw"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(CORhnscRPKM_log2, <span class="dt">main =</span> <span class="st">"log2( RPKM + 1)"</span>, <span class="dt">xlab =</span> <span class="st">""</span>, <span class="dt">xlim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
-<span id="cb30-18"><a href="#cb30-18"></a><span class="kw"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(CORhnscTPM, <span class="dt">main =</span> <span class="st">"TPM"</span>, <span class="dt">xlab =</span> <span class="st">""</span>, <span class="dt">xlim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
-<span id="cb30-19"><a href="#cb30-19"></a><span class="kw"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(CORhnscTPM_log2, <span class="dt">main =</span> <span class="st">"log2( TPM + 1)"</span>, <span class="dt">xlab =</span> <span class="st">""</span>, <span class="dt">xlim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="dv">1</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb30"><html><body><pre class="r"><span class="co">## RPKM</span>
+<span class="no">CORhnscRPKM</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscRPKM</span>))
+
+<span class="co">## Log2(RPKM + 1)</span>
+<span class="no">CORhnscRPKM_log2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscRPKM_log2</span>))
+
+<span class="co">## TPM</span>
+<span class="no">CORhnscTPM</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscTPM</span>))
+
+<span class="co">## Log2(TPM + 1)</span>
+<span class="no">CORhnscTPM_log2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscTPM_log2</span>))
+
+<span class="co"># Plots</span>
+
+<span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mfrow</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2</span>,<span class="fl">2</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="no">CORhnscRPKM</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"RPKM"</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">""</span>, <span class="kw">xlim</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">1</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="no">CORhnscRPKM_log2</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"log2( RPKM + 1)"</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">""</span>, <span class="kw">xlim</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">1</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="no">CORhnscTPM</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"TPM"</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">""</span>, <span class="kw">xlim</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">1</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="no">CORhnscTPM_log2</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"log2( TPM + 1)"</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">""</span>, <span class="kw">xlim</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">1</span>))</pre></body></html></div>
 <p><img src="RNAseq_ScalNorm_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 <p>We observe the correlation between samples is much higher for <span class="math inline">\(log_2\)</span> transformed data, This is because the <span class="math inline">\(log_2\)</span> adheres to the normality assumption of Pearson correlation well.</p>
 </div>
@@ -385,53 +386,53 @@
 <div id="tmm" class="section level2">
 <h2 class="hasAnchor">
 <a href="#tmm" class="anchor"></a>TMM</h2>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(edgeR)</span>
-<span id="cb31-2"><a href="#cb31-2"></a></span>
-<span id="cb31-3"><a href="#cb31-3"></a><span class="co"># Normalize expression</span></span>
-<span id="cb31-4"><a href="#cb31-4"></a>hnscTMM &lt;-<span class="st"> </span>hnscTMM_log2  &lt;-<span class="st"> </span>hnsc</span>
-<span id="cb31-5"><a href="#cb31-5"></a>DGE &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/edgeR/man/DGEList.html">DGEList</a></span>(hnscTMM) <span class="co"># Create edgeR specific object</span></span>
-<span id="cb31-6"><a href="#cb31-6"></a>DGE &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/edgeR/man/calcNormFactors.html">calcNormFactors</a></span>(DGE, <span class="dt">method =</span> <span class="st">"TMM"</span>) <span class="co"># Calculate Scaling Factors</span></span>
-<span id="cb31-7"><a href="#cb31-7"></a><span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscTMM) &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/edgeR/man/cpm.html">cpm</a></span>(DGE,<span class="dt">log=</span><span class="ot">FALSE</span>) <span class="co"># Calculate counts per million</span></span>
-<span id="cb31-8"><a href="#cb31-8"></a><span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscTMM_log2) &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscTMM) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">2</span>) <span class="co"># Calculate log2 counts per million</span></span></code></pre></div>
+<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">edgeR</span>)
+
+<span class="co"># Normalize expression</span>
+<span class="no">hnscTMM</span> <span class="kw">&lt;-</span> <span class="no">hnscTMM_log2</span>  <span class="kw">&lt;-</span> <span class="no">hnsc</span>
+<span class="no">DGE</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/DGEList.html">DGEList</a></span>(<span class="no">hnscTMM</span>) <span class="co"># Create edgeR specific object</span>
+<span class="no">DGE</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/calcNormFactors.html">calcNormFactors</a></span>(<span class="no">DGE</span>, <span class="kw">method</span> <span class="kw">=</span> <span class="st">"TMM"</span>) <span class="co"># Calculate Scaling Factors</span>
+<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscTMM</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cpm.html">cpm</a></span>(<span class="no">DGE</span>,<span class="kw">log</span><span class="kw">=</span><span class="fl">FALSE</span>) <span class="co"># Calculate counts per million</span>
+<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscTMM_log2</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscTMM</span>) + <span class="fl">1</span>, <span class="fl">2</span>) <span class="co"># Calculate log2 counts per million</span></pre></body></html></div>
 </div>
 <div id="rle" class="section level2">
 <h2 class="hasAnchor">
 <a href="#rle" class="anchor"></a>RLE</h2>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span>(DESeq2)</span>
-<span id="cb32-2"><a href="#cb32-2"></a></span>
-<span id="cb32-3"><a href="#cb32-3"></a>hnscRLE &lt;-<span class="st"> </span>hnscRLE_log2  &lt;-<span class="st"> </span>hnsc</span>
-<span id="cb32-4"><a href="#cb32-4"></a>dds &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/DESeq2/man/DESeqDataSet.html">DESeqDataSetFromMatrix</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscRLE), <span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(hnscRLE), <span class="kw"><a href="https://rdrr.io/r/stats/formula.html">formula</a></span>( <span class="op">~</span><span class="st"> </span><span class="dv">1</span>)) <span class="co"># Create DEseq2 specific object</span></span>
-<span id="cb32-5"><a href="#cb32-5"></a></span>
-<span id="cb32-6"><a href="#cb32-6"></a>dds &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/DESeq2/man/estimateSizeFactors.html">estimateSizeFactors</a></span>(dds) <span class="co"># Estimate scaling factors</span></span>
-<span id="cb32-7"><a href="#cb32-7"></a><span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscRLE) &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/DESeq2/man/counts.html">counts</a></span>(dds, <span class="dt">normalized=</span><span class="ot">TRUE</span>) <span class="co"># Get counts</span></span>
-<span id="cb32-8"><a href="#cb32-8"></a><span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscRLE_log2) &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscRLE) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">2</span>) <span class="co"># Calculate log2 counts</span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">DESeq2</span>)
+
+<span class="no">hnscRLE</span> <span class="kw">&lt;-</span> <span class="no">hnscRLE_log2</span>  <span class="kw">&lt;-</span> <span class="no">hnsc</span>
+<span class="no">dds</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/DESeqDataSet.html">DESeqDataSetFromMatrix</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscRLE</span>), <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">hnscRLE</span>), <span class="fu"><a href="https://rdrr.io/r/stats/formula.html">formula</a></span>( ~ <span class="fl">1</span>)) <span class="co"># Create DEseq2 specific object</span>
+
+<span class="no">dds</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/estimateSizeFactors.html">estimateSizeFactors</a></span>(<span class="no">dds</span>) <span class="co"># Estimate scaling factors</span>
+<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscRLE</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/counts.html">counts</a></span>(<span class="no">dds</span>, <span class="kw">normalized</span><span class="kw">=</span><span class="fl">TRUE</span>) <span class="co"># Get counts</span>
+<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscRLE_log2</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscRLE</span>) + <span class="fl">1</span>, <span class="fl">2</span>) <span class="co"># Calculate log2 counts</span></pre></body></html></div>
 <div id="sample-level-pearson-correlation-1" class="section level3">
 <h3 class="hasAnchor">
 <a href="#sample-level-pearson-correlation-1" class="anchor"></a>Sample-Level Pearson Correlation</h3>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="co"># Find correlation of TMM and RLE</span></span>
-<span id="cb33-2"><a href="#cb33-2"></a></span>
-<span id="cb33-3"><a href="#cb33-3"></a><span class="co">## TMM</span></span>
-<span id="cb33-4"><a href="#cb33-4"></a>CORhnscTMM &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscTMM))</span>
-<span id="cb33-5"><a href="#cb33-5"></a></span>
-<span id="cb33-6"><a href="#cb33-6"></a><span class="co">## Log2(TMM + 1)</span></span>
-<span id="cb33-7"><a href="#cb33-7"></a>CORhnscTMM_log2 &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscTMM_log2))</span>
-<span id="cb33-8"><a href="#cb33-8"></a></span>
-<span id="cb33-9"><a href="#cb33-9"></a><span class="co">## RLE</span></span>
-<span id="cb33-10"><a href="#cb33-10"></a>CORhnscRLE &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscRLE))</span>
-<span id="cb33-11"><a href="#cb33-11"></a></span>
-<span id="cb33-12"><a href="#cb33-12"></a><span class="co">## Log2(RLE + 1)</span></span>
-<span id="cb33-13"><a href="#cb33-13"></a>CORhnscRLE_log2 &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(hnscRLE_log2))</span>
-<span id="cb33-14"><a href="#cb33-14"></a></span>
-<span id="cb33-15"><a href="#cb33-15"></a></span>
-<span id="cb33-16"><a href="#cb33-16"></a><span class="kw"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="dt">mfrow=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">4</span>,<span class="dv">2</span>))</span>
-<span id="cb33-17"><a href="#cb33-17"></a><span class="kw"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(CORhnscRPKM, <span class="dt">main =</span> <span class="st">"RPKM"</span>, <span class="dt">xlab =</span> <span class="st">""</span>, <span class="dt">xlim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
-<span id="cb33-18"><a href="#cb33-18"></a><span class="kw"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(CORhnscRPKM_log2, <span class="dt">main =</span> <span class="st">"log2(RPKM + 1)"</span>, <span class="dt">xlab =</span> <span class="st">""</span>, <span class="dt">xlim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
-<span id="cb33-19"><a href="#cb33-19"></a><span class="kw"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(CORhnscTPM, <span class="dt">main =</span> <span class="st">"TPM"</span>, <span class="dt">xlab =</span> <span class="st">""</span>, <span class="dt">xlim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
-<span id="cb33-20"><a href="#cb33-20"></a><span class="kw"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(CORhnscTPM_log2, <span class="dt">main =</span> <span class="st">"log2(TPM + 1)"</span>, <span class="dt">xlab =</span> <span class="st">""</span>, <span class="dt">xlim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
-<span id="cb33-21"><a href="#cb33-21"></a><span class="kw"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(CORhnscTMM, <span class="dt">main =</span> <span class="st">"TMM"</span>, <span class="dt">xlab =</span> <span class="st">""</span>, <span class="dt">xlim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
-<span id="cb33-22"><a href="#cb33-22"></a><span class="kw"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(CORhnscTMM_log2, <span class="dt">main =</span> <span class="st">"log2(TMM + 1)"</span>, <span class="dt">xlab =</span> <span class="st">""</span>, <span class="dt">xlim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
-<span id="cb33-23"><a href="#cb33-23"></a><span class="kw"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(CORhnscRLE, <span class="dt">main =</span> <span class="st">"RLE"</span>, <span class="dt">xlab =</span> <span class="st">""</span>, <span class="dt">xlim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
-<span id="cb33-24"><a href="#cb33-24"></a><span class="kw"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(CORhnscRLE_log2, <span class="dt">main =</span> <span class="st">"log2(RLE + 1)"</span>, <span class="dt">xlab =</span> <span class="st">""</span>, <span class="dt">xlim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">0</span>, <span class="dv">1</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="co"># Find correlation of TMM and RLE</span>
+
+<span class="co">## TMM</span>
+<span class="no">CORhnscTMM</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscTMM</span>))
+
+<span class="co">## Log2(TMM + 1)</span>
+<span class="no">CORhnscTMM_log2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscTMM_log2</span>))
+
+<span class="co">## RLE</span>
+<span class="no">CORhnscRLE</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscRLE</span>))
+
+<span class="co">## Log2(RLE + 1)</span>
+<span class="no">CORhnscRLE_log2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">hnscRLE_log2</span>))
+
+
+<span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mfrow</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">4</span>,<span class="fl">2</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="no">CORhnscRPKM</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"RPKM"</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">""</span>, <span class="kw">xlim</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">1</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="no">CORhnscRPKM_log2</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"log2(RPKM + 1)"</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">""</span>, <span class="kw">xlim</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">1</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="no">CORhnscTPM</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"TPM"</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">""</span>, <span class="kw">xlim</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">1</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="no">CORhnscTPM_log2</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"log2(TPM + 1)"</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">""</span>, <span class="kw">xlim</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">1</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="no">CORhnscTMM</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"TMM"</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">""</span>, <span class="kw">xlim</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">1</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="no">CORhnscTMM_log2</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"log2(TMM + 1)"</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">""</span>, <span class="kw">xlim</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">1</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="no">CORhnscRLE</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"RLE"</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">""</span>, <span class="kw">xlim</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">1</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="no">CORhnscRLE_log2</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"log2(RLE + 1)"</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">""</span>, <span class="kw">xlim</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">1</span>))</pre></body></html></div>
 <p><img src="RNAseq_ScalNorm_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 <p>Once again, we observe the correlation between samples is much higher for <span class="math inline">\(log_2\)</span> transformed data, and even moreso for TMM and RLE scaled data.</p>
 </div>
@@ -448,38 +449,22 @@
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <div id="tocnav">
-      <h2 class="hasAnchor">
-<a href="#tocnav" class="anchor"></a>Contents</h2>
-      <ul class="nav nav-pills nav-stacked">
-<li><a href="#import-head-and-neck-cancer-data-set">Import Head and Neck Cancer Data Set</a></li>
-      <li><a href="#remove-zero-counts">Remove zero counts</a></li>
-      <li><a href="#reads-fragments-per-kilobase-million-and-transcripts-per-million">Reads (Fragments) Per Kilobase Million and Transcripts Per Million</a></li>
-      <li><a href="#comparison-of-tpm-and-fpkm">Comparison of TPM and FPKM</a></li>
-      <li><a href="#log2-transform">Log2 Transform</a></li>
-      <li>
-<a href="#trimmed-mean-of-m-values-tmm-and-relative-log-expression-rle">Trimmed Mean of M-values (TMM) and Relative Log Expression (RLE)</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#tmm">TMM</a></li>
-      <li><a href="#rle">RLE</a></li>
-      </ul>
-</li>
-      <li><a href="#summary">Summary</a></li>
-      </ul>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
 </div>
-      </div>
 
 </div>
 
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://github.com/tetomonti">Stefano Monti</a>, <a href="https://github.com/lia978">Amy Li</a>, <a href="https://github.com/ericreed">Eric Reed</a>, <a href="https://github.com/anfederico">Anthony Federico</a>.</p>
+  <p>Developed by <a href="https://github.com/tetomonti">Stefano Monti</a>, <a href="https://github.com/anfederico">Anthony Federico</a>, <a href="https://github.com/ericreed">Eric Reed</a>, <a href="https://github.com/lia978">Amy Li</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
 </div>
 
       </footer>

@@ -10,23 +10,27 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -34,6 +38,8 @@
 
 
 
+  <link href="../extra.css" rel="stylesheet">
+  <script src="../extra.js"></script>
 
 <meta property="og:title" content="Articles" />
 
@@ -53,7 +59,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-article-index">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -207,34 +213,62 @@
       <h3>All vignettes</h3>
       <p class="section-desc"></p>
 
-      <ul>
-        <li><a href="docs/Classification_Caret.html">Classification Using Caret</a></li>
-        <li><a href="docs/Clustering.html">Clustering and Heatmap Visualization</a></li>
-        <li><a href="docs/Diffanal_LimmaBC.html">Gene Expression Differential Analysis based on Limma</a></li>
-        <li><a href="docs/Diffanalysis.html">Gene Expression Differential Analysis with Microarrays</a></li>
-        <li><a href="docs/DiffanalysisRNAseqComparison.html">RNA-seq differential expression analysis with DEseq2, edgeR and limma</a></li>
-        <li><a href="docs/Dimensionality_Reduction.html">Dimensionality Reduction</a></li>
-        <li><a href="docs/Distributions.html">Probability Distributions</a></li>
-        <li><a href="docs/ExpressionSet.html">The ExpressionSet Data Object</a></li>
-        <li><a href="docs/GeneSetProjectionASSIGN.html">Geneset projection based on ASSIGN</a></li>
-        <li><a href="docs/GeneSetProjectionGSVA.html">Gene Set Projection based on KS</a></li>
-        <li><a href="docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a></li>
-        <li><a href="docs/Heatmaps.html">Heatmaps</a></li>
-        <li><a href="docs/HyperEnrichment.html">HyperGeometric Enrichment</a></li>
-        <li><a href="docs/KS_Enrichment.html">KS-based Enrichment</a></li>
-        <li><a href="docs/Linear_Regression.html">Linear Regression</a></li>
-        <li><a href="docs/MHTcorrection.html">Multiple-Hypothesis Correction</a></li>
-        <li><a href="docs/Microarray_Processing.html">Data Acquisition and ExpressionSet Basics</a></li>
-        <li><a href="docs/Mix_Normals.html">Mixture of Normals</a></li>
-        <li><a href="docs/RNAseq_ScalNorm.html">RNA-Seq Data Scaling and Normalization</a></li>
-        <li><a href="docs/SampleSize.html">Sample Size and Statistical Significance</a></li>
-        <li><a href="docs/diffanalLM.html">Differential Analysis as Linear Regression</a></li>
-        <li><a href="docs/featureRedundancy.html">Feature Redundancy: the Good and the Bad</a></li>
-        <li><a href="docs/hclust.html">Hierarchical Clustering</a></li>
-        <li><a href="docs/matrixOp.html">Efficient Computation in R</a></li>
-        <li><a href="docs/microarrayQC.html">Quality Control</a></li>
-        <li><a href="docs/quantileNormalization.html">Quantile Normalization</a></li>
-      </ul>
+      <dl>
+        <dt><a href="docs/Classification_Caret.html">Classification Using Caret</a></dt>
+        <dd></dt>
+        <dt><a href="docs/Clustering.html">Clustering and Heatmap Visualization</a></dt>
+        <dd></dt>
+        <dt><a href="docs/Diffanal_LimmaBC.html">Gene Expression Differential Analysis based on Limma</a></dt>
+        <dd></dt>
+        <dt><a href="docs/Diffanalysis.html">Gene Expression Differential Analysis with Microarrays</a></dt>
+        <dd></dt>
+        <dt><a href="docs/DiffanalysisRNAseqComparison.html">RNA-seq differential expression analysis with DEseq2, edgeR and limma</a></dt>
+        <dd></dt>
+        <dt><a href="docs/Dimensionality_Reduction.html">Dimensionality Reduction</a></dt>
+        <dd></dt>
+        <dt><a href="docs/Distributions.html">Probability Distributions</a></dt>
+        <dd></dt>
+        <dt><a href="docs/ExpressionSet.html">The ExpressionSet Data Object</a></dt>
+        <dd></dt>
+        <dt><a href="docs/GeneSetProjectionASSIGN.html">Geneset projection based on ASSIGN</a></dt>
+        <dd></dt>
+        <dt><a href="docs/GeneSetProjectionGSVA.html">Gene Set Projection based on KS</a></dt>
+        <dd></dt>
+        <dt><a href="docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a></dt>
+        <dd></dt>
+        <dt><a href="docs/Heatmaps.html">Heatmaps</a></dt>
+        <dd></dt>
+        <dt><a href="docs/HyperEnrichment.html">HyperGeometric Enrichment</a></dt>
+        <dd></dt>
+        <dt><a href="docs/KS_Enrichment.html">KS-based Enrichment</a></dt>
+        <dd></dt>
+        <dt><a href="docs/Linear_Regression.html">Linear Regression</a></dt>
+        <dd></dt>
+        <dt><a href="docs/MHTcorrection.html">Multiple-Hypothesis Correction</a></dt>
+        <dd></dt>
+        <dt><a href="docs/Microarray_Processing.html">Data Acquisition and ExpressionSet Basics</a></dt>
+        <dd></dt>
+        <dt><a href="docs/Mix_Normals.html">Mixture of Normals</a></dt>
+        <dd></dt>
+        <dt><a href="docs/RNAseq_ScalNorm.html">RNA-Seq Data Scaling and Normalization</a></dt>
+        <dd></dt>
+        <dt><a href="docs/SampleSize.html">Sample Size and Statistical Significance</a></dt>
+        <dd></dt>
+        <dt><a href="docs/diffanalLM.html">Differential Analysis as Linear Regression</a></dt>
+        <dd></dt>
+        <dt><a href="docs/featureRedundancy.html">Feature Redundancy: the Good and the Bad</a></dt>
+        <dd></dt>
+        <dt><a href="docs/hclust.html">Hierarchical Clustering</a></dt>
+        <dd></dt>
+        <dt><a href="docs/matrixOp.html">Efficient Computation in R</a></dt>
+        <dd></dt>
+        <dt><a href="docs/microarrayQC.html">Quality Control</a></dt>
+        <dd></dt>
+        <dt><a href="docs/quantileNormalization.html">Quantile Normalization</a></dt>
+        <dd></dt>
+        <dt><a href="docs/rmarkdown_template.html">Template</a></dt>
+        <dd></dt>
+      </dl>
     </div>
   </div>
 </div>
@@ -242,11 +276,11 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by <a href='https://github.com/tetomonti'>Stefano Monti</a>, <a href='https://github.com/lia978'>Amy Li</a>, <a href='https://github.com/ericreed'>Eric Reed</a>, <a href='https://github.com/anfederico'>Anthony Federico</a>.</p>
+  <p>Developed by <a href='https://github.com/tetomonti'>Stefano Monti</a>, <a href='https://github.com/anfederico'>Anthony Federico</a>, <a href='https://github.com/ericreed'>Eric Reed</a>, <a href='https://github.com/lia978'>Amy Li</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
 </div>
 
       </footer>
