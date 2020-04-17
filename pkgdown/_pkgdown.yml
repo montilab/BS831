@@ -10,12 +10,12 @@ template:
 authors:
   Stefano Monti:
     href: https://github.com/tetomonti
+  Anthony Federico:
+    href: https://github.com/anfederico
   Amy Li:
     href: https://github.com/lia978
   Eric Reed:
     href: https://github.com/ericreed
-  Anthony Federico:
-    href: https://github.com/anfederico
 
 navbar:
   title: "BS831"

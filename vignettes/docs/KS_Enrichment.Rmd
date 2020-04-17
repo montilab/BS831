@@ -11,7 +11,12 @@ output:
 
 ```{r global, echo=FALSE, include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
-devtools::load_all(".")
+require(BS831)
+#devtools::load_all(".")
+```
+
+```{r settings, eval=FALSE}
+require(BS831)
 ```
 
 ### Introduction
@@ -131,7 +136,7 @@ simple wrapper.
 
 ### The `ksGenescore` script
 
-We defined a simple script (in `CBMRtools`) that builds upon `ks.test`
+We defined a simple script (in `BS831/R/ksGenescore.R`) that builds upon `ks.test`
 but is specifically tailored to testing for the skewdness of the
 distribution of a set of 'genes' toward the beginning or the end of a
 sorted list. The script also plots the enrichment score, and returns a
@@ -144,8 +149,7 @@ ranks.
 
 Few examples of use of `ks.genescore` follow. For visualization
 purposes, we use a reduced sample size of 100 (to better see the
-tickmarks corresponding to the genes' ranks). First, source the script
-..
+tickmarks corresponding to the genes' ranks). 
 
 Testing whether 10 genes fall randomly in the 1:100 range.
 ```{r ksGenescore}
@@ -158,3 +162,5 @@ ksGenescore(100,46:55,do.plot=TRUE)
 # randomly distributed
 set.seed(6719); ksGenescore(100,runif(10,min=1,max=100),do.plot=TRUE)
 ```
+
+Notice that the KS test, when used against a uniform distribution, simply tests deviation of an observed sample from a uniform distribution. Thus, in the examples above, the "geneset" `46:55` (of ten genes ranked in the middle and adjacent to each other) is also unlikely to come from a uniform distribution, hence the significant p-value (although weakly so).

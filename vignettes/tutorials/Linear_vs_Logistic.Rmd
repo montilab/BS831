@@ -23,30 +23,17 @@ knitr::opts_chunk$set(message=FALSE, warning=FALSE)
 
 ```{r settings}
 ## require() or library() statements
+require(BS831)
 require(Biobase)
 require(ggplot2)
-OMPATH <- Sys.getenv("OMPATH")
 ```
 
 ## Loading the Data
 
 ```{r read.data}
-brca <- readRDS(file.path(OMPATH,"data/TCGA.BRCA25.rds"))
-```
-
-```{r load.data, eval=FALSE, echo=FALSE}
-## use this when module is added to the github
-data(TCGA.BRCA25)
-brca <- TCGA.BRCA25
-```
-
-We extract two classes, "Luminal A" and "Basal", for the subsequent analyses.
-
-```{r process.data}
-## select two classes
-brca2 <- brca[,brca$pam50 %in% c("LumA","Basal")]
-brca2$pam50 <- droplevels(brca2$pam50)
-table(brca2$pam50)
+data(renamedBreastDB)
+brca <- renamedBreastDB
+table(brca$diseaseState)
 ```
 
 ## Linear _vs._ Logistic Regression
@@ -85,11 +72,11 @@ We next apply the wrapper functions to our BrCa dataset. We first compare their 
 
 ```{r lm.vs.logistic.time, warning=TRUE}
 ## run linear regression
-Tlin <- system.time( resultsLin <- multi.lm(brca2,pheno="pam50") )
+Tlin <- system.time( resultsLin <- multi.lm(brca,pheno="diseaseState") )
 head(resultsLin) # show few results
 
 ## run logistic regression
-Tlog <- system.time( resultsLog <- multi.logistic(brca2,pheno="pam50") )
+Tlog <- system.time( resultsLog <- multi.logistic(brca,pheno="diseaseState") )
 head(resultsLog) # show few results
 
 ## how much faster is linear compared to logistic?
@@ -116,7 +103,7 @@ DF[idx,]
 ggplot(DF,aes(x=lm.pval,y=logistic.pval)) +
     geom_point() +
     geom_point(data=DF[idx,],aes(x=lm.pval,y=logistic.pval,col="red")) +
-    labs(col="difference>0.05")
+    labs(col="difference>0.05",label=NULL)
 ```
 
 

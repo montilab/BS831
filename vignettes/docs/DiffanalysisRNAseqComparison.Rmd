@@ -37,6 +37,12 @@ Let's start by writing wrapper functions for each tool. This is useful
 so as to have a go-to place where to be reminded of the sequences of
 commands needed to run a given tool.
 
+```{r function.wrappers}
+print(run_deseq)
+print(run_edgeR)
+print(run_limma)
+```
+
 ### Loading zebrafish count data into expression set
 
 ```{r loading data}
@@ -263,6 +269,10 @@ venn <- venn.diagram(x = diff_list,
                      cat.cex = size,
                      main = paste0("Overlap of Signficant genes (FDR < ", min.fdr, ")"))
 grid.draw(venn)
+
+## Let us use our own visualizer (at github.com/montilab/vennr)
+require(vennr)
+vennr(diff_list)
 ```
 
 ### Extract normalized values from DESeq and edgeR
