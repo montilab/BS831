@@ -118,6 +118,9 @@
       <a href="../../articles/docs/KS_Enrichment.html">KS-based Enrichment</a>
     </li>
     <li>
+      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
+    </li>
+    <li>
       <a href="../../articles/docs/GeneSetProjectionGSVA.html">Gene Set Projection based on KS</a>
     </li>
     <li>
@@ -133,9 +136,6 @@
     </li>
     <li class="divider">
     <li class="dropdown-header">Clustering</li>
-    <li>
-      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
-    </li>
     <li>
       <a href="../../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -176,19 +176,20 @@
 
     
     
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">BS831</span>)
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">BS831</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">Biobase</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">caret</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">pROC</span>)</pre></body></html></div>
 <div id="loading-the-drugmatrix-data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#loading-the-drugmatrix-data" class="anchor"></a>Loading the DrugMatrix Data</h2>
 <p>Loading data for the classification task. We will be using the 10-chemical subset of the DrugMatrix dataset, and aim to predict the chemicals’ carcinogenicity status.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">dm10</span>)
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">dm10</span>)
 
-<span class="co">## DrugMatrix dataset 10 drugs/10 controls</span>
+<span class="co">## DrugMatrix dataset comprising 10 drugs plus controls</span>
 <span class="no">DM</span> <span class="kw">&lt;-</span> <span class="no">dm10</span>
 <span class="co">## show chemicals and their numbers</span>
-<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="fu">pData</span>(<span class="no">DM</span>)[,<span class="st">"CHEMICAL"</span>])</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">DM</span>)[,<span class="st">"CHEMICAL"</span>])</pre></body></html></div>
 <pre><code>## 
 ##                                     2,3,7,8-TETRACHLORODIBENZO-P-DIOXIN 
 ##                                 225                                   9 
@@ -202,51 +203,55 @@
 ##                                   6                                   9 
 ##                        TESTOSTERONE 
 ##                                   6</code></pre>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="co">## show carcinogenicity status</span>
-<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="fu">pData</span>(<span class="no">DM</span>)[,<span class="st">"Carcinogen_liv"</span>],<span class="kw">exclude</span><span class="kw">=</span><span class="kw">NULL</span>)</pre></body></html></div>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## show carcinogenicity status</span>
+<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">DM</span>)[,<span class="st">"Carcinogen_liv"</span>],<span class="kw">exclude</span><span class="kw">=</span><span class="kw">NULL</span>)</pre></body></html></div>
 <pre><code>## 
 ##   NON-CARC CARCINOGEN       &lt;NA&gt; 
 ##         63         50        225</code></pre>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="co">## exclude the controls (the ones with carcinogenicity status==NA)</span>
-<span class="no">DM1</span> <span class="kw">&lt;-</span> <span class="no">DM</span>[,!<span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span>(<span class="fu">pData</span>(<span class="no">DM</span>)[,<span class="st">"Carcinogen_liv"</span>])]
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## exclude the controls (the ones with carcinogenicity status==NA)</span>
+<span class="no">DM1</span> <span class="kw">&lt;-</span> <span class="no">DM</span>[,!<span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">DM</span>)[,<span class="st">"Carcinogen_liv"</span>])]
 <span class="no">DM1</span>$<span class="no">Carcinogen_liv</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html">droplevels</a></span>(<span class="no">DM1</span>$<span class="no">Carcinogen_liv</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="fu">pData</span>(<span class="no">DM1</span>)[,<span class="st">"Carcinogen_liv"</span>],<span class="kw">exclude</span><span class="kw">=</span><span class="kw">NULL</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">DM1</span>)[,<span class="st">"Carcinogen_liv"</span>],<span class="kw">exclude</span><span class="kw">=</span><span class="kw">NULL</span>)</pre></body></html></div>
 <pre><code>## 
 ##   NON-CARC CARCINOGEN 
 ##         63         50</code></pre>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="co">## carry out (drastic) variation filtering</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## carry out (drastic) variation filtering</span>
 <span class="no">DM1000</span> <span class="kw">&lt;-</span> <span class="fu">variationFilter</span>(<span class="no">DM1</span>,<span class="kw">ngenes</span><span class="kw">=</span><span class="fl">1000</span>,<span class="kw">score</span><span class="kw">=</span><span class="st">"mad"</span>,<span class="kw">do.plot</span><span class="kw">=</span><span class="fl">FALSE</span>)</pre></body></html></div>
 <pre><code>## Variation filtering based on mad .. done.
 ## Selecting top 1000 by mad .. done, 1000 genes selected.</code></pre>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">DM1000</span>)</pre></body></html></div>
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">DM1000</span>)</pre></body></html></div>
 <pre><code>## Features  Samples 
 ##     1000      113</code></pre>
 <div id="exploratory-data-visualization" class="section level3">
 <h3 class="hasAnchor">
 <a href="#exploratory-data-visualization" class="anchor"></a>Exploratory Data Visualization</h3>
 <p>After having uploaded and properly processed the data, we start by visualizing them with a heatmap (see <code>Rmodule_heatmap.Rmd</code>).</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggpubr</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">cba</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">gridExtra</span>)
-<span class="co">## plotting using heatmap.ggplot2</span>
-<span class="no">p1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/heatmap.ggplot2.html">heatmap.ggplot2</a></span>(<span class="kw">eSet</span><span class="kw">=</span><span class="no">DM1000</span>,
-                      <span class="kw">col.legend.brewer</span> <span class="kw">=</span> <span class="st">""</span>,
-                      <span class="kw">col.clust</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">row.clust</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
-                      <span class="kw">col.clust.hc</span> <span class="kw">=</span> <span class="fl">NA</span>, <span class="kw">row.clust.hc</span> <span class="kw">=</span> <span class="fl">NA</span>,
-                      <span class="kw">col.lab</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Carcinogen_liv"</span>, <span class="st">"CHEMICAL"</span>), <span class="kw">row.lab</span> <span class="kw">=</span> <span class="st">""</span>,
-                      <span class="kw">heatmap.y.text</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">heatmap.x.text</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
-                      <span class="kw">heatmap.colorlegend.name</span> <span class="kw">=</span> <span class="st">"expression"</span>,
-                      <span class="kw">title.text</span> <span class="kw">=</span> <span class="st">"Expression of top 1k MAD filtered genes"</span>,
-                      <span class="kw">col.legend.name</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Carcinogen_liv"</span>, <span class="st">"CHEMICAL"</span>),
-                      <span class="kw">row.legend.name</span> <span class="kw">=</span> <span class="st">""</span>,
-                      <span class="kw">row.scaling</span> <span class="kw">=</span> <span class="st">"z-score.capped"</span>,
-                      <span class="kw">z.norm</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
-                      <span class="kw">cuttree.col</span> <span class="kw">=</span> <span class="fl">0</span>, <span class="kw">cuttree.row</span> <span class="kw">=</span> <span class="fl">0</span>,
-                      <span class="kw">verbose</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
-                      <span class="kw">grid.heights</span> <span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">1.5</span>,<span class="fl">0.5</span>,<span class="fl">4</span>,<span class="fl">0.5</span>,<span class="fl">0.5</span>,<span class="fl">0.5</span>)/<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">1.5</span>,<span class="fl">0.5</span>,<span class="fl">4</span>,<span class="fl">0.5</span>,<span class="fl">0.5</span>,<span class="fl">0.5</span>)),
-                      <span class="kw">show</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
-<span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html">grid.arrange</a></span>(<span class="no">p1</span>)</pre></body></html></div>
-<p><img src="Classification_Caret_files/figure-html/heatmap-1.png" width="672"></p>
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">ComplexHeatmap</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">circlize</span>)
+<span class="no">DMscaled</span> <span class="kw">&lt;-</span> <span class="fu">scale_row</span>(<span class="no">DM1000</span>)
+<span class="no">hm.annotation</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ComplexHeatmap/man/HeatmapAnnotation.html">HeatmapAnnotation</a></span>(
+    <span class="kw">CHEMICAL</span><span class="kw">=</span><span class="no">DMscaled</span>$<span class="no">Carcinogen_liv</span>,
+    <span class="kw">GTOX</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span>(<span class="no">DMscaled</span>$<span class="no">GenTox</span>),
+    <span class="kw">na_col</span><span class="kw">=</span><span class="st">"ghostwhite"</span>,
+    <span class="kw">col</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">CHEMICAL</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"NON-CARC"</span><span class="kw">=</span><span class="st">"green"</span>,<span class="kw">CARCINOGEN</span><span class="kw">=</span><span class="st">"red"</span>),
+             <span class="kw">GTOX</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'0'</span><span class="kw">=</span><span class="st">"orange"</span>,<span class="st">'1'</span><span class="kw">=</span><span class="st">"purple"</span>))
+)
+<span class="fu"><a href="https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html">Heatmap</a></span>(<span class="kw pkg">Biobase</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">DMscaled</span>),
+        <span class="kw">name</span><span class="kw">=</span><span class="st">"expression"</span>,
+        <span class="kw">col</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/pkg/circlize/man/colorRamp2.html">colorRamp2</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">3</span>), <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"#072448"</span>, <span class="st">"white"</span>, <span class="st">"#ff6150"</span>)),
+        <span class="kw">top_annotation</span><span class="kw">=</span><span class="no">hm.annotation</span>,
+        <span class="kw">cluster_rows</span><span class="kw">=</span><span class="fl">TRUE</span>,
+        <span class="kw">cluster_columns</span><span class="kw">=</span><span class="fl">TRUE</span>,
+        <span class="kw">clustering_distance_rows</span><span class="kw">=</span><span class="st">"euclidean"</span>,
+        <span class="kw">clustering_method_rows</span><span class="kw">=</span><span class="st">"ward.D"</span>,
+        <span class="kw">clustering_distance_columns</span><span class="kw">=</span><span class="st">"euclidean"</span>,
+        <span class="kw">clustering_method_columns</span><span class="kw">=</span><span class="st">"ward.D"</span>,
+        <span class="kw">column_split</span><span class="kw">=</span><span class="fl">6</span>,
+        <span class="kw">show_parent_dend_line</span><span class="kw">=</span><span class="fl">TRUE</span>,
+        <span class="kw">row_title</span><span class="kw">=</span><span class="st">""</span>,
+        <span class="kw">show_column_names</span><span class="kw">=</span><span class="fl">FALSE</span>,
+        <span class="kw">show_row_names</span><span class="kw">=</span><span class="fl">FALSE</span>)</pre></body></html></div>
+<p><img src="Classification_Caret_files/figure-html/complex.heatmap-1.png" width="672"></p>
 </div>
 </div>
 <div id="classifying-the-carcinogenicity-status-of-compounds" class="section level2">
@@ -257,14 +262,14 @@
 <a href="#data-partitioning" class="anchor"></a>Data partitioning</h3>
 <p>Here, we perform the data partition into discovery and validation sets (alternatively, into train and test sets).</p>
 <p>We start by simplifying the phenotype labels.</p>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">3456</span>) <span class="co"># for reproducible results</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">3456</span>) <span class="co"># for reproducible results</span>
 
 <span class="co">## some renaming to make data handling simpler</span>
 <span class="no">DM1000</span>$<span class="no">CHEMICAL</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="no">DM1000</span>$<span class="no">CHEMICAL</span>)              <span class="co"># ensuring phenoype is a factor</span>
 <span class="no">DM1000</span>$<span class="no">Carcinogen_liv</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="no">DM1000</span>$<span class="no">Carcinogen_liv</span>)  <span class="co"># ditto</span>
 <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span>(<span class="no">DM1000</span>$<span class="no">Carcinogen_liv</span>)[<span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span>(<span class="no">DM1000</span>$<span class="no">Carcinogen_liv</span>)<span class="kw">==</span><span class="st">"NON-CARC"</span>] <span class="kw">&lt;-</span> <span class="st">"noncarc"</span>
 <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span>(<span class="no">DM1000</span>$<span class="no">Carcinogen_liv</span>)[<span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span>(<span class="no">DM1000</span>$<span class="no">Carcinogen_liv</span>)<span class="kw">==</span><span class="st">"CARCINOGEN"</span>] <span class="kw">&lt;-</span> <span class="st">"carc"</span>
-<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="fu">pData</span>(<span class="no">DM1000</span>)[,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>( <span class="st">"CHEMICAL"</span>, <span class="st">"Carcinogen_liv"</span>)]) <span class="co"># show composition</span></pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">DM1000</span>)[,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>( <span class="st">"CHEMICAL"</span>, <span class="st">"Carcinogen_liv"</span>)]) <span class="co"># show composition</span></pre></body></html></div>
 <pre><code>##                                      Carcinogen_liv
 ## CHEMICAL                              noncarc carc
 ##   2,3,7,8-TETRACHLORODIBENZO-P-DIOXIN       0    9
@@ -280,8 +285,8 @@
 <p>We then perform the <em>stratified</em> partition, whereby stratified means that both subsets should have a relatively equal representation of the two classes (‘noncar’ and ‘carc’).</p>
 <p>Also, notice that there is an additional level of complexity here, because we have multiple replicates for each chemical. Hence, if we were to carry out the split ‘naively’, we might end up with representative of the same chemicals <em>both</em> in the discovery and validation set, which would not be appropriate (it would be ‘cheating’).</p>
 <p>To address this issue, we carry out the partition at the <em>chemical</em> level, rather than the <em>sample</em> level. That is, we partition the chemicals into a discovery and validation set, so that <em>all</em> the replicates of a given chemical will be assigned to either the discovery or the validation set.</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="co">## data partitioning into discovery and validation set</span>
-<span class="no">CHEMICALGROUP</span> <span class="kw">&lt;-</span> <span class="fu">pData</span>(<span class="no">DM1000</span>)[!<span class="fu"><a href="https://rdrr.io/r/base/duplicated.html">duplicated</a></span>(<span class="fu">pData</span>(<span class="no">DM1000</span>)$<span class="no">CHEMICAL</span>),<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"CHEMICAL"</span>, <span class="st">"Carcinogen_liv"</span>)]
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## data partitioning into discovery and validation set</span>
+<span class="no">CHEMICALGROUP</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">DM1000</span>)[!<span class="fu"><a href="https://rdrr.io/r/base/duplicated.html">duplicated</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">DM1000</span>)$<span class="no">CHEMICAL</span>),<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"CHEMICAL"</span>, <span class="st">"Carcinogen_liv"</span>)]
 <span class="no">discoveryCHEMICALindex</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/caret/man/createDataPartition.html">createDataPartition</a></span>(<span class="no">CHEMICALGROUP</span>$<span class="no">Carcinogen_liv</span>, <span class="kw">p</span><span class="kw">=</span><span class="fl">0.6</span>, <span class="kw">list</span><span class="kw">=</span><span class="fl">FALSE</span>, <span class="kw">times</span><span class="kw">=</span><span class="fl">1</span>)
 <span class="no">discoveryCHEMICAL</span> <span class="kw">&lt;-</span> <span class="no">CHEMICALGROUP</span>$<span class="no">CHEMICAL</span>[<span class="no">discoveryCHEMICALindex</span>]
 <span class="no">validationCHEMICAL</span> <span class="kw">&lt;-</span> <span class="no">CHEMICALGROUP</span>$<span class="no">CHEMICAL</span>[-<span class="no">discoveryCHEMICALindex</span>]
@@ -300,7 +305,7 @@
 <h3 class="hasAnchor">
 <a href="#model-fitting-on-the-training-set" class="anchor"></a>Model Fitting on the Training Set</h3>
 <p>We now fit a KNN classifier. We evaluate several versions, based on different numbers of neighbors, and evaluate the performance of each by 5-fold cross-validation (cv).</p>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="co">## KNN with 5x cross validation</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## KNN with 5x cross validation</span>
 <span class="no">fitControl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/caret/man/trainControl.html">trainControl</a></span>(<span class="kw">method</span><span class="kw">=</span><span class="st">"cv"</span>,
                            <span class="kw">number</span><span class="kw">=</span><span class="fl">5</span>,
                            <span class="kw">classProbs</span><span class="kw">=</span><span class="no">T</span>,
@@ -336,13 +341,13 @@
 ## 
 ## ROC was used to select the optimal model using the largest value.
 ## The final value used for the model was k = 7.</code></pre>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/plot.roc.html">plot</a></span>(<span class="no">KNN</span>, <span class="kw">metric</span> <span class="kw">=</span> <span class="st">"ROC"</span>)</pre></body></html></div>
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/plot.roc.html">plot</a></span>(<span class="no">KNN</span>, <span class="kw">metric</span> <span class="kw">=</span> <span class="st">"ROC"</span>)</pre></body></html></div>
 <p><img src="Classification_Caret_files/figure-html/classify_3-1.png" width="700"></p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="co">## show the parameters that yield the most accurate classifier (as estimated by cv)</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## show the parameters that yield the most accurate classifier (as estimated by cv)</span>
 <span class="no">KNN</span>$<span class="no">bestTune</span></pre></body></html></div>
 <pre><code>##   k
 ## 3 7</code></pre>
-<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="co">#final model used and performance across test sets of each fold</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">#final model used and performance across test sets of each fold</span>
 <span class="no">KNN</span>$<span class="no">finalModel</span></pre></body></html></div>
 <pre><code>## 7-nearest neighbor model
 ## Training set outcome distribution:
@@ -355,7 +360,7 @@
 <h3 class="hasAnchor">
 <a href="#validation-on-the-test-set" class="anchor"></a>Validation on the Test Set</h3>
 <p>After having selected the “best” classifier, we can now apply it to the validation set.</p>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="co">## predicting the validation data:</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## predicting the validation data:</span>
 <span class="no">pred</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">KNN</span>,<span class="no">validation</span>)
 
 <span class="co">## or predicting using the probabilities (nice because you can get ROC)</span>
@@ -374,14 +379,14 @@
 <span class="co">## Calculating Accuracy</span>
 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="no">probs</span>$<span class="no">obs</span><span class="kw">==</span><span class="no">probs</span>$<span class="no">pred</span>)</pre></body></html></div>
 <pre><code>## [1] 0.48</code></pre>
-<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="co">## see classification prob for each sample in validation set</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## see classification prob for each sample in validation set</span>
 <span class="co">## pred column shows model predicted label if cutoff for calling label = 0.5</span>
 <span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="no">probs</span>$<span class="no">obs</span>, <span class="no">probs</span>$<span class="no">pred</span>)</pre></body></html></div>
 <pre><code>##          
 ##           carc noncarc
 ##   carc       3      23
 ##   noncarc    3      21</code></pre>
-<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="co">## summary of performance result on validation set</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## summary of performance result on validation set</span>
 <span class="fu"><a href="https://rdrr.io/pkg/caret/man/postResample.html">twoClassSummary</a></span>(<span class="no">probs</span>, <span class="kw">lev</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span>(<span class="no">probs</span>$<span class="no">obs</span>))</pre></body></html></div>
 <pre><code>##       ROC      Sens      Spec 
 ## 0.3421474 0.1153846 0.8750000</code></pre>
@@ -393,7 +398,7 @@
 <h4 class="hasAnchor">
 <a href="#model-fitting-on-the-training-set-1" class="anchor"></a>Model Fitting on the Training Set</h4>
 <p>Next we fit a Random Forest classifier. We evaluate several versions, based on different numbers of random features to be used for each tree, and evaluate the performance of each by 5-fold cross-validation (cv). Note, that a commonly features per tree is <span class="math inline">\(\sqrt{total\; features}\)</span>, in this case <span class="math inline">\(\sqrt{total\; features} = \sqrt{1000} \sim 32\)</span>.</p>
-<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="co">## RandomForest with 5x cross validation</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## RandomForest with 5x cross validation</span>
 <span class="no">fitControl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/caret/man/trainControl.html">trainControl</a></span>(<span class="kw">method</span><span class="kw">=</span><span class="st">"cv"</span>,
                            <span class="kw">number</span><span class="kw">=</span><span class="fl">5</span>,
                            <span class="kw">classProbs</span><span class="kw">=</span><span class="no">T</span>,
@@ -430,13 +435,13 @@
 ## 
 ## ROC was used to select the optimal model using the largest value.
 ## The final value used for the model was mtry = 50.</code></pre>
-<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/plot.roc.html">plot</a></span>(<span class="no">RF</span>, <span class="kw">metric</span> <span class="kw">=</span> <span class="st">"ROC"</span>)</pre></body></html></div>
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/plot.roc.html">plot</a></span>(<span class="no">RF</span>, <span class="kw">metric</span> <span class="kw">=</span> <span class="st">"ROC"</span>)</pre></body></html></div>
 <p><img src="Classification_Caret_files/figure-html/classify_5-1.png" width="700"></p>
-<div class="sourceCode" id="cb32"><html><body><pre class="r"><span class="co">## show the parameters that yield the most accurate classifier (as estimated by cv)</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## show the parameters that yield the most accurate classifier (as estimated by cv)</span>
 <span class="no">RF</span>$<span class="no">bestTune</span></pre></body></html></div>
 <pre><code>##   mtry
 ## 2   50</code></pre>
-<div class="sourceCode" id="cb34"><html><body><pre class="r"><span class="co">#final model used and performance across test sets of each fold</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">#final model used and performance across test sets of each fold</span>
 <span class="no">RF</span>$<span class="no">finalModel</span></pre></body></html></div>
 <pre><code>## 
 ## Call:
@@ -455,7 +460,7 @@
 <h4 class="hasAnchor">
 <a href="#validation-on-the-test-set-1" class="anchor"></a>Validation on the Test Set</h4>
 <p>All of the classifiers work well on the training data. A nice thing about Random Forests are that they’re performance is fairly robust to different parameter choices We’ll end using use <span class="math inline">\(\sqrt{total\; features} = \sqrt{1000} \sim 32\)</span> , we can now apply it to the validation set.</p>
-<div class="sourceCode" id="cb36"><html><body><pre class="r"><span class="co">## predicting the validation data:</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## predicting the validation data:</span>
 <span class="no">predRF</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">RF</span>,<span class="no">validation</span>)
 
 <span class="co">## or predicting using the probabilities (nice because you can get ROC)</span>
@@ -474,14 +479,14 @@
 <span class="co">## Calculating Accuracy</span>
 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="no">probsRF</span>$<span class="no">obs</span><span class="kw">==</span><span class="no">probsRF</span>$<span class="no">pred</span>)</pre></body></html></div>
 <pre><code>## [1] 0.4</code></pre>
-<div class="sourceCode" id="cb38"><html><body><pre class="r"><span class="co">## see classification prob for each sample in validation set</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## see classification prob for each sample in validation set</span>
 <span class="co">## pred column shows model predicted label if cutoff for calling label = 0.5</span>
 <span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="no">probsRF</span>$<span class="no">obs</span>, <span class="no">probsRF</span>$<span class="no">pred</span>)</pre></body></html></div>
 <pre><code>##          
 ##           carc noncarc
 ##   carc       0      26
 ##   noncarc    4      20</code></pre>
-<div class="sourceCode" id="cb40"><html><body><pre class="r"><span class="co">## summary of performance result on validation set</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## summary of performance result on validation set</span>
 <span class="fu"><a href="https://rdrr.io/pkg/caret/man/postResample.html">twoClassSummary</a></span>(<span class="no">probsRF</span>, <span class="kw">lev</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span>(<span class="no">probsRF</span>$<span class="no">obs</span>))</pre></body></html></div>
 <pre><code>##       ROC      Sens      Spec 
 ## 0.1762821 0.0000000 0.8333333</code></pre>
@@ -494,7 +499,7 @@
 <h4 class="hasAnchor">
 <a href="#model-fitting-on-the-training-set-2" class="anchor"></a>Model Fitting on the Training Set</h4>
 <p>Next we fit a SVM classifier with a linear. We evaluate several versions, based on different cost parameters, and evaluate the performance of each by 5-fold cross-validation (cv). SVM attempts to separate each group by a hyperplane over all variables by maximizing the distance (or margin) between this hyperplane and the closest points to it. The cost parameter controls the leniency of certain points falling on the wrong side of this hyperplane if it means the margin of the hyperplane to other points to be greater. This is to control overfitting. Large cost parameters don’t allow for any points in the training data to be misclassified.</p>
-<div class="sourceCode" id="cb42"><html><body><pre class="r"><span class="co">## SVM with 5x cross validation</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## SVM with 5x cross validation</span>
 <span class="no">fitControl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/caret/man/trainControl.html">trainControl</a></span>(<span class="kw">method</span><span class="kw">=</span><span class="st">"cv"</span>,
                            <span class="kw">number</span><span class="kw">=</span><span class="fl">5</span>,
                            <span class="kw">classProbs</span><span class="kw">=</span><span class="no">T</span>,
@@ -557,13 +562,13 @@
 ## 
 ## ROC was used to select the optimal model using the largest value.
 ## The final value used for the model was cost = 0.001.</code></pre>
-<div class="sourceCode" id="cb44"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/plot.roc.html">plot</a></span>(<span class="no">SVM</span>, <span class="kw">metric</span> <span class="kw">=</span> <span class="st">"ROC"</span>)</pre></body></html></div>
+<div class="sourceCode"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/plot.roc.html">plot</a></span>(<span class="no">SVM</span>, <span class="kw">metric</span> <span class="kw">=</span> <span class="st">"ROC"</span>)</pre></body></html></div>
 <p><img src="Classification_Caret_files/figure-html/classify_7-1.png" width="700"></p>
-<div class="sourceCode" id="cb45"><html><body><pre class="r"><span class="co">## show the parameters that yield the most accurate classifier (as estimated by cv)</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## show the parameters that yield the most accurate classifier (as estimated by cv)</span>
 <span class="no">SVM</span>$<span class="no">bestTune</span></pre></body></html></div>
 <pre><code>##     cost
 ## 31 0.001</code></pre>
-<div class="sourceCode" id="cb47"><html><body><pre class="r"><span class="co">#final model used and performance across test sets of each fold</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">#final model used and performance across test sets of each fold</span>
 <span class="no">SVM</span>$<span class="no">finalModel</span></pre></body></html></div>
 <pre><code>## 
 ## Call:
@@ -581,7 +586,7 @@
 <div id="validation-on-the-test-set-2" class="section level4">
 <h4 class="hasAnchor">
 <a href="#validation-on-the-test-set-2" class="anchor"></a>Validation on the Test Set</h4>
-<div class="sourceCode" id="cb49"><html><body><pre class="r"><span class="co">## predicting the validation data:</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## predicting the validation data:</span>
 <span class="no">predSVM</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">SVM</span>,<span class="no">validation</span>)
 
 <span class="co">## or predicting using the probabilities (nice because you can get ROC)</span>
@@ -600,14 +605,14 @@
 <span class="co">## Calculating Accuracy</span>
 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="no">probsSVM</span>$<span class="no">obs</span><span class="kw">==</span><span class="no">probsSVM</span>$<span class="no">pred</span>)</pre></body></html></div>
 <pre><code>## [1] 0.36</code></pre>
-<div class="sourceCode" id="cb51"><html><body><pre class="r"><span class="co">## see classification prob for each sample in validation set</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## see classification prob for each sample in validation set</span>
 <span class="co">## pred column shows model predicted label if cutoff for calling label = 0.5</span>
 <span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="no">probsSVM</span>$<span class="no">obs</span>, <span class="no">probsSVM</span>$<span class="no">pred</span>)</pre></body></html></div>
 <pre><code>##          
 ##           carc noncarc
 ##   carc       6      20
 ##   noncarc   12      12</code></pre>
-<div class="sourceCode" id="cb53"><html><body><pre class="r"><span class="co">## summary of performance result on validation set</span>
+<div class="sourceCode"><html><body><pre class="r"><span class="co">## summary of performance result on validation set</span>
 <span class="fu"><a href="https://rdrr.io/pkg/caret/man/postResample.html">twoClassSummary</a></span>(<span class="no">probsSVM</span>, <span class="kw">lev</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span>(<span class="no">probsSVM</span>$<span class="no">obs</span>))</pre></body></html></div>
 <pre><code>##       ROC      Sens      Spec 
 ## 0.1858974 0.2307692 0.5000000</code></pre>
