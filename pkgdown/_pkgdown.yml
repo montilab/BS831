@@ -73,6 +73,8 @@ navbar:
         href: articles/docs/HyperEnrichment.html
       - text: "KS-based Enrichment"
         href: articles/docs/KS_Enrichment.html
+      - text: "Mapping genesets for KS testing"
+        href: articles/docs/GenesetMapping4KS.html
       - text: "Gene Set Projection based on KS"
         href: articles/docs/GeneSetProjectionGSVA.html
       - text: "Geneset projection based on ASSIGN"
@@ -85,8 +87,6 @@ navbar:
         href: articles/docs/Classification_Caret.html
       - text: -------
       - text: "Clustering"
-      - text: "Mapping genesets for KS testing"
-        href: articles/docs/GenesetMapping4KS.html
       - text: "Clustering and Heatmap Visualization"
         href: articles/docs/Clustering.html
     - text: "Reference"

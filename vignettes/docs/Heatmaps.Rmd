@@ -20,8 +20,8 @@ require(scales)
 require(cba)
 require(gtable)
 require(gridExtra)
-library(ComplexHeatmap)
-library(circlize)
+require(ComplexHeatmap)
+require(circlize)
 ```
 
 ```{r eval=FALSE}
