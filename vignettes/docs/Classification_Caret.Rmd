@@ -11,13 +11,16 @@ output:
 
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
-devtools::load_all(".")
+#devtools::load_all(".")
+require(BS831)
+require(Biobase)
 require(caret)
 require(pROC)
 ```
 
 ```{r eval=FALSE}
 require(BS831)
+require(Biobase)
 require(caret)
 require(pROC)
 ```
@@ -31,7 +34,7 @@ chemicals' carcinogenicity status.
 ```{r load_data}
 data(dm10)
 
-## DrugMatrix dataset 10 drugs/10 controls
+## DrugMatrix dataset comprising 10 drugs plus controls
 DM <- dm10
 ## show chemicals and their numbers
 table(pData(DM)[,"CHEMICAL"])
@@ -50,28 +53,32 @@ dim(DM1000)
 After having uploaded and properly processed the data, we start by
 visualizing them with a heatmap (see `Rmodule_heatmap.Rmd`).
 
-```{r heatmap, fig.width=7, fig.height=10}
-library(ggpubr)
-library(cba)
-library(gridExtra)
-## plotting using heatmap.ggplot2
-p1 <- heatmap.ggplot2(eSet=DM1000,
-                      col.legend.brewer = "",
-                      col.clust = TRUE, row.clust = TRUE,
-                      col.clust.hc = NA, row.clust.hc = NA,
-                      col.lab = c("Carcinogen_liv", "CHEMICAL"), row.lab = "",
-                      heatmap.y.text = FALSE, heatmap.x.text = FALSE,
-                      heatmap.colorlegend.name = "expression",
-                      title.text = "Expression of top 1k MAD filtered genes",
-                      col.legend.name = c("Carcinogen_liv", "CHEMICAL"),
-                      row.legend.name = "",
-                      row.scaling = "z-score.capped",
-                      z.norm = FALSE,
-                      cuttree.col = 0, cuttree.row = 0,
-                      verbose = FALSE,
-                      grid.heights =c(1,1.5,0.5,4,0.5,0.5,0.5)/sum(c(1,1.5,0.5,4,0.5,0.5,0.5)),
-                      show = FALSE)
-grid.arrange(p1)
+```{r complex.heatmap, fig.width=7, fig.height=7}
+require(ComplexHeatmap)
+require(circlize)
+DMscaled <- scale_row(DM1000)
+hm.annotation <- HeatmapAnnotation(
+    CHEMICAL=DMscaled$Carcinogen_liv,
+    GTOX=as.factor(DMscaled$GenTox),
+    na_col="ghostwhite",
+    col=list(CHEMICAL=c("NON-CARC"="green",CARCINOGEN="red"),
+             GTOX=c('0'="orange",'1'="purple"))
+)
+Heatmap(Biobase::exprs(DMscaled),
+        name="expression", 
+        col=colorRamp2(c(-3, 0, 3), c("#072448", "white", "#ff6150")),
+        top_annotation=hm.annotation, 
+        cluster_rows=TRUE,
+        cluster_columns=TRUE,
+        clustering_distance_rows="euclidean",
+        clustering_method_rows="ward.D",    
+        clustering_distance_columns="euclidean",
+        clustering_method_columns="ward.D", 
+        column_split=6,
+        show_parent_dend_line=TRUE,
+        row_title="",
+        show_column_names=FALSE,
+        show_row_names=FALSE)
 ```
 
 ## Classifying the Carcinogenicity Status of Compounds
