@@ -58,10 +58,10 @@ require(ComplexHeatmap)
 require(circlize)
 DMscaled <- scale_row(DM1000)
 hm.annotation <- HeatmapAnnotation(
-    CHEMICAL=DMscaled$Carcinogen_liv,
+    CARCINOGEN=DMscaled$Carcinogen_liv,
     GTOX=as.factor(DMscaled$GenTox),
     na_col="ghostwhite",
-    col=list(CHEMICAL=c("NON-CARC"="green",CARCINOGEN="red"),
+    col=list(CARCINOGEN=c("NON-CARC"="green",CARCINOGEN="red"),
              GTOX=c('0'="orange",'1'="purple"))
 )
 Heatmap(Biobase::exprs(DMscaled),
