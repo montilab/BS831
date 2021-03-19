@@ -16,12 +16,12 @@ data.
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
 devtools::load_all(".")
-require(Biobase)
+library(Biobase)
 ```
 
 ```{r eval=FALSE}
-require(BS831)
-require(Biobase) # The package with the ExpressionSet definition, among others
+library(BS831)
+library(Biobase) # The package with the ExpressionSet definition, among others
 ```
 
 An expression set is a data object consisting of three entities: the

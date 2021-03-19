@@ -66,27 +66,38 @@ It should be noted that there are actually native R functions for the
 efficient sum of a matrix rows and columns (`rowSums` and
 `colSums`). However, the point of this basic demonstration holds.
 
+The gain in efficiency is due to the fact that in the `for` loop formulation, all the operations are performed in R (which is an interpreted language, hence inefficient), and in the `apply` formulation there are 1M function calls, which is also inefficient. In the `%*%` formulation, there is a single R function call, and all the number crunching is performed in whatever (compiled) language the `%*%` is implemented, most likely Fortran.
+
+In fact, notice that the gain in efficiency of the `%*%` over `apply` is largely lost when computing the column sum, since there are only 10 columns, hence only ten R function calls. The gain in efficient with respect to the `for` loop is still there.
+
+```{r colSum.for}
+## use of apply function
+T3 <- system.time(tmp3 <- forSum(t(X)))
+print(T3)
+```
+
 ```{r colSum.apply}
 ## use of apply function
-T3 <- system.time(tmp3 <- apply(X,2,sum))
-print(T3)
+T4 <- system.time(tmp4 <- apply(X,2,sum))
+print(T4)
 ```
 
 ```{r colSum.inner}
 ## use of matrix multiplication
 In <- rep(1,1000000) # define a unit vector
-T4 <- system.time(tmp4 <- t(X) %*% In)
-print(T4)
-```
-
-```{r colSum.inner2}
-## use of matrix multiplication
-In <- rep(1,1000000) # define a unit vector
-T5 <- system.time(tmp4 <- In %*% X)
+T5 <- system.time(tmp5 <- t(X) %*% In)
 print(T5)
 ```
+
+As noted, cognizant of this issue, R provides efficient functions to perform row and column sums. 
 
 ```{r rowSums}
 T6 <- system.time(rowSums(X))
 print(T6)
 ```
+
+```{r colSums}
+T7 <- system.time(colSums(X))
+print(T7)
+```
+
