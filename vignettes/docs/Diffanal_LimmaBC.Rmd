@@ -12,8 +12,8 @@ output:
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
 devtools::load_all(".")
-require(Biobase)
-require(limma)
+library(Biobase)
+library(limma)
 ```
 
 Here, we present a couple of simple examples of differential analysis
@@ -26,9 +26,9 @@ This document also provides examples of how to embed equations into an
 R markdown document, and how to cross-reference those equations.
 
 ```{r eval=FALSE}
-require(BS831)
-require(Biobase)
-require(limma)
+library(BS831)
+library(Biobase)
+library(limma)
 ```
 
 ### Load the Data

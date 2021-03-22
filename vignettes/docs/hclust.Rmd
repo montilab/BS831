@@ -12,12 +12,12 @@ output:
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
 devtools::load_all(".")
-require(heatmap.plus)
+library(heatmap.plus)
 ```
 
 ```{r eval=FALSE}
-require(BS831)
-require(heatmap.plus)
+library(BS831)
+library(heatmap.plus)
 ```
 
 ## Clustering of Real Data: the Drug Matrix 
@@ -100,7 +100,7 @@ et al. (2001)</A>, which minimizes the distance betwees adjacent items
 in two distinct sub-trees.
 
 ```{r hcopt}
-require(cba) # load the necessary pacakge
+library(cba) # load the necessary pacakge
 
 ## First, call hclust, then call the leaf-ordering algorithm and re-order the dendrogram
 

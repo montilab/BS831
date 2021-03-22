@@ -12,12 +12,12 @@ output:
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
 devtools::load_all(".")
-require(Biobase)
+library(Biobase)
 ```
 
 ```{r eval=FALSE}
-require(BS831)
-require(Biobase) # the package with the ExpressionSet definition, among others
+library(BS831)
+library(Biobase) # the package with the ExpressionSet definition, among others
 ```
 
 ## Import Head and Neck Cancer Data Set
@@ -192,7 +192,7 @@ Trimmed mean of M-values (TMM) and Relative Log Expression (RLE), the default sc
 ## TMM
 
 ```{r}
-require(edgeR)
+library(edgeR)
 
 # Normalize expression
 hnscTMM <- hnscTMM_log2  <- hnsc
@@ -205,7 +205,7 @@ exprs(hnscTMM_log2) <- log(exprs(hnscTMM) + 1, 2) # Calculate log2 counts per mi
 
 ## RLE
 ```{r}
-require(DESeq2)
+library(DESeq2)
 
 hnscRLE <- hnscRLE_log2  <- hnsc
 dds <- DESeqDataSetFromMatrix(exprs(hnscRLE), pData(hnscRLE), formula( ~ 1)) # Create DEseq2 specific object

@@ -12,25 +12,25 @@ output:
 ```{r global, echo=FALSE,message=FALSE, warning=FALSE, eval=TRUE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE)
 devtools::load_all(".")
-require(Biobase) 
-require(limma)
-require(VennDiagram)
-require(ComplexHeatmap)
-require(circlize)
-require(ggplot2)
-require(vennr) # see github.com/montilab/vennr
+library(Biobase) 
+library(limma)
+library(VennDiagram)
+library(ComplexHeatmap)
+library(circlize)
+library(ggplot2)
+library(vennr) # see github.com/montilab/vennr
 ```
 
 ```{r settings,message=FALSE, warning=FALSE, eval=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE)
-require(BS831)
-require(Biobase) 
-require(limma)
-require(VennDiagram)
-require(ComplexHeatmap)
-require(circlize)
-require(ggplot2)
-require(vennr) # see github.com/montilab/vennr
+library(BS831)
+library(Biobase) 
+library(limma)
+library(VennDiagram)
+library(ComplexHeatmap)
+library(circlize)
+library(ggplot2)
+library(vennr) # see github.com/montilab/vennr
 ```
 
 In this module, we explore the use of different R functions to perform differential analysis.

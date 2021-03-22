@@ -16,16 +16,16 @@ sizes.
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
 devtools::load_all(".")
-require(heatmap.plus)
-require(ggplot2)
-require(tidyr)
+library(heatmap.plus)
+library(ggplot2)
+library(tidyr)
 ```
 
 ```{r eval=FALSE}
-require(BS831)
-require(heatmap.plus)
-require(ggplot2)
-require(tidyr)
+library(BS831)
+library(heatmap.plus)
+library(ggplot2)
+library(tidyr)
 ```
 
 # Multiple-Hypothesis Correction by FDR and FWER

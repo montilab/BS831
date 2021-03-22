@@ -12,12 +12,12 @@ output:
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
 devtools::load_all(".")
-require(Biobase)
+library(Biobase)
 ```
 
 ```{r eval=FALSE}
 library(BS831)
-require(Biobase)
+library(Biobase)
 ```
 
 Here we show some basic QC plots to assess the quality of the data and

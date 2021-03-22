@@ -12,12 +12,12 @@ output:
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
 devtools::load_all(".")
-require(mclust)
+library(mclust)
 ```
 
 ```{r eval=FALSE}
-require(BS831)
-require(mclust)
+library(BS831)
+library(mclust)
 ```
 
 Here we describe the definition and use of few simple functions to

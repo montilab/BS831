@@ -16,7 +16,7 @@ ngenes <- 10
 ```
 
 ```{r eval=FALSE}
-require(BS831)
+library(BS831)
 ngenes <- 10
 ```
 

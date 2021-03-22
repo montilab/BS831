@@ -12,9 +12,9 @@ output:
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
 devtools::load_all(".")
-require(Biobase)      # the package with the ExpressionSet definition, among others
-require(ASSIGN)       # the assign package
-require(RColorBrewer) # for heatmap visualization
+library(Biobase)      # the package with the ExpressionSet definition, among others
+library(ASSIGN)       # the assign package
+library(RColorBrewer) # for heatmap visualization
 ```
 
 In this module, we illustrate the use of a method of pathway (or
@@ -32,9 +32,9 @@ and by sourcing a wrapper script for its easier handling.
 
 ```{r eval=FALSE}
 library(BS831)
-require(Biobase)      # the package with the ExpressionSet definition, among others
-require(ASSIGN)       # the assign package
-require(RColorBrewer) # for heatmap visualization
+library(Biobase)      # the package with the ExpressionSet definition, among others
+library(ASSIGN)       # the assign package
+library(RColorBrewer) # for heatmap visualization
 ```
 
 We next load the necessary data, consisting of gene expression

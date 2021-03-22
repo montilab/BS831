@@ -23,17 +23,17 @@ and 101 healthy controls for a total of 690 profiles.
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
 devtools::load_all(".")
-require(GEOquery)
-require(Biobase)
+library(GEOquery)
+library(Biobase)
 overwrite <- FALSE
 ```
 
 We start by loading some required packages and functions.
 
 ```{r settings, eval=FALSE}
-require(BS831)
-require(GEOquery)
-require(Biobase)
+library(BS831)
+library(GEOquery)
+library(Biobase)
 overwrite <- FALSE
 ```
 
@@ -158,10 +158,10 @@ median. The function is based on the R functions `melt` and `dcast`
 defined in the package `reshape2`.
 
 ```{r collapseByMedian.function}
-require(reshape2)
+library(reshape2)
 collapseByMedian <- function(eset, rowid)
 {
-    ## require(reshape2)
+    ## library(reshape2)
 
     ## remove unmapped probe sets
     genes <- fData(eset)[, rowid]

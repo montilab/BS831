@@ -12,22 +12,22 @@ output:
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
 devtools::load_all(".")
-require(Biobase)
-require(mclust)
-require(ConsensusClusterPlus)
-require(cba)
-require(pheatmap)
+library(Biobase)
+library(mclust)
+library(ConsensusClusterPlus)
+library(cba)
+library(pheatmap)
 ```
 
 ```{r eval=FALSE}
-require(BS831)
-require(Biobase)
-require(mclust)
+library(BS831)
+library(Biobase)
+library(mclust)
 #source("http://bioconductor.org/biocLite.R")
 #biocLite("ConsensusClusterPlus")
-require(ConsensusClusterPlus)
-require(cba)
-require(pheatmap)
+library(ConsensusClusterPlus)
+library(cba)
+library(pheatmap)
 ```
 
 In this module, we illustrate the use of Hierarchical Clustering,

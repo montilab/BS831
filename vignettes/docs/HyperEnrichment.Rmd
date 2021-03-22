@@ -150,7 +150,7 @@ h.all</a>
 [<a href="http://www.ncbi.nlm.nih.gov/pubmed/26771021">Liberzon et al., 2015</a>].
 
 ```{r run_canonical}
-require(openxlsx) 
+library(openxlsx) 
 hyperE <- hyperEnrichment(drawn=hyperSig,categories=getGeneSet(hyperGsets),ntotal=backpop) 
 head(hyperE)
 hyperE.fdr25 <- hyperE[hyperE[,'fdr']<=0.25,]

@@ -12,17 +12,17 @@ output:
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
 #devtools::load_all(".")
-require(BS831)
-require(Biobase)
-require(caret)
-require(pROC)
+library(BS831)
+library(Biobase)
+library(caret)
+library(pROC)
 ```
 
 ```{r eval=FALSE}
-require(BS831)
-require(Biobase)
-require(caret)
-require(pROC)
+library(BS831)
+library(Biobase)
+library(caret)
+library(pROC)
 ```
 
 ## Loading the DrugMatrix Data
@@ -54,8 +54,8 @@ After having uploaded and properly processed the data, we start by
 visualizing them with a heatmap (see `Rmodule_heatmap.Rmd`).
 
 ```{r complex.heatmap, fig.width=7, fig.height=7}
-require(ComplexHeatmap)
-require(circlize)
+library(ComplexHeatmap)
+library(circlize)
 DMscaled <- scale_row(DM1000)
 hm.annotation <- HeatmapAnnotation(
     CARCINOGEN=DMscaled$Carcinogen_liv,

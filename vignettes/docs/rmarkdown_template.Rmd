@@ -14,8 +14,8 @@ knitr::opts_chunk$set(message=FALSE, warning=FALSE)
 ```
 
 ```{r settings}
-require(GEOquery)
-require(Biobase)
+library(GEOquery)
+library(Biobase)
 OMPATH <- Sys.getenv("OMPATH") # this could be defined in .Renviron or .Rprofile. See Introduction
 ```
 

@@ -15,11 +15,11 @@ sizes.
 
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
-require(heatmap.plus)
+library(heatmap.plus)
 ```
 
 ```{r eval=FALSE}
-require(heatmap.plus)
+library(heatmap.plus)
 ```
 
 # Sample Size's effect on heatmap visualization

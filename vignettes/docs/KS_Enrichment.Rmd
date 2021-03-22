@@ -11,12 +11,12 @@ output:
 
 ```{r global, echo=FALSE, include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
-require(BS831)
+library(BS831)
 #devtools::load_all(".")
 ```
 
 ```{r settings, eval=FALSE}
-require(BS831)
+library(BS831)
 ```
 
 ### Introduction

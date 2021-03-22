@@ -15,22 +15,22 @@ differential analysis to count data from RNA-sequencing.
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
 devtools::load_all(".")
-require(Biobase)     # for ExpressionSet data objects
-require(limma)
-require(edgeR)
-require(DESeq2)
-require(biomaRt)     # for gene annotation
-require(VennDiagram)
+library(Biobase)     # for ExpressionSet data objects
+library(limma)
+library(edgeR)
+library(DESeq2)
+library(biomaRt)     # for gene annotation
+library(VennDiagram)
 ```
 
 ```{r eval=FALSE}
 library(BS831)
-require(Biobase)
-require(limma)
-require(edgeR)
-require(DESeq2)
-require(biomaRt)
-require(VennDiagram)
+library(Biobase)
+library(limma)
+library(edgeR)
+library(DESeq2)
+library(biomaRt)
+library(VennDiagram)
 ```
 
 Let's start by writing wrapper functions for each tool. This is useful
@@ -271,7 +271,7 @@ venn <- venn.diagram(x = diff_list,
 grid.draw(venn)
 
 ## Let us use our own visualizer (at github.com/montilab/vennr)
-require(vennr)
+library(vennr)
 vennr(diff_list)
 ```
 

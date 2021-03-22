@@ -12,12 +12,12 @@ output:
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
 #devtools::load_all(".")
-require(BS831)
-require(GSVA)
-require(Biobase)
-require(cba)
-require(ComplexHeatmap)
-require(circlize)
+library(BS831)
+library(GSVA)
+library(Biobase)
+library(cba)
+library(ComplexHeatmap)
+library(circlize)
 ```
 
 In this module, we show how to use Kolmogorov-Smirnov (KS)-based
@@ -27,12 +27,12 @@ or pathway level, thus making the data more interpretable while at the
 same time making them more robust to potential batch-to-batch effects.
 
 ```{r eval=FALSE}
-require(BS831)
-require(GSVA)
-require(Biobase)
-require(cba)
-require(ComplexHeatmap)
-require(circlize)
+library(BS831)
+library(GSVA)
+library(Biobase)
+library(cba)
+library(ComplexHeatmap)
+library(circlize)
 ```
 
 We start by requiring the necessary package and loading the data. The

@@ -19,12 +19,12 @@ anomalies.
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
 devtools::load_all(".")
-require(Biobase)
+library(Biobase)
 ```
 
 ```{r eval=FALSE}
-require(BS831)
-require(Biobase)
+library(BS831)
+library(Biobase)
 ```
 
 ```{r load.data}
@@ -69,7 +69,7 @@ legend("topright",col=col_palette,legend=levels(phenoData(dm3)$CHEMICAL),pch=20)
 Let us use the "fancier" plotting functions in the `ggplot` package.
 
 ```{r pca.ggplot, message=FALSE, warning=FALSE}
-require(ggplot2)
+library(ggplot2)
 df <- data.frame(x=dm3_svd$rotation[,"PC1"], y=dm3_svd$rotation[,"PC2"],
                  id=phenoData(dm3)$CHEMICAL)
 
@@ -144,7 +144,7 @@ method</a> (see this nice <a href="http://distill.pub/2016/misread-tsne/
 ">tutorial</a>).
 
 ```{r t-SNE, message=FALSE, warning=FALSE}
-require(tsne)
+library(tsne)
 
 # Create distance matrix (Euclidean)
 distDM3 <- dist(t(Biobase::exprs(dm3)))
