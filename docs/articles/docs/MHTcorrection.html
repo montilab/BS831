@@ -118,6 +118,9 @@
       <a href="../../articles/docs/KS_Enrichment.html">KS-based Enrichment</a>
     </li>
     <li>
+      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
+    </li>
+    <li>
       <a href="../../articles/docs/GeneSetProjectionGSVA.html">Gene Set Projection based on KS</a>
     </li>
     <li>
@@ -133,9 +136,6 @@
     </li>
     <li class="divider">
     <li class="dropdown-header">Clustering</li>
-    <li>
-      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
-    </li>
     <li>
       <a href="../../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -162,7 +162,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="MHTcorrection_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Multiple-Hypothesis Correction</h1>
@@ -177,10 +177,11 @@
     
     
 <p>In this module, we show how testing for multiple hypotheses (genes) can increase the chance of false positives, especially for small sample sizes.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">BS831</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">heatmap.plus</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">ggplot2</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">tidyr</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/montilab/BS831">BS831</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">heatmap.plus</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op">)</span></code></pre></div>
 <div id="multiple-hypothesis-correction-by-fdr-and-fwer" class="section level1">
 <h1 class="hasAnchor">
 <a href="#multiple-hypothesis-correction-by-fdr-and-fwer" class="anchor"></a>Multiple-Hypothesis Correction by FDR and FWER</h1>
@@ -192,111 +193,117 @@
 <div id="wrapper-of-students-t-test" class="section level3">
 <h3 class="hasAnchor">
 <a href="#wrapper-of-students-t-test" class="anchor"></a>Wrapper of Student’s T-Test</h3>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="co">## wrapper function extracting t-statistic and p-value from a call to function t.test</span>
-<span class="no">tscore</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">y</span>,<span class="no">x</span>) {
-  <span class="no">tmp</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/t.test.html">t.test</a></span>(<span class="no">y</span>~<span class="no">x</span>)
-  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">score</span><span class="kw">=</span><span class="no">tmp</span>$<span class="no">statistic</span>,<span class="kw">pval</span><span class="kw">=</span><span class="no">tmp</span>$<span class="no">p.value</span>)
-}</pre></body></html></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## wrapper function extracting t-statistic and p-value from a call to function t.test</span>
+<span class="va">tscore</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">y</span>,<span class="va">x</span><span class="op">)</span> <span class="op">{</span> 
+  <span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/t.test.html">t.test</a></span><span class="op">(</span><span class="va">y</span><span class="op">~</span><span class="va">x</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>score<span class="op">=</span><span class="va">tmp</span><span class="op">$</span><span class="va">statistic</span>,pval<span class="op">=</span><span class="va">tmp</span><span class="op">$</span><span class="va">p.value</span><span class="op">)</span>
+<span class="op">}</span></code></pre></div>
 <p>The next function is a wrapper to define a data matrix, X, and outcome vector, Y, for different conditions. By default we can generate a complete set of data from the null hypthesis to check the FWER. We can also generate data with a subset of features which have different means between groups to check, false positive rate, false negative rate, and power by changing <code>propDiff</code> and <code>Diff</code>.</p>
 </div>
 <div id="wrapper-of-data-generation-and-differential-analysis" class="section level3">
 <h3 class="hasAnchor">
 <a href="#wrapper-of-data-generation-and-differential-analysis" class="anchor"></a>Wrapper of data generation and differential analysis</h3>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">wrapDA</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">Nsamps</span>, <span class="co"># Number of samples per pseudogroup</span>
-                   <span class="no">Nrow</span> <span class="kw">=</span> <span class="fl">200</span>, <span class="co"># Number of parameters</span>
-                   <span class="no">mean</span> <span class="kw">=</span> <span class="fl">0</span>, <span class="co"># Mean of normal</span>
-                   <span class="no">sd</span> <span class="kw">=</span> <span class="fl">0.5</span>, <span class="co"># SD of normal</span>
-                   <span class="no">alpha</span> <span class="kw">=</span> <span class="fl">0.05</span>, <span class="co"># Signficance threshold</span>
-                   <span class="no">propDiff</span> <span class="kw">=</span> <span class="fl">0</span>, <span class="co"># Proportion to make Ha</span>
-                   <span class="no">Diff</span> <span class="kw">=</span> <span class="fl">0</span>, <span class="co"># Difference for Ha features</span>
-                   <span class="no">reportAll</span> <span class="kw">=</span> <span class="fl">FALSE</span>
-                   )
-  {
-
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">wrapDA</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">Nsamps</span>, <span class="co"># Number of samples per pseudogroup</span>
+                   <span class="va">Nrow</span> <span class="op">=</span> <span class="fl">200</span>, <span class="co"># Number of parameters</span>
+                   <span class="va">mean</span> <span class="op">=</span> <span class="fl">0</span>, <span class="co"># Mean of normal</span>
+                   <span class="va">sd</span> <span class="op">=</span> <span class="fl">0.5</span>, <span class="co"># SD of normal</span>
+                   <span class="va">alpha</span> <span class="op">=</span> <span class="fl">0.05</span>, <span class="co"># Signficance threshold</span>
+                   <span class="va">propDiff</span> <span class="op">=</span> <span class="fl">0</span>, <span class="co"># Proportion to make Ha</span>
+                   <span class="va">Diff</span> <span class="op">=</span> <span class="fl">0</span>, <span class="co"># Difference for Ha features</span>
+                   <span class="va">reportAll</span> <span class="op">=</span> <span class="cn">FALSE</span>
+                   <span class="op">)</span>
+  <span class="op">{</span>
+  
   <span class="co"># Genreate a data of random data from null distribution</span>
-  <span class="no">DAT</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>( <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>( <span class="no">Nrow</span> * <span class="no">Nsamps</span> * <span class="fl">2</span>, <span class="kw">mean</span><span class="kw">=</span><span class="fl">0</span>, <span class="kw">sd</span><span class="kw">=</span><span class="fl">0.5</span>), <span class="kw">nrow</span><span class="kw">=</span><span class="no">Nrow</span>, <span class="kw">ncol</span><span class="kw">=</span>( <span class="no">Nsamps</span> *<span class="fl">2</span>) )
-
+  <span class="va">DAT</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span> <span class="va">Nrow</span> <span class="op">*</span> <span class="va">Nsamps</span> <span class="op">*</span> <span class="fl">2</span>, mean<span class="op">=</span><span class="fl">0</span>, sd<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span>, nrow<span class="op">=</span><span class="va">Nrow</span>, ncol<span class="op">=</span><span class="op">(</span> <span class="va">Nsamps</span> <span class="op">*</span><span class="fl">2</span><span class="op">)</span> <span class="op">)</span>
+  
   <span class="co"># Add difference to one group</span>
-  <span class="kw">if</span>(<span class="no">propDiff</span> <span class="kw">&gt;</span> <span class="fl">0</span>){
-    <span class="no">nChange</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">floor</a></span>(<span class="no">propDiff</span>*<span class="no">Nrow</span>)
-    <span class="no">DAT</span>[<span class="fl">1</span>:(<span class="no">nChange</span>), <span class="fl">1</span>:<span class="no">Nsamps</span>] <span class="kw">&lt;-</span> <span class="no">DAT</span>[<span class="fl">1</span>:(<span class="no">nChange</span>), <span class="fl">1</span>:<span class="no">Nsamps</span>] + <span class="no">Diff</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">DAT</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="st">"Ha"</span>, <span class="no">nChange</span>), <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="st">"H0"</span>, (<span class="no">Nrow</span> - <span class="no">nChange</span>))), <span class="fl">1</span>:<span class="no">Nrow</span>)
-  }
-
+  <span class="kw">if</span><span class="op">(</span><span class="va">propDiff</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span><span class="op">{</span>
+    <span class="va">nChange</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">floor</a></span><span class="op">(</span><span class="va">propDiff</span><span class="op">*</span><span class="va">Nrow</span><span class="op">)</span>
+    <span class="va">DAT</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">nChange</span><span class="op">)</span>, <span class="fl">1</span><span class="op">:</span><span class="va">Nsamps</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">DAT</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">nChange</span><span class="op">)</span>, <span class="fl">1</span><span class="op">:</span><span class="va">Nsamps</span><span class="op">]</span> <span class="op">+</span> <span class="va">Diff</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"Ha"</span>, <span class="va">nChange</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"H0"</span>, <span class="op">(</span><span class="va">Nrow</span> <span class="op">-</span> <span class="va">nChange</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="fl">1</span><span class="op">:</span><span class="va">Nrow</span><span class="op">)</span>
+  <span class="op">}</span>
+  
   <span class="co">## generate a (head/tail) phenotype of proper size</span>
-  <span class="no">pheno</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'head'</span>,<span class="st">'tail'</span>),<span class="kw">each</span><span class="kw">=</span><span class="no">Nsamps</span>))
+  <span class="va">pheno</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'head'</span>,<span class="st">'tail'</span><span class="op">)</span>,each<span class="op">=</span><span class="va">Nsamps</span><span class="op">)</span><span class="op">)</span>
 
   <span class="co">## perform t.test on each data row with respect to the random phenotype</span>
-  <span class="no">DIF</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="no">DAT</span>,<span class="fl">1</span>,<span class="no">tscore</span>,<span class="kw">x</span><span class="kw">=</span><span class="no">pheno</span>)))
-
+  <span class="va">DIF</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">DAT</span>,<span class="fl">1</span>,<span class="va">tscore</span>,x<span class="op">=</span><span class="va">pheno</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+  
   <span class="co">## Sort by p-value</span>
-  <span class="no">DIF</span> <span class="kw">&lt;-</span> <span class="no">DIF</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">DIF</span>$<span class="no">pval</span>),]
-
+  <span class="va">DIF</span> <span class="op">&lt;-</span> <span class="va">DIF</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">DIF</span><span class="op">$</span><span class="va">pval</span><span class="op">)</span>,<span class="op">]</span>
+  
   <span class="co">## Perform Bonferroni and BH corrections</span>
-  <span class="no">DIF</span>$<span class="no">BFp</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/p.adjust.html">p.adjust</a></span>(<span class="no">DIF</span>$<span class="no">pval</span>, <span class="kw">method</span> <span class="kw">=</span> <span class="st">"bonferroni"</span>)
-  <span class="no">DIF</span>$<span class="no">BHp</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/p.adjust.html">p.adjust</a></span>(<span class="no">DIF</span>$<span class="no">pval</span>, <span class="kw">method</span> <span class="kw">=</span> <span class="st">"BH"</span>)
-
+  <span class="va">DIF</span><span class="op">$</span><span class="va">BFp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/p.adjust.html">p.adjust</a></span><span class="op">(</span><span class="va">DIF</span><span class="op">$</span><span class="va">pval</span>, method <span class="op">=</span> <span class="st">"bonferroni"</span><span class="op">)</span>
+  <span class="va">DIF</span><span class="op">$</span><span class="va">BHp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/p.adjust.html">p.adjust</a></span><span class="op">(</span><span class="va">DIF</span><span class="op">$</span><span class="va">pval</span>, method <span class="op">=</span> <span class="st">"BH"</span><span class="op">)</span>
+  
   <span class="co">## Get BH Significant Rows</span>
-  <span class="no">DIFsig</span> <span class="kw">&lt;-</span> <span class="no">DIF</span>[<span class="no">DIF</span>$<span class="no">BHp</span> <span class="kw">&lt;</span> <span class="no">alpha</span>,]
-
+  <span class="va">DIFsig</span> <span class="op">&lt;-</span> <span class="va">DIF</span><span class="op">[</span><span class="va">DIF</span><span class="op">$</span><span class="va">BHp</span> <span class="op">&lt;</span> <span class="va">alpha</span>,<span class="op">]</span>
+  
   <span class="co">## Return All results or only features with small p-values</span>
-  <span class="kw">if</span>(<span class="no">reportAll</span>){
-    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">DIF</span>)
-  } <span class="kw">else</span> {
+  <span class="kw">if</span><span class="op">(</span><span class="va">reportAll</span><span class="op">)</span><span class="op">{</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">DIF</span><span class="op">)</span>
+  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
     <span class="co">## If any genes BH significant return these rows else just return row with smallest p-value</span>
-    <span class="kw">if</span>(<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">DIFsig</span>)<span class="kw">&gt;</span><span class="fl">0</span>) <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">DIFsig</span>) <span class="kw">else</span> <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">DIF</span>[<span class="fl">1</span>,])
-  }
-}</pre></body></html></div>
+    <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">DIFsig</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">0</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">DIFsig</span><span class="op">)</span> <span class="kw">else</span> <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">DIF</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span>
+  <span class="op">}</span>
+<span class="op">}</span>  </code></pre></div>
 </div>
 </div>
 <div id="run-differential-analysis-from-null-distributions-for-different-sample-sizes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#run-differential-analysis-from-null-distributions-for-different-sample-sizes" class="anchor"></a>Run differential analysis from null distributions for different sample sizes</h2>
 <p>First, we will check the FWER between Bonferroni and BH corrections for two different sample sizes: 10 samples per group and 50 samples per group. Each feature will have mean=0 and SD=0.5. For each run, the result will either be the feature with the smallest p-value, or a data.frame of features that passed BH significance threshold.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">sGroups</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">10</span>, <span class="fl">25</span>, <span class="fl">50</span>) <span class="co"># Vector of group sizes</span>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sGroups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">25</span>, <span class="fl">50</span><span class="op">)</span> <span class="co"># Vector of group sizes</span>
 
 <span class="co"># Run simulation for each sample size 100 times</span>
-<span class="no">outList</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">sGroups</span>, <span class="kw">function</span>(<span class="no">Nsamps</span>){
-    <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span>(<span class="fl">100</span>, <span class="fu">wrapDA</span>(<span class="no">Nsamps</span>), <span class="kw">simplify</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
-})
+<span class="va">outList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">sGroups</span>, <span class="kw">function</span><span class="op">(</span><span class="va">Nsamps</span><span class="op">)</span><span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fu">wrapDA</span><span class="op">(</span><span class="va">Nsamps</span><span class="op">)</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="op">}</span><span class="op">)</span>
 
 <span class="co"># Name list by sample size</span>
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">outList</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="st">"Samps"</span>, <span class="no">sGroups</span>, <span class="kw">sep</span> <span class="kw">=</span> <span class="st">"_"</span>)
+<span class="fu"><a href="https://rdrr.io/pkg/openxlsx/man/names.html">names</a></span><span class="op">(</span><span class="va">outList</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Samps"</span>, <span class="va">sGroups</span>, sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span>
 
 <span class="co"># What does the output look like?</span>
-<span class="no">outList</span>$<span class="no">Samps_10</span><span class="kw">[[</span><span class="fl">1</span>]]</pre></body></html></div>
-<pre><code>##      score.t        pval       BFp       BHp
-## 45 -3.806345 0.001440239 0.2880478 0.2880478</code></pre>
+<span class="va">outList</span><span class="op">$</span><span class="va">Samps_10</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></code></pre></div>
+<pre><code>##      score.t        pval BFp       BHp
+## 27 -3.174271 0.005279612   1 0.7985444</code></pre>
 <div id="get-family-wise-error-rates-from-bonferroni-alpha-0-05" class="section level3">
 <h3 class="hasAnchor">
 <a href="#get-family-wise-error-rates-from-bonferroni-alpha-0-05" class="anchor"></a>Get family wise error rates from Bonferroni (alpha = 0.05)</h3>
 <div id="function-to-calculate-fwer-from-list-of-experiment-results" class="section level4">
 <h4 class="hasAnchor">
 <a href="#function-to-calculate-fwer-from-list-of-experiment-results" class="anchor"></a>Function to calculate FWER from list of experiment results</h4>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">getFWER</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">resList</span>, <span class="co"># List of lowest p-values</span>
-                    <span class="no">alpha</span> <span class="kw">=</span> <span class="fl">0.05</span>, <span class="co"># P-value threshold</span>
-                    <span class="no">pCol</span> <span class="kw">=</span> <span class="st">"BFp"</span> <span class="co"># Column with MHT P-value of interest</span>
-                    )
-{
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">getFWER</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">resList</span>, <span class="co"># List of lowest p-values</span>
+                    <span class="va">alpha</span> <span class="op">=</span> <span class="fl">0.05</span>, <span class="co"># P-value threshold</span>
+                    <span class="va">pCol</span> <span class="op">=</span> <span class="st">"BFp"</span> <span class="co"># Column with MHT P-value of interest</span>
+                    <span class="op">)</span>
+<span class="op">{</span>
   <span class="co">## Which experiments had at least one positive hit?</span>
-  <span class="no">FWERvec</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">resList</span>, <span class="kw">function</span>(<span class="no">y</span>) <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">y</span>[,<span class="st">"BFp"</span>] <span class="kw">&lt;</span> <span class="no">alpha</span>)<span class="kw">&gt;</span><span class="fl">0</span>))
-
+  <span class="va">FWERvec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">resList</span>, <span class="kw">function</span><span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">y</span><span class="op">[</span>,<span class="st">"BFp"</span><span class="op">]</span> <span class="op">&lt;</span> <span class="va">alpha</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">0</span><span class="op">)</span><span class="op">)</span>
+  
   <span class="co">## What proportion of experiments had at least one positive hit?</span>
-  <span class="no">FWERval</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="no">FWERvec</span>)
-
+  <span class="va">FWERval</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">FWERvec</span><span class="op">)</span>
+  
   <span class="co">## Return FWER for this set of experiments</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">FWERval</span>)
-}</pre></body></html></div>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="co">## Get FWER for bonferonni corrected p-values</span>
-<span class="no">BonVec</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">outList</span>, <span class="no">getFWER</span>, <span class="kw">alpha</span> <span class="kw">=</span> <span class="fl">0.05</span>, <span class="kw">pCol</span> <span class="kw">=</span> <span class="st">"BFp"</span>)) <span class="co"># Note pCol</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">BonVec</span>)</pre></body></html></div>
+  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">FWERval</span><span class="op">)</span>
+<span class="op">}</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Get FWER for bonferonni corrected p-values</span>
+<span class="va">BonVec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">outList</span>, <span class="va">getFWER</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>, pCol <span class="op">=</span> <span class="st">"BFp"</span><span class="op">)</span><span class="op">)</span> <span class="co"># Note pCol</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">BonVec</span><span class="op">)</span></code></pre></div>
 <pre><code>## Samps_10 Samps_25 Samps_50 
-##     0.05     0.05     0.04</code></pre>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="co">## Get FWER for Benjamini-Hochberg corrected p-values</span>
-<span class="no">BhVec</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">outList</span>, <span class="no">getFWER</span>, <span class="kw">alpha</span> <span class="kw">=</span> <span class="fl">0.05</span>, <span class="kw">pCol</span> <span class="kw">=</span> <span class="st">"BHp"</span>)) <span class="co"># Note pCol</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">BhVec</span>)</pre></body></html></div>
+##     0.03     0.05     0.06</code></pre>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Get FWER for Benjamini-Hochberg corrected p-values</span>
+<span class="va">BhVec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">outList</span>, <span class="va">getFWER</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>, pCol <span class="op">=</span> <span class="st">"BHp"</span><span class="op">)</span><span class="op">)</span> <span class="co"># Note pCol</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">BhVec</span><span class="op">)</span></code></pre></div>
 <pre><code>## Samps_10 Samps_25 Samps_50 
-##     0.05     0.05     0.04</code></pre>
+##     0.03     0.05     0.06</code></pre>
 <p>Note, for repeated experiments with multiple hypotheses the FWER returned from Bonferroni and Benjamini-Hochberg is the same</p>
 </div>
 </div>
@@ -305,20 +312,18 @@
 <h2 class="hasAnchor">
 <a href="#run-differential-analysis-from-alternative-distriubtions-for-different-sample-sizes" class="anchor"></a>Run differential analysis from alternative distriubtions for different sample sizes</h2>
 <p>Next, we will create data where 25% of the genes differ between groups by 0.5. In the output, true positive will have row names starting with “Ha”.</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">haList</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">sGroups</span>, <span class="kw">function</span>(<span class="no">Nsamps</span>){
-    <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span>(<span class="fl">100</span>, <span class="fu">wrapDA</span>(<span class="no">Nsamps</span>, <span class="kw">propDiff</span> <span class="kw">=</span> <span class="fl">0.25</span>, <span class="kw">Diff</span> <span class="kw">=</span> <span class="fl">0.5</span>), <span class="kw">simplify</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
-})
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">haList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">sGroups</span>, <span class="kw">function</span><span class="op">(</span><span class="va">Nsamps</span><span class="op">)</span><span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fu">wrapDA</span><span class="op">(</span><span class="va">Nsamps</span>, propDiff <span class="op">=</span> <span class="fl">0.25</span>, Diff <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="op">}</span><span class="op">)</span>
 
 <span class="co">## Name list by sample size</span>
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">haList</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="st">"Samps"</span>, <span class="no">sGroups</span>, <span class="kw">sep</span> <span class="kw">=</span> <span class="st">"_"</span>)
+<span class="fu"><a href="https://rdrr.io/pkg/openxlsx/man/names.html">names</a></span><span class="op">(</span><span class="va">haList</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Samps"</span>, <span class="va">sGroups</span>, sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span>
 
 <span class="co">## What does the output look like?</span>
-<span class="no">haList</span>$<span class="no">Samps_10</span><span class="kw">[[</span><span class="fl">1</span>]]</pre></body></html></div>
-<pre><code>##       score.t         pval         BFp         BHp
-## Ha27 6.538013 1.323719e-05 0.002647438 0.002647438
-## Ha16 5.556502 3.005494e-05 0.006010987 0.002922764
-## Ha49 5.559083 4.384146e-05 0.008768291 0.002922764
-## Ha39 5.164050 7.690804e-05 0.015381608 0.003845402</code></pre>
+<span class="va">haList</span><span class="op">$</span><span class="va">Samps_10</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></code></pre></div>
+<pre><code>##       score.t        pval       BFp       BHp
+## Ha23 3.544877 0.002603729 0.5207458 0.1323147</code></pre>
 <p>The rows with the prefix, <em>Ha</em>, come from the distribution for which the alternative hypthesis is true.</p>
 <div id="get-false-positive-and-false-negative-rates" class="section level3">
 <h3 class="hasAnchor">
@@ -327,118 +332,126 @@
 <h4 class="hasAnchor">
 <a href="#function-to-calculate-the-false-positive-rate-and-false-negative-rates-from-list-of-experiment-results" class="anchor"></a>Function to calculate the false positive rate and false negative rates from list of experiment results</h4>
 <p>The a false positive rate will be calculated for each experiment individually</p>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">getFPR_FNR</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">resList</span>, <span class="co"># List of lowest p-values</span>
-                       <span class="no">alpha</span> <span class="kw">=</span> <span class="fl">0.05</span>, <span class="co"># P-value threshold</span>
-                       <span class="no">pCol</span> <span class="kw">=</span> <span class="st">"BFp"</span>, <span class="co"># Column with MHT P-value of interest</span>
-                       <span class="no">nMH</span> <span class="kw">=</span> <span class="fl">200</span>, <span class="co"># Number of hypothesis tested</span>
-                       <span class="no">nHa</span> <span class="kw">=</span> <span class="fl">50</span> <span class="co"># Number of true positives</span>
-                       )
-{
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">getFPR_FNR</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">resList</span>, <span class="co"># List of lowest p-values</span>
+                       <span class="va">alpha</span> <span class="op">=</span> <span class="fl">0.05</span>, <span class="co"># P-value threshold</span>
+                       <span class="va">pCol</span> <span class="op">=</span> <span class="st">"BFp"</span>, <span class="co"># Column with MHT P-value of interest</span>
+                       <span class="va">nMH</span> <span class="op">=</span> <span class="fl">200</span>, <span class="co"># Number of hypothesis tested</span>
+                       <span class="va">nHa</span> <span class="op">=</span> <span class="fl">50</span> <span class="co"># Number of true positives</span>
+                       <span class="op">)</span>
+<span class="op">{</span>  
   <span class="co">## Extract instances of null hypotheses with small p-values from each experiment</span>
-  <span class="no">H0list</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">resList</span>, <span class="kw">function</span>(<span class="no">y</span>) <span class="no">y</span>[!<span class="fu"><a href="https://rdrr.io/r/base/grep.html">grepl</a></span>(<span class="st">"Ha"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">y</span>)),])
-
+  <span class="va">H0list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">resList</span>, <span class="kw">function</span><span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="va">y</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html">grepl</a></span><span class="op">(</span><span class="st">"Ha"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>,<span class="op">]</span><span class="op">)</span>
+  
   <span class="co"># Extract vector of false postive rates from each experiment</span>
-  <span class="no">FPvec</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">H0list</span>, <span class="kw">function</span>(<span class="no">y</span>) <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">y</span>[,<span class="no">pCol</span>]<span class="kw">&lt;</span><span class="no">alpha</span>)/(<span class="no">nMH</span>-<span class="no">nHa</span>)))
-
+  <span class="va">FPvec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">H0list</span>, <span class="kw">function</span><span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">y</span><span class="op">[</span>,<span class="va">pCol</span><span class="op">]</span><span class="op">&lt;</span><span class="va">alpha</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="va">nMH</span><span class="op">-</span><span class="va">nHa</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+  
   <span class="co"># Extract instances of alternative hypotheses with small p-values from each experiment</span>
-  <span class="no">Halist</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">resList</span>, <span class="kw">function</span>(<span class="no">y</span>) <span class="no">y</span>[<span class="fu"><a href="https://rdrr.io/r/base/grep.html">grepl</a></span>(<span class="st">"Ha"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">y</span>)),])
-
+  <span class="va">Halist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">resList</span>, <span class="kw">function</span><span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="va">y</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html">grepl</a></span><span class="op">(</span><span class="st">"Ha"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>,<span class="op">]</span><span class="op">)</span>
+  
   <span class="co"># Extract vector of false negative rates from each experiment</span>
-  <span class="no">FNvec</span> <span class="kw">&lt;-</span> <span class="fl">1</span> - <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">Halist</span>, <span class="kw">function</span>(<span class="no">y</span>) <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">y</span>[,<span class="no">pCol</span>]<span class="kw">&lt;</span><span class="no">alpha</span>)/(<span class="no">nHa</span>)))
-
+  <span class="va">FNvec</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">Halist</span>, <span class="kw">function</span><span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">y</span><span class="op">[</span>,<span class="va">pCol</span><span class="op">]</span><span class="op">&lt;</span><span class="va">alpha</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="va">nHa</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+  
   <span class="co"># Create data.frame of results</span>
-  <span class="no">FP_FN</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="kw">FalsePosi</span> <span class="kw">=</span> <span class="no">FPvec</span>, <span class="kw">FalseNeg</span> <span class="kw">=</span> <span class="no">FNvec</span>)
-
-  <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">FP_FN</span>)
-}</pre></body></html></div>
+  <span class="va">FP_FN</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>FalsePosi <span class="op">=</span> <span class="va">FPvec</span>, FalseNeg <span class="op">=</span> <span class="va">FNvec</span><span class="op">)</span>
+  
+  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">FP_FN</span><span class="op">)</span>
+<span class="op">}</span></code></pre></div>
 </div>
 </div>
 <div id="bonferroni-corrected-p-values" class="section level3">
 <h3 class="hasAnchor">
 <a href="#bonferroni-corrected-p-values" class="anchor"></a>Bonferroni Corrected P-values</h3>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="co">## Get FP and FN</span>
-<span class="no">BonFP_FN</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">haList</span>, <span class="no">getFPR_FNR</span>, <span class="kw">alpha</span> <span class="kw">=</span> <span class="fl">0.05</span>, <span class="kw">pCol</span> <span class="kw">=</span> <span class="st">"BFp"</span>, <span class="kw">nMH</span> <span class="kw">=</span> <span class="fl">200</span>, <span class="kw">nHa</span> <span class="kw">=</span> <span class="fl">50</span>)
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Get FP and FN</span>
+<span class="va">BonFP_FN</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">haList</span>, <span class="va">getFPR_FNR</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>, pCol <span class="op">=</span> <span class="st">"BFp"</span>, nMH <span class="op">=</span> <span class="fl">200</span>, nHa <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
 
 <span class="co">## Concatenate the results for each sample size</span>
-<span class="no">BonFP_FN</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span>(<span class="no">rbind</span>, <span class="no">BonFP_FN</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">BonFP_FN</span>)</pre></body></html></div>
-<pre><code>##              FalsePosi FalseNeg
-## Samps_10.1 0.000000000     0.92
-## Samps_10.2 0.000000000     0.98
-## Samps_10.3 0.000000000     1.00
-## Samps_10.4 0.000000000     0.90
-## Samps_10.5 0.000000000     0.94
-## Samps_10.6 0.006666667     0.98</code></pre>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="co">## Add column for sample size identifier</span>
-<span class="no">BonFP_FN</span>$<span class="no">SampleSize</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">sub</a></span>(<span class="st">"[.][[:digit:]]*"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">BonFP_FN</span>))
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">BonFP_FN</span>)</pre></body></html></div>
-<pre><code>##              FalsePosi FalseNeg SampleSize
-## Samps_10.1 0.000000000     0.92   Samps_10
-## Samps_10.2 0.000000000     0.98   Samps_10
-## Samps_10.3 0.000000000     1.00   Samps_10
-## Samps_10.4 0.000000000     0.90   Samps_10
-## Samps_10.5 0.000000000     0.94   Samps_10
-## Samps_10.6 0.006666667     0.98   Samps_10</code></pre>
+<span class="va">BonFP_FN</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">BonFP_FN</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">BonFP_FN</span><span class="op">)</span></code></pre></div>
+<pre><code>##            FalsePosi FalseNeg
+## Samps_10.1         0     1.00
+## Samps_10.2         0     0.94
+## Samps_10.3         0     0.94
+## Samps_10.4         0     0.98
+## Samps_10.5         0     1.00
+## Samps_10.6         0     0.98</code></pre>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Add column for sample size identifier</span>
+<span class="va">BonFP_FN</span><span class="op">$</span><span class="va">SampleSize</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">sub</a></span><span class="op">(</span><span class="st">"[.][[:digit:]]*"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">BonFP_FN</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">BonFP_FN</span><span class="op">)</span></code></pre></div>
+<pre><code>##            FalsePosi FalseNeg SampleSize
+## Samps_10.1         0     1.00   Samps_10
+## Samps_10.2         0     0.94   Samps_10
+## Samps_10.3         0     0.94   Samps_10
+## Samps_10.4         0     0.98   Samps_10
+## Samps_10.5         0     1.00   Samps_10
+## Samps_10.6         0     0.98   Samps_10</code></pre>
 </div>
 <div id="benjamini-hochberg-corrected-p-values" class="section level3">
 <h3 class="hasAnchor">
 <a href="#benjamini-hochberg-corrected-p-values" class="anchor"></a>Benjamini Hochberg Corrected P-values</h3>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="co">## Get FP and FN</span>
-<span class="no">BhFP_FN</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">haList</span>, <span class="no">getFPR_FNR</span>, <span class="kw">alpha</span> <span class="kw">=</span> <span class="fl">0.05</span>, <span class="kw">pCol</span> <span class="kw">=</span> <span class="st">"BHp"</span>, <span class="kw">nMH</span> <span class="kw">=</span> <span class="fl">200</span>, <span class="kw">nHa</span> <span class="kw">=</span> <span class="fl">50</span>)
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Get FP and FN</span>
+<span class="va">BhFP_FN</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">haList</span>, <span class="va">getFPR_FNR</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>, pCol <span class="op">=</span> <span class="st">"BHp"</span>, nMH <span class="op">=</span> <span class="fl">200</span>, nHa <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
 
 <span class="co">## Concatenate the results for each sample size</span>
-<span class="no">BhFP_FN</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span>(<span class="no">rbind</span>, <span class="no">BhFP_FN</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">BhFP_FN</span>)</pre></body></html></div>
-<pre><code>##              FalsePosi FalseNeg
-## Samps_10.1 0.000000000     0.92
-## Samps_10.2 0.000000000     0.90
-## Samps_10.3 0.000000000     0.94
-## Samps_10.4 0.013333333     0.64
-## Samps_10.5 0.000000000     0.94
-## Samps_10.6 0.006666667     0.92</code></pre>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="co">## Add column for sample size identifier</span>
-<span class="no">BhFP_FN</span>$<span class="no">SampleSize</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">sub</a></span>(<span class="st">"[.][[:digit:]]*"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">BhFP_FN</span>))
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">BhFP_FN</span>)</pre></body></html></div>
-<pre><code>##              FalsePosi FalseNeg SampleSize
-## Samps_10.1 0.000000000     0.92   Samps_10
-## Samps_10.2 0.000000000     0.90   Samps_10
-## Samps_10.3 0.000000000     0.94   Samps_10
-## Samps_10.4 0.013333333     0.64   Samps_10
-## Samps_10.5 0.000000000     0.94   Samps_10
-## Samps_10.6 0.006666667     0.92   Samps_10</code></pre>
+<span class="va">BhFP_FN</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">BhFP_FN</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">BhFP_FN</span><span class="op">)</span></code></pre></div>
+<pre><code>##            FalsePosi FalseNeg
+## Samps_10.1         0     1.00
+## Samps_10.2         0     0.78
+## Samps_10.3         0     0.92
+## Samps_10.4         0     0.96
+## Samps_10.5         0     0.86
+## Samps_10.6         0     0.86</code></pre>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Add column for sample size identifier</span>
+<span class="va">BhFP_FN</span><span class="op">$</span><span class="va">SampleSize</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">sub</a></span><span class="op">(</span><span class="st">"[.][[:digit:]]*"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">BhFP_FN</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">BhFP_FN</span><span class="op">)</span></code></pre></div>
+<pre><code>##            FalsePosi FalseNeg SampleSize
+## Samps_10.1         0     1.00   Samps_10
+## Samps_10.2         0     0.78   Samps_10
+## Samps_10.3         0     0.92   Samps_10
+## Samps_10.4         0     0.96   Samps_10
+## Samps_10.5         0     0.86   Samps_10
+## Samps_10.6         0     0.86   Samps_10</code></pre>
 </div>
 <div id="plot-results" class="section level3">
 <h3 class="hasAnchor">
 <a href="#plot-results" class="anchor"></a>Plot Results</h3>
 <p>We will create boxplots of the results with <code>ggplot2</code>.</p>
-<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="co">## Concatenate results between Bonferroni and Benjamini-Hochberg</span>
-<span class="no">FP_FN</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(<span class="no">BonFP_FN</span>, <span class="no">BhFP_FN</span>)
-<span class="no">FP_FN</span>$<span class="no">correction</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Bonferroni"</span>, <span class="st">"BH"</span>), <span class="kw">each</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">BonFP_FN</span>)) <span class="co"># Add correction type</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">FP_FN</span>)</pre></body></html></div>
-<pre><code>##              FalsePosi FalseNeg SampleSize correction
-## Samps_10.1 0.000000000     0.92   Samps_10 Bonferroni
-## Samps_10.2 0.000000000     0.98   Samps_10 Bonferroni
-## Samps_10.3 0.000000000     1.00   Samps_10 Bonferroni
-## Samps_10.4 0.000000000     0.90   Samps_10 Bonferroni
-## Samps_10.5 0.000000000     0.94   Samps_10 Bonferroni
-## Samps_10.6 0.006666667     0.98   Samps_10 Bonferroni</code></pre>
-<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="co">## Create one column of False Positive and False Negative Rates</span>
-<span class="no">FP_FN</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/gather.html">gather</a></span>(<span class="no">FP_FN</span>, <span class="kw">key</span> <span class="kw">=</span> <span class="st">"statistic"</span>, <span class="kw">value</span> <span class="kw">=</span> <span class="st">"measure"</span>, <span class="fl">1</span>:<span class="fl">2</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">FP_FN</span>)</pre></body></html></div>
-<pre><code>##   SampleSize correction statistic     measure
-## 1   Samps_10 Bonferroni FalsePosi 0.000000000
-## 2   Samps_10 Bonferroni FalsePosi 0.000000000
-## 3   Samps_10 Bonferroni FalsePosi 0.000000000
-## 4   Samps_10 Bonferroni FalsePosi 0.000000000
-## 5   Samps_10 Bonferroni FalsePosi 0.000000000
-## 6   Samps_10 Bonferroni FalsePosi 0.006666667</code></pre>
-<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="co"># Create plot of results</span>
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">FP_FN</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">SampleSize</span>,
-                        <span class="kw">y</span> <span class="kw">=</span> <span class="no">measure</span>,
-                        <span class="kw">fill</span> <span class="kw">=</span> <span class="no">correction</span>,
-                        <span class="kw">colour</span> <span class="kw">=</span> <span class="no">correction</span>)) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html">geom_boxplot</a></span>() +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span>(~<span class="no">statistic</span>, <span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">2</span>, <span class="kw">scales</span> <span class="kw">=</span> <span class="st">"free_y"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Concatenate results between Bonferroni and Benjamini-Hochberg</span>
+<span class="va">FP_FN</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">BonFP_FN</span>, <span class="va">BhFP_FN</span><span class="op">)</span>
+<span class="va">FP_FN</span><span class="op">$</span><span class="va">correction</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Bonferroni"</span>, <span class="st">"BH"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">BonFP_FN</span><span class="op">)</span><span class="op">)</span> <span class="co"># Add correction type</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">FP_FN</span><span class="op">)</span></code></pre></div>
+<pre><code>##            FalsePosi FalseNeg SampleSize correction
+## Samps_10.1         0     1.00   Samps_10 Bonferroni
+## Samps_10.2         0     0.94   Samps_10 Bonferroni
+## Samps_10.3         0     0.94   Samps_10 Bonferroni
+## Samps_10.4         0     0.98   Samps_10 Bonferroni
+## Samps_10.5         0     1.00   Samps_10 Bonferroni
+## Samps_10.6         0     0.98   Samps_10 Bonferroni</code></pre>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Create one column of False Positive and False Negative Rates</span>
+<span class="va">FP_FN</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/gather.html">gather</a></span><span class="op">(</span><span class="va">FP_FN</span>, key <span class="op">=</span> <span class="st">"statistic"</span>, value <span class="op">=</span> <span class="st">"measure"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">FP_FN</span><span class="op">)</span></code></pre></div>
+<pre><code>##   SampleSize correction statistic measure
+## 1   Samps_10 Bonferroni FalsePosi       0
+## 2   Samps_10 Bonferroni FalsePosi       0
+## 3   Samps_10 Bonferroni FalsePosi       0
+## 4   Samps_10 Bonferroni FalsePosi       0
+## 5   Samps_10 Bonferroni FalsePosi       0
+## 6   Samps_10 Bonferroni FalsePosi       0</code></pre>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Create plot of results</span>
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">FP_FN</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">SampleSize</span>, 
+                        y <span class="op">=</span> <span class="va">measure</span>, 
+                        fill <span class="op">=</span> <span class="va">correction</span>, 
+                        colour <span class="op">=</span> <span class="va">correction</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html">geom_boxplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">statistic</span>, nrow <span class="op">=</span> <span class="fl">2</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></code></pre></div>
 <p><img src="MHTcorrection_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 <p>What do you notice about the nature of the performance of the FWER-based Bonferroni correction, and FDR-based Benjamini-Hochberg correction.</p>
 </div>
@@ -461,7 +474,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

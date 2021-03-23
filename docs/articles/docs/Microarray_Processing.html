@@ -118,6 +118,9 @@
       <a href="../../articles/docs/KS_Enrichment.html">KS-based Enrichment</a>
     </li>
     <li>
+      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
+    </li>
+    <li>
       <a href="../../articles/docs/GeneSetProjectionGSVA.html">Gene Set Projection based on KS</a>
     </li>
     <li>
@@ -133,9 +136,6 @@
     </li>
     <li class="divider">
     <li class="dropdown-header">Clustering</li>
-    <li>
-      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
-    </li>
     <li>
       <a href="../../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -162,7 +162,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="Microarray_Processing_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Data Acquisition and ExpressionSet Basics</h1>
@@ -179,19 +179,21 @@
 <p>In this module, we illustrate how to download gene expression datasets from <a href="http://www.ncbi.nlm.nih.gov/geo">GEO</a>.</p>
 <p>To this end, we will download and pre-process the gene expression data from the LOAD (Late Onset Alzheimer Disease) study in <a href="http://www.cell.com/fulltext/S0092-8674(13)00387-5"> [Zhang et al., Cell 2013] </a>. The dataset consists of gene expression data of postmortem brain tissues from three brain regions (PC: prefrontal cortex; VC: visual cortex; and CB: cerebellum) from 129 LOAD patients and 101 healthy controls for a total of 690 profiles.</p>
 <p>We start by loading some required packages and functions.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">BS831</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">GEOquery</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">Biobase</span>)
-<span class="no">overwrite</span> <span class="kw">&lt;-</span> <span class="fl">FALSE</span></pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/montilab/BS831">BS831</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/seandavi/GEOquery">GEOquery</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">Biobase</span><span class="op">)</span>
+<span class="va">overwrite</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></code></pre></div>
 <div id="download-data-from-geo" class="section level1">
 <h1 class="hasAnchor">
 <a href="#download-data-from-geo" class="anchor"></a>Download data from GEO</h1>
 <p>We start by downloading the data from GEO. We will then show two approaches to adding gene annotation to the expression matrix, one based on the use of already available annotation available on GEO, and another one based on “de-novo” annotation based on the <code>biomaRt</code> package.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="co">## Download expression data from GEO and store in temporary directory</span>
-<span class="no">tmp_dir</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span>()
-<span class="no">LOAD</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/GEOquery/man/getGEO.html">getGEO</a></span>(<span class="kw">GEO</span><span class="kw">=</span><span class="st">"GSE44772"</span>, <span class="kw">GSEMatrix</span><span class="kw">=</span><span class="fl">TRUE</span>, <span class="kw">destdir</span><span class="kw">=</span><span class="no">tmp_dir</span>)
-<span class="no">LOAD</span> <span class="kw">&lt;-</span> <span class="no">LOAD</span><span class="kw">[[</span><span class="fl">1</span>]] <span class="co"># getGEO returns a list, so we extract the first element</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">LOAD</span>)       <span class="co"># display summary info for the object</span></pre></body></html></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Download expression data from GEO and store in temporary directory</span>
+<span class="va">tmp_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">LOAD</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/GEOquery/man/getGEO.html">getGEO</a></span><span class="op">(</span>GEO<span class="op">=</span><span class="st">"GSE44772"</span>, GSEMatrix<span class="op">=</span><span class="cn">TRUE</span>, destdir<span class="op">=</span><span class="va">tmp_dir</span><span class="op">)</span>
+<span class="va">LOAD</span> <span class="op">&lt;-</span> <span class="va">LOAD</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="co"># getGEO returns a list, so we extract the first element</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">LOAD</span><span class="op">)</span>       <span class="co"># display summary info for the object</span></code></pre></div>
 <pre><code>## ExpressionSet (storageMode: lockedEnvironment)
 ## assayData: 39280 features, 690 samples 
 ##   element names: exprs 
@@ -211,9 +213,10 @@
 <h2 class="hasAnchor">
 <a href="#use-pre-existing-gene-annotation" class="anchor"></a>Use pre-existing Gene Annotation</h2>
 <p>We first show how to use already available gene annotation information. To this end, we manually downloaded to the data/ subfolder the <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL4372">GPL4372.annot</a> file from geo, then ran the following command.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="co">## read.delim can read compressed files</span>
-<span class="no">fdata</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.delim</a></span>(<span class="kw">file</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="kw">package</span><span class="kw">=</span><span class="st">"BS831"</span>), <span class="st">"GPL4372.annot"</span>), <span class="kw">skip</span><span class="kw">=</span><span class="fl">27</span>,<span class="kw">row.names</span><span class="kw">=</span><span class="fl">1</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">fdata</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## read.delim can read compressed files</span>
+<span class="va">fdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.delim</a></span><span class="op">(</span>file<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package<span class="op">=</span><span class="st">"BS831"</span><span class="op">)</span>, <span class="st">"GPL4372.annot"</span><span class="op">)</span>, skip<span class="op">=</span><span class="fl">27</span>,row.names<span class="op">=</span><span class="fl">1</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">fdata</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>##  [1] "Gene.title"            "Gene.symbol"           "Gene.ID"              
 ##  [4] "UniGene.title"         "UniGene.symbol"        "UniGene.ID"           
 ##  [7] "Nucleotide.Title"      "GI"                    "GenBank.Accession"    
@@ -222,144 +225,160 @@
 ## [16] "GO.Process"            "GO.Component"          "GO.Function.ID"       
 ## [19] "GO.Process.ID"         "GO.Component.ID"</code></pre>
 <p>There are many more annotation columns than needeed, thus we extract some relevant columns, and since we are at it, we also properly sort the rows, and rename the columns, for easier handling.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="co">## see R/misc.R for a definition of the 'match.nona' function</span>
-<span class="no">fdata</span> <span class="kw">&lt;-</span> <span class="no">fdata</span>[<span class="fu">match.nona</span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">featureNames</a></span>(<span class="no">LOAD</span>),<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">fdata</span>)),<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Gene.symbol"</span>,<span class="st">"Gene.title"</span>,<span class="st">"Gene.ID"</span>)]
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## see R/misc.R for a definition of the 'match.nona' function</span>
+<span class="va">fdata</span> <span class="op">&lt;-</span> <span class="va">fdata</span><span class="op">[</span><span class="fu">match.nona</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">featureNames</a></span><span class="op">(</span><span class="va">LOAD</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">fdata</span><span class="op">)</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Gene.symbol"</span>,<span class="st">"Gene.title"</span>,<span class="st">"Gene.ID"</span><span class="op">)</span><span class="op">]</span>
 <span class="co">## modifying fdata colnames for ease of handling</span>
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">fdata</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"Gene.symbol"</span>,<span class="st">"gene_symbol"</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">fdata</span>))
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">fdata</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"Gene.title"</span>,<span class="st">"gene_title"</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">fdata</span>))
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">fdata</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"Gene.ID"</span>,<span class="st">"GeneID"</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">fdata</span>))
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">fdata</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"Gene.symbol"</span>,<span class="st">"gene_symbol"</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">fdata</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">fdata</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"Gene.title"</span>,<span class="st">"gene_title"</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">fdata</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">fdata</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"Gene.ID"</span>,<span class="st">"GeneID"</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">fdata</span><span class="op">)</span><span class="op">)</span> 
 
 <span class="co">## always be super-cautious, double- and triple-check</span>
-<span class="kw">if</span> ( <span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">featureNames</a></span>(<span class="no">LOAD</span>)<span class="kw">!=</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">fdata</span>)) ) <span class="fu"><a href="https://rdrr.io/r/base/stop.html">stop</a></span>( <span class="st">"row mismatch"</span> )
+<span class="kw">if</span> <span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">featureNames</a></span><span class="op">(</span><span class="va">LOAD</span><span class="op">)</span><span class="op">!=</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">fdata</span><span class="op">)</span><span class="op">)</span> <span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span> <span class="st">"row mismatch"</span> <span class="op">)</span>
 
 <span class="co">## finally, update the gene annotation in the ExpressionSet</span>
-<span class="no">LOAD1</span> <span class="kw">&lt;-</span> <span class="no">LOAD</span>
-<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span>(<span class="no">LOAD1</span>) <span class="kw">&lt;-</span> <span class="no">fdata</span>
+<span class="va">LOAD1</span> <span class="op">&lt;-</span> <span class="va">LOAD</span>
+<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">LOAD1</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">fdata</span>
 
 <span class="co">## save data</span>
-<span class="kw">if</span> (<span class="no">overwrite</span>) {
-    <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">saveRDS</a></span>(<span class="no">LOAD1</span>, <span class="kw">file</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span>(<span class="no">OMPATH</span>,<span class="st">"data/LOAD1.RDS"</span>))
-}</pre></body></html></div>
+<span class="kw">if</span> <span class="op">(</span><span class="va">overwrite</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">saveRDS</a></span><span class="op">(</span><span class="va">LOAD1</span>, file<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">OMPATH</span>,<span class="st">"data/LOAD1.RDS"</span><span class="op">)</span><span class="op">)</span>
+<span class="op">}</span></code></pre></div>
 </div>
 <div id="gene-annotation-based-on-biomart" class="section level2">
 <h2 class="hasAnchor">
 <a href="#gene-annotation-based-on-biomart" class="anchor"></a>Gene Annotation based on <code>biomaRt</code>
 </h2>
 <p>We will use the <code>EntrezGeneID</code> column in the fData to retrieve gene symbols and descriptions with <code>biomaRt</code>.</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="co">## check the annotation columns in fData</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span>(<span class="no">LOAD</span>)))</pre></body></html></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## check the annotation columns in fData</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">LOAD</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] "ID"                            "EntrezGeneID"                 
 ## [3] "ORF"                           "GB_ACC"                       
 ## [5] "PROBE_DERIVED_FROM_TRANSCRIPT" "SPOT_ID"                      
 ## [7] "RosettaGeneModelID"</code></pre>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="co">## we first restrict to rows w/ non-empty EntrezGeneID annotation</span>
-<span class="no">LOAD</span> <span class="kw">&lt;-</span> <span class="no">LOAD</span>[!<span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span>(<span class="no">LOAD</span>)[,<span class="st">"EntrezGeneID"</span>]),]; <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">LOAD</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## we first restrict to rows w/ non-empty EntrezGeneID annotation</span>
+<span class="va">LOAD</span> <span class="op">&lt;-</span> <span class="va">LOAD</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">LOAD</span><span class="op">)</span><span class="op">[</span>,<span class="st">"EntrezGeneID"</span><span class="op">]</span><span class="op">)</span>,<span class="op">]</span>; <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">LOAD</span><span class="op">)</span></code></pre></div>
 <pre><code>## Features 
 ##    25929</code></pre>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="co">## notice that there are replicate entries, but we will deal with them later</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>( <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span>(<span class="no">LOAD</span>)[,<span class="st">"EntrezGeneID"</span>])) )</pre></body></html></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## notice that there are replicate entries, but we will deal with them later</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">LOAD</span><span class="op">)</span><span class="op">[</span>,<span class="st">"EntrezGeneID"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">)</span></code></pre></div>
 <pre><code>## [1] 21576</code></pre>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="co">## use biomaRt databased to retrieve the relevant annotation (type</span>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## use biomaRt databased to retrieve the relevant annotation (type</span>
 <span class="co">## `?useMart` and `?getBM` for details)</span>
-<span class="no">mart</span> <span class="kw">&lt;-</span> <span class="kw pkg">biomaRt</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/biomaRt/man/useMart.html">useMart</a></span>(<span class="kw">biomart</span><span class="kw">=</span><span class="st">"ensembl"</span>, <span class="kw">dataset</span><span class="kw">=</span><span class="st">"hsapiens_gene_ensembl"</span>)
-<span class="no">martMap</span> <span class="kw">&lt;-</span> <span class="kw pkg">biomaRt</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/biomaRt/man/getBM.html">getBM</a></span>(<span class="kw">attributes</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"entrezgene_id"</span>,<span class="st">"hgnc_symbol"</span>,<span class="st">"description"</span>),
-                          <span class="kw">filters</span><span class="kw">=</span><span class="st">"entrezgene_id"</span>,
-                          <span class="kw">values</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span>(<span class="no">LOAD</span>)[,<span class="st">"EntrezGeneID"</span>],
-                          <span class="kw">mart</span><span class="kw">=</span><span class="no">mart</span>)
+<span class="va">mart</span> <span class="op">&lt;-</span> <span class="fu">biomaRt</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/biomaRt/man/useMart.html">useMart</a></span><span class="op">(</span>biomart<span class="op">=</span><span class="st">"ensembl"</span>, dataset<span class="op">=</span><span class="st">"hsapiens_gene_ensembl"</span><span class="op">)</span>
+<span class="va">martMap</span> <span class="op">&lt;-</span> <span class="fu">biomaRt</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/biomaRt/man/getBM.html">getBM</a></span><span class="op">(</span>attributes<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"entrezgene_id"</span>,<span class="st">"hgnc_symbol"</span>,<span class="st">"description"</span><span class="op">)</span>,
+                          filters<span class="op">=</span><span class="st">"entrezgene_id"</span>,
+                          values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">LOAD</span><span class="op">)</span><span class="op">[</span>,<span class="st">"EntrezGeneID"</span><span class="op">]</span>,
+                          mart<span class="op">=</span><span class="va">mart</span><span class="op">)</span>
 
 <span class="co">## remove entries with empty gene symbol</span>
-<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">martMap</span>) <span class="co"># before</span></pre></body></html></div>
-<pre><code>## [1] 22183</code></pre>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">martMap</span> <span class="kw">&lt;-</span> <span class="no">martMap</span>[<span class="no">martMap</span>[,<span class="st">"hgnc_symbol"</span>]<span class="kw">!=</span><span class="st">""</span>,]
-<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">martMap</span>) <span class="co"># after</span></pre></body></html></div>
-<pre><code>## [1] 22060</code></pre>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="co">## notice that there are some duplicated entrez IDs and gene symbols</span>
-<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="kw pkg">base</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html">duplicated</a></span>(<span class="no">martMap</span>[,<span class="st">"entrezgene_id"</span>]))</pre></body></html></div>
-<pre><code>## [1] 3920</code></pre>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="kw pkg">base</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html">duplicated</a></span>(<span class="no">martMap</span>[,<span class="st">"hgnc_symbol"</span>]))</pre></body></html></div>
-<pre><code>## [1] 3920</code></pre>
-<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="co">## we adopt the simple (perhaps too simple) approach of taking the</span>
+<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">martMap</span><span class="op">)</span> <span class="co"># before</span></code></pre></div>
+<pre><code>## [1] 22428</code></pre>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">martMap</span> <span class="op">&lt;-</span> <span class="va">martMap</span><span class="op">[</span><span class="va">martMap</span><span class="op">[</span>,<span class="st">"hgnc_symbol"</span><span class="op">]</span><span class="op">!=</span><span class="st">""</span>,<span class="op">]</span>
+<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">martMap</span><span class="op">)</span> <span class="co"># after</span></code></pre></div>
+<pre><code>## [1] 22269</code></pre>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## notice that there are some duplicated entrez IDs and gene symbols</span>
+<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html">duplicated</a></span><span class="op">(</span><span class="va">martMap</span><span class="op">[</span>,<span class="st">"entrezgene_id"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>     </code></pre></div>
+<pre><code>## [1] 3391</code></pre>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html">duplicated</a></span><span class="op">(</span><span class="va">martMap</span><span class="op">[</span>,<span class="st">"hgnc_symbol"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] 3385</code></pre>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## we adopt the simple (perhaps too simple) approach of taking the</span>
 <span class="co">## first occurence of each EntrezID</span>
-<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">martMap</span>)</pre></body></html></div>
-<pre><code>## [1] 22060</code></pre>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">martMap</span> <span class="kw">&lt;-</span> <span class="no">martMap</span>[<span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="no">martMap</span>[,<span class="st">"entrezgene_id"</span>]),<span class="no">martMap</span>[,<span class="st">"entrezgene_id"</span>]),]
-<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">martMap</span>)</pre></body></html></div>
-<pre><code>## [1] 18140</code></pre>
-<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="co">## now there are no more replicated EntrezID (but there are still replicate gene symbols)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="kw pkg">base</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html">duplicated</a></span>(<span class="no">martMap</span>[,<span class="st">"entrezgene_id"</span>]))</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">martMap</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] 22269</code></pre>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">martMap</span> <span class="op">&lt;-</span> <span class="va">martMap</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">martMap</span><span class="op">[</span>,<span class="st">"entrezgene_id"</span><span class="op">]</span><span class="op">)</span>,<span class="va">martMap</span><span class="op">[</span>,<span class="st">"entrezgene_id"</span><span class="op">]</span><span class="op">)</span>,<span class="op">]</span>
+<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">martMap</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] 18878</code></pre>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## now there are no more replicated EntrezID (but there are still replicate gene symbols)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html">duplicated</a></span><span class="op">(</span><span class="va">martMap</span><span class="op">[</span>,<span class="st">"entrezgene_id"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>     </code></pre></div>
 <pre><code>## [1] 0</code></pre>
-<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="kw pkg">base</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html">duplicated</a></span>(<span class="no">martMap</span>[,<span class="st">"hgnc_symbol"</span>]))</pre></body></html></div>
-<pre><code>## [1] 27</code></pre>
-<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="co">## let us now match gene annotation and expression data</span>
-<span class="no">matchIdx</span> <span class="kw">&lt;-</span> <span class="fu">match.nona</span>( <span class="no">martMap</span>[,<span class="st">"entrezgene_id"</span>], <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span>(<span class="no">LOAD</span>)[,<span class="st">"EntrezGeneID"</span>] )
-<span class="no">LOAD2</span> <span class="kw">&lt;-</span> <span class="no">LOAD</span>[<span class="no">matchIdx</span>,]
-<span class="kw">if</span> ( <span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span>(<span class="no">martMap</span>[,<span class="st">"entrezgene_id"</span>]<span class="kw">!=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span>(<span class="no">LOAD2</span>)[,<span class="st">"EntrezGeneID"</span>]) ) <span class="fu"><a href="https://rdrr.io/r/base/stop.html">stop</a></span>( <span class="st">"row mismatch"</span> )
-<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span>(<span class="no">LOAD2</span>) <span class="kw">&lt;-</span> <span class="no">martMap</span>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html">duplicated</a></span><span class="op">(</span><span class="va">martMap</span><span class="op">[</span>,<span class="st">"hgnc_symbol"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] 19</code></pre>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## let us now match gene annotation and expression data</span>
+<span class="va">matchIdx</span> <span class="op">&lt;-</span> <span class="fu">match.nona</span><span class="op">(</span> <span class="va">martMap</span><span class="op">[</span>,<span class="st">"entrezgene_id"</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">LOAD</span><span class="op">)</span><span class="op">[</span>,<span class="st">"EntrezGeneID"</span><span class="op">]</span> <span class="op">)</span>
+<span class="va">LOAD2</span> <span class="op">&lt;-</span> <span class="va">LOAD</span><span class="op">[</span><span class="va">matchIdx</span>,<span class="op">]</span>
+<span class="kw">if</span> <span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span><span class="op">(</span><span class="va">martMap</span><span class="op">[</span>,<span class="st">"entrezgene_id"</span><span class="op">]</span><span class="op">!=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">LOAD2</span><span class="op">)</span><span class="op">[</span>,<span class="st">"EntrezGeneID"</span><span class="op">]</span><span class="op">)</span> <span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span> <span class="st">"row mismatch"</span> <span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">LOAD2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">martMap</span>
 
 <span class="co">## save data</span>
-<span class="kw">if</span> (<span class="no">overwrite</span>) {
-    <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">saveRDS</a></span>( <span class="no">LOAD2</span>, <span class="kw">file</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span>(<span class="no">OMPATH</span>,<span class="st">"data/LOAD2.RDS"</span>) )
-}</pre></body></html></div>
+<span class="kw">if</span> <span class="op">(</span><span class="va">overwrite</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">saveRDS</a></span><span class="op">(</span> <span class="va">LOAD2</span>, file<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">OMPATH</span>,<span class="st">"data/LOAD2.RDS"</span><span class="op">)</span> <span class="op">)</span>
+<span class="op">}</span></code></pre></div>
 </div>
 <div id="merge-replicated-entries" class="section level2">
 <h2 class="hasAnchor">
 <a href="#merge-replicated-entries" class="anchor"></a>Merge Replicated Entries</h2>
 <p>This next step is not necessary, as one might want to keep the multiple chip probes associated with the same gene symbol separate until the end of the analysis. However, if desired, one can merge the rows corresponding to multiple probes.</p>
 <p>Here, we define a simple function to collapse multiple rows by median. The function is based on the R functions <code>melt</code> and <code>dcast</code> defined in the package <code>reshape2</code>.</p>
-<div class="sourceCode" id="cb30"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">reshape2</span>)
-<span class="no">collapseByMedian</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">eset</span>, <span class="no">rowid</span>)
-{
-    <span class="co">## require(reshape2)</span>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/hadley/reshape">reshape2</a></span><span class="op">)</span>
+<span class="va">collapseByMedian</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">eset</span>, <span class="va">rowid</span><span class="op">)</span>
+<span class="op">{</span>
+    <span class="co">## library(reshape2)</span>
 
     <span class="co">## remove unmapped probe sets</span>
-    <span class="no">genes</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span>(<span class="no">eset</span>)[, <span class="no">rowid</span>]
-    <span class="no">rows.mapped</span> <span class="kw">&lt;-</span> !<span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span>(<span class="no">genes</span>) <span class="kw">&amp;</span> <span class="no">genes</span> <span class="kw">!=</span> <span class="st">""</span>
-    <span class="no">eset</span> <span class="kw">&lt;-</span> <span class="no">eset</span>[<span class="no">rows.mapped</span>,]
-    <span class="no">genes</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span>(<span class="no">eset</span>)[, <span class="no">rowid</span>]
+    <span class="va">genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">eset</span><span class="op">)</span><span class="op">[</span>, <span class="va">rowid</span><span class="op">]</span>
+    <span class="va">rows.mapped</span> <span class="op">&lt;-</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">genes</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">genes</span> <span class="op">!=</span> <span class="st">""</span>
+    <span class="va">eset</span> <span class="op">&lt;-</span> <span class="va">eset</span><span class="op">[</span><span class="va">rows.mapped</span>,<span class="op">]</span>
+    <span class="va">genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">eset</span><span class="op">)</span><span class="op">[</span>, <span class="va">rowid</span><span class="op">]</span>
 
     <span class="co">## collapse by median value among duplicate probes</span>
-    <span class="no">df</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">eset</span>), <span class="kw">genes</span> <span class="kw">=</span> <span class="no">genes</span>)
-    <span class="no">df.melt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/reshape2/man/melt.html">melt</a></span>(<span class="no">df</span>, <span class="kw">id.vars</span> <span class="kw">=</span> <span class="st">"genes"</span>)
-    <span class="no">df.median.collapsed</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/reshape2/man/cast.html">dcast</a></span>(<span class="no">df.melt</span>, <span class="no">genes</span> ~ <span class="no">variable</span>, <span class="no">median</span>)
+    <span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">eset</span><span class="op">)</span>, genes <span class="op">=</span> <span class="va">genes</span><span class="op">)</span>
+    <span class="va">df.melt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/reshape2/man/melt.html">melt</a></span><span class="op">(</span><span class="va">df</span>, id.vars <span class="op">=</span> <span class="st">"genes"</span><span class="op">)</span>
+    <span class="va">df.median.collapsed</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/reshape2/man/cast.html">dcast</a></span><span class="op">(</span><span class="va">df.melt</span>, <span class="va">genes</span> <span class="op">~</span> <span class="va">variable</span>, <span class="va">median</span><span class="op">)</span>
 
     <span class="co">## reassemble collapsed eset</span>
-    <span class="no">fdat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span>(<span class="no">eset</span>)
-    <span class="kw">if</span> ( <span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span>(<span class="no">roworder</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="no">df.median.collapsed</span>[,<span class="st">'genes'</span>],<span class="no">fdat</span>[,<span class="no">rowid</span>]))) )
-        <span class="fu"><a href="https://rdrr.io/r/base/stop.html">stop</a></span>( <span class="st">"something wrong"</span> )
-    <span class="no">fdat.collapsed</span> <span class="kw">&lt;-</span> <span class="no">fdat</span>[<span class="no">roworder</span>,]
-    <span class="no">eset</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/class.ExpressionSet.html">ExpressionSet</a></span>(<span class="kw">assayData</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="no">df.median.collapsed</span>[, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">eset</span>)]),
-                          <span class="kw">phenoData</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/class.AnnotatedDataFrame.html">AnnotatedDataFrame</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">eset</span>)),
-                          <span class="kw">featureData</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/class.AnnotatedDataFrame.html">AnnotatedDataFrame</a></span>(<span class="no">fdat.collapsed</span>))
-    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">eset</span>)
-}
-<span class="no">collapseByFun</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">eset</span>,<span class="no">rowid</span>,<span class="no">method</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"median"</span>,<span class="st">"mean"</span>))
-{
-    <span class="no">tbl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="kw">key</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span>(<span class="no">eset</span>)[,<span class="no">rowid</span>],
-                      <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">eset</span>))
-    <span class="no">tbl1</span> <span class="kw">&lt;-</span> <span class="no">tbl</span> <span class="kw">%&gt;%</span> <span class="fu">group_by</span>(<span class="no">key</span>) <span class="kw">%&gt;%</span> <span class="fu">summarize_all</span>(<span class="no">median</span>)
+    <span class="va">fdat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">eset</span><span class="op">)</span>
+    <span class="kw">if</span> <span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">roworder</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="va">df.median.collapsed</span><span class="op">[</span>,<span class="st">'genes'</span><span class="op">]</span>,<span class="va">fdat</span><span class="op">[</span>,<span class="va">rowid</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">)</span>
+        <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span> <span class="st">"something wrong"</span> <span class="op">)</span>
+    <span class="va">fdat.collapsed</span> <span class="op">&lt;-</span> <span class="va">fdat</span><span class="op">[</span><span class="va">roworder</span>,<span class="op">]</span>
+    <span class="va">eset</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/class.ExpressionSet.html">ExpressionSet</a></span><span class="op">(</span>assayData<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">df.median.collapsed</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">eset</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>,
+                          phenoData<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/class.AnnotatedDataFrame.html">AnnotatedDataFrame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">eset</span><span class="op">)</span><span class="op">)</span>,
+                          featureData<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/class.AnnotatedDataFrame.html">AnnotatedDataFrame</a></span><span class="op">(</span><span class="va">fdat.collapsed</span><span class="op">)</span><span class="op">)</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">eset</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="va">collapseByFun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">eset</span>,<span class="va">rowid</span>,<span class="va">method</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"median"</span>,<span class="st">"mean"</span><span class="op">)</span><span class="op">)</span>
+<span class="op">{</span>
+    <span class="va">tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>key<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">eset</span><span class="op">)</span><span class="op">[</span>,<span class="va">rowid</span><span class="op">]</span>,
+                      <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">eset</span><span class="op">)</span><span class="op">)</span>
+    <span class="va">tbl1</span> <span class="op">&lt;-</span> <span class="va">tbl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">key</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">summarize_all</span><span class="op">(</span><span class="va">median</span><span class="op">)</span>
 
-    <span class="no">dat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="no">tbl1</span>[,-<span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="st">"key"</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">tbl1</span>))])
-    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">dat</span>) <span class="kw">&lt;-</span> <span class="no">tbl1</span>[,<span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="st">"key"</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">tbl1</span>))]
+    <span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">tbl1</span><span class="op">[</span>,<span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="st">"key"</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">tbl1</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">tbl1</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="st">"key"</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">tbl1</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>
 
-    <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/class.ExpressionSet.html">ExpressionSet</a></span>(<span class="kw">assayData</span><span class="kw">=</span><span class="no">dat</span>,
-                  <span class="kw">phenoData</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">eset</span>)[,<span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">dat</span>),<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">sampleNames</a></span>(<span class="no">eset</span>))],
-                  <span class="kw">featureData</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span>(<span class="no">eset</span>)[<span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">dat</span>),<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span>(<span class="no">eset</span>)[,<span class="no">rowid</span>]),])
-
-}</pre></body></html></div>
-<p>We now apply <code>collapseByMedian</code> to both LOAD1 (n=19756 duplicates), and LOAD2 (n=27 duplicates). Notice that running it on a 600+ sample size is somewhat slow.</p>
-<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">LOAD1</span>)
-<span class="no">LOAD1.collapsed</span> <span class="kw">&lt;-</span> <span class="fu">collapseByMedian</span>(<span class="no">LOAD1</span>, <span class="kw">rowid</span><span class="kw">=</span><span class="st">"gene_symbol"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">LOAD1.collapsed</span>)
-<span class="kw">if</span> (<span class="no">overwrite</span>) {
-    <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">saveRDS</a></span>(<span class="no">LOAD1.collapsed</span>,<span class="kw">file</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span>(<span class="no">OMPATH</span>,<span class="st">"data/LOAD1.collapsed.RDS"</span>))
-}
-<span class="no">tbl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="kw">key</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"a"</span>,<span class="st">"b"</span>,<span class="st">"a"</span>,<span class="st">"b"</span>),<span class="kw">col1</span><span class="kw">=</span><span class="fl">1</span>:<span class="fl">4</span>,<span class="kw">col2</span><span class="kw">=</span><span class="fl">5</span>:<span class="fl">8</span>)</pre></body></html></div>
-<div class="sourceCode" id="cb32"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">LOAD2</span>)
-<span class="no">LOAD2.collapsed</span> <span class="kw">&lt;-</span> <span class="fu">collapseByMedian</span>(<span class="no">LOAD2</span>, <span class="kw">rowid</span><span class="kw">=</span><span class="st">"hgnc_symbol"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="no">LOAD2.collapsed</span>)
-<span class="kw">if</span> (<span class="no">overwrite</span>) {
-    <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">saveRDS</a></span>(<span class="no">LOAD2.collapsed</span>,<span class="kw">file</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span>(<span class="no">OMPATH</span>,<span class="st">"data/LOAD2.collapsed.RDS"</span>))
-}</pre></body></html></div>
+    <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/class.ExpressionSet.html">ExpressionSet</a></span><span class="op">(</span>assayData<span class="op">=</span><span class="va">dat</span>,
+                  phenoData<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">eset</span><span class="op">)</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">sampleNames</a></span><span class="op">(</span><span class="va">eset</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>,
+                  featureData<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">eset</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">eset</span><span class="op">)</span><span class="op">[</span>,<span class="va">rowid</span><span class="op">]</span><span class="op">)</span>,<span class="op">]</span><span class="op">)</span>
+    
+<span class="op">}</span></code></pre></div>
+<p>We now apply <code>collapseByMedian</code> to both LOAD1 (n=19756 duplicates), and LOAD2 (n=19 duplicates). Notice that running it on a 600+ sample size is somewhat slow.</p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">LOAD1</span><span class="op">)</span>
+<span class="va">LOAD1.collapsed</span> <span class="op">&lt;-</span> <span class="fu">collapseByMedian</span><span class="op">(</span><span class="va">LOAD1</span>, rowid<span class="op">=</span><span class="st">"gene_symbol"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">LOAD1.collapsed</span><span class="op">)</span>
+<span class="kw">if</span> <span class="op">(</span><span class="va">overwrite</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">saveRDS</a></span><span class="op">(</span><span class="va">LOAD1.collapsed</span>,file<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">OMPATH</span>,<span class="st">"data/LOAD1.collapsed.RDS"</span><span class="op">)</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="va">tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>key<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"a"</span>,<span class="st">"b"</span>,<span class="st">"a"</span>,<span class="st">"b"</span><span class="op">)</span>,col1<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>,col2<span class="op">=</span><span class="fl">5</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">LOAD2</span><span class="op">)</span>
+<span class="va">LOAD2.collapsed</span> <span class="op">&lt;-</span> <span class="fu">collapseByMedian</span><span class="op">(</span><span class="va">LOAD2</span>, rowid<span class="op">=</span><span class="st">"hgnc_symbol"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">LOAD2.collapsed</span><span class="op">)</span>
+<span class="kw">if</span> <span class="op">(</span><span class="va">overwrite</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">saveRDS</a></span><span class="op">(</span><span class="va">LOAD2.collapsed</span>,file<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">OMPATH</span>,<span class="st">"data/LOAD2.collapsed.RDS"</span><span class="op">)</span><span class="op">)</span>
+<span class="op">}</span></code></pre></div>
 </div>
 </div>
   </div>
@@ -379,7 +398,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

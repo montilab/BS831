@@ -50,18 +50,23 @@ Here we show how the quantiles of two samples' distributions compare to
 each other. As you can see, while close, there are differences between
 the two.
 
-```{r explore}
+```{r quantile.by.probs}
 probs <- seq(0,1,.01)
 plot(quantile(exprs(DAT)[,1],probs=probs),quantile(exprs(DAT)[,2],probs=probs),
      xlab=sampleNames(DAT)[1],ylab=sampleNames(DAT)[2],main="quantiles of raw data")
 abline(0,1,col="red")
+```
 
+Notice that we can also compare 'quantiles' by simply plotting the sorted vectors corresponding to the two samples. After all, in the sorted _p_-sized vector, the _i_-th entry represents the 100*_i/p_ percentile (i.e., quantile).
+
+```{r quantile.by.sort}
 plot(sort(exprs(DAT)[,1]),sort(exprs(DAT)[,2]),
      xlab=sampleNames(DAT)[1],ylab=sampleNames(DAT)[2],main="sorted raw data")
 abline(0,1,col="red")
 
 ## let's boxplot each sample's distribution (similar but not identical)
-boxplot(exprs(DAT)+1,col=c("lightblue","pink")[as.factor(DAT$patient.neoplasm_histologic_grade)],las=2,log="y")
+boxplot(exprs(DAT)+1,col=c("lightblue","pink")[as.factor(DAT$patient.neoplasm_histologic_grade)],
+        las=2,log="y",pch="-")
 ```
 
 ## Performing Quantile Normalization
@@ -106,6 +111,6 @@ plot(sort(exprs(NRM)[,1]),sort(exprs(NRM)[,2]),
 abline(0,1,col="red")
 
 ## let's boxplot each sample's distribution (identical)
-boxplot(exprs(NRM)+1,
-        col=c("lightblue","pink")[as.factor(NRM$patient.neoplasm_histologic_grade)],las=2,log="y")
+boxplot(exprs(NRM)+1,col=c("lightblue","pink")[as.factor(NRM$patient.neoplasm_histologic_grade)],
+        las=2,log="y",pch="-")
 ```

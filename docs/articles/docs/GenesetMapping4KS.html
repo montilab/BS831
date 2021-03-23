@@ -118,6 +118,9 @@
       <a href="../../articles/docs/KS_Enrichment.html">KS-based Enrichment</a>
     </li>
     <li>
+      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
+    </li>
+    <li>
       <a href="../../articles/docs/GeneSetProjectionGSVA.html">Gene Set Projection based on KS</a>
     </li>
     <li>
@@ -133,9 +136,6 @@
     </li>
     <li class="divider">
     <li class="dropdown-header">Clustering</li>
-    <li>
-      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
-    </li>
     <li>
       <a href="../../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -162,7 +162,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="GenesetMapping4KS_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Mapping genesets for KS testing</h1>
@@ -176,32 +176,37 @@
 
     
     
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">BS831</span>)
-<span class="no">ngenes</span> <span class="kw">&lt;-</span> <span class="fl">10</span></pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/montilab/BS831">BS831</a></span><span class="op">)</span>
+<span class="va">ngenes</span> <span class="op">&lt;-</span> <span class="fl">10</span></code></pre></div>
 <p>Let us generate a toy set of 10 genes with random tScores, which we will use to establish a gene ranking and based on which we will perform the KS enrichment.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">123</span>)
-<span class="no">tScores</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="no">ngenes</span>,<span class="fl">0</span>,<span class="fl">1</span>),<span class="fl">4</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">tScores</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span>(<span class="st">"gene%02d"</span>,<span class="fl">1</span>:<span class="no">ngenes</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">tScores</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span>
+<span class="va">tScores</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">ngenes</span>,<span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>,<span class="fl">4</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">tScores</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"gene%02d"</span>,<span class="fl">1</span><span class="op">:</span><span class="va">ngenes</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">tScores</span><span class="op">)</span></code></pre></div>
 <pre><code>##  gene01  gene02  gene03  gene04  gene05  gene06  gene07  gene08  gene09  gene10 
 ## -0.5605 -0.2302  1.5587  0.0705  0.1293  1.7151  0.4609 -1.2651 -0.6869 -0.4457</code></pre>
 <p>Notice that the t.score vector is named (i.e., each score is labeled by the corresponding gene).</p>
 <p>Let’s assume the geneset we want to test is the following:</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">gset</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"gene03"</span>,<span class="st">"gene05"</span>,<span class="st">"gene06"</span>,<span class="st">"gene07"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gset</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gene03"</span>,<span class="st">"gene05"</span>,<span class="st">"gene06"</span>,<span class="st">"gene07"</span><span class="op">)</span></code></pre></div>
 <p>To establish the geneset members’ ranking, and to properly perform the KS test, we can proceed in one of two ways.</p>
 <ol style="list-style-type: decimal">
 <li>We can sort the t.score vector, find the position of the geneset members and call ksGenescore on those positions</li>
 </ol>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="co">## sorting the negative of the scores yields decreasing order sort</span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## sorting the negative of the scores yields decreasing order sort</span>
 <span class="co">## alternatively: sortT &lt;- tScores[order(tScores,decreasing=TRUE)]</span>
-<span class="no">sortT</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span>(-<span class="no">tScores</span>)
+<span class="va">sortT</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span><span class="op">(</span><span class="op">-</span><span class="va">tScores</span><span class="op">)</span>
 
 <span class="co">## find the geneset members' positions</span>
-<span class="no">idx1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="no">gset</span>,<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">sortT</span>))
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">idx1</span>) <span class="co"># show those positions (toward the end of the ranking)</span></pre></body></html></div>
+<span class="va">idx1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="va">gset</span>,<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">sortT</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">idx1</span><span class="op">)</span> <span class="co"># show those positions (toward the end of the ranking)</span></code></pre></div>
 <pre><code>## [1] 2 4 1 3</code></pre>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="co">## perform ks test</span>
-<span class="fu">ksGenescore</span>(<span class="no">ngenes</span>,<span class="no">idx1</span>,<span class="kw">do.plot</span><span class="kw">=</span><span class="fl">TRUE</span>,<span class="kw">main</span><span class="kw">=</span><span class="st">"by sort"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## perform ks test</span>
+<span class="fu">ksGenescore</span><span class="op">(</span><span class="va">ngenes</span>,<span class="va">idx1</span>,do.plot<span class="op">=</span><span class="cn">TRUE</span>,main<span class="op">=</span><span class="st">"by sort"</span><span class="op">)</span></code></pre></div>
 <p><img src="GenesetMapping4KS_files/figure-html/sort-1.png" width="700"></p>
 <pre><code>## 
 ##  Two-sample Kolmogorov-Smirnov test
@@ -212,16 +217,18 @@
 <ol start="2" style="list-style-type: decimal">
 <li>We can compute the rank of the tScores, find the ranks of the geneset members, and call ksGenescore on those ranks</li>
 </ol>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="co">## computing ranks of minus the scores (to use decreasing order)</span>
-<span class="no">rankT</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rank.html">rank</a></span>(-<span class="no">tScores</span>,<span class="kw">ties.method</span><span class="kw">=</span><span class="st">"first"</span>)
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## computing ranks of minus the scores (to use decreasing order)</span>
+<span class="va">rankT</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rank.html">rank</a></span><span class="op">(</span><span class="op">-</span><span class="va">tScores</span>,ties.method<span class="op">=</span><span class="st">"first"</span><span class="op">)</span>
 
 <span class="co">## find the positions of geneset members in the rank list</span>
-<span class="no">idx2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="no">gset</span>,<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">rankT</span>))
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">rankT</span>[<span class="no">idx2</span>]) <span class="co"># show those ranks</span></pre></body></html></div>
+<span class="va">idx2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="va">gset</span>,<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">rankT</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">rankT</span><span class="op">[</span><span class="va">idx2</span><span class="op">]</span><span class="op">)</span> <span class="co"># show those ranks</span></code></pre></div>
 <pre><code>## gene03 gene05 gene06 gene07 
 ##      2      4      1      3</code></pre>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="co">## perform ks test on the ranks</span>
-<span class="fu">ksGenescore</span>(<span class="no">ngenes</span>,<span class="no">rankT</span>[<span class="no">idx2</span>],<span class="kw">do.plot</span><span class="kw">=</span><span class="fl">TRUE</span>,<span class="kw">main</span><span class="kw">=</span><span class="st">"by rank"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## perform ks test on the ranks</span>
+<span class="fu">ksGenescore</span><span class="op">(</span><span class="va">ngenes</span>,<span class="va">rankT</span><span class="op">[</span><span class="va">idx2</span><span class="op">]</span>,do.plot<span class="op">=</span><span class="cn">TRUE</span>,main<span class="op">=</span><span class="st">"by rank"</span><span class="op">)</span></code></pre></div>
 <p><img src="GenesetMapping4KS_files/figure-html/rank-1.png" width="700"></p>
 <pre><code>## 
 ##  Two-sample Kolmogorov-Smirnov test
@@ -244,7 +251,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

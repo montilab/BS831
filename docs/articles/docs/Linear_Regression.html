@@ -118,6 +118,9 @@
       <a href="../../articles/docs/KS_Enrichment.html">KS-based Enrichment</a>
     </li>
     <li>
+      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
+    </li>
+    <li>
       <a href="../../articles/docs/GeneSetProjectionGSVA.html">Gene Set Projection based on KS</a>
     </li>
     <li>
@@ -133,9 +136,6 @@
     </li>
     <li class="divider">
     <li class="dropdown-header">Clustering</li>
-    <li>
-      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
-    </li>
     <li>
       <a href="../../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -162,7 +162,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="Linear_Regression_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Linear Regression</h1>
@@ -177,26 +177,30 @@
     
     
 <p>This is a simple example, where we generate data from a given linear model (with known intercept and slope), and then we apply linear regression to estimate the parameters of the data generating model.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">159</span>) <span class="co"># for reproducible results </span>
-<span class="no">nobs</span> <span class="kw">&lt;-</span> <span class="fl">1000</span>   <span class="co"># sample size</span>
-<span class="no">beta0</span> <span class="kw">&lt;-</span> <span class="fl">1</span>     <span class="co"># true intercept</span>
-<span class="no">beta1</span> <span class="kw">&lt;-</span> <span class="fl">0.15</span>  <span class="co"># true slope</span>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">159</span><span class="op">)</span> <span class="co"># for reproducible results </span>
+<span class="va">nobs</span> <span class="op">&lt;-</span> <span class="fl">1000</span>   <span class="co"># sample size</span>
+<span class="va">beta0</span> <span class="op">&lt;-</span> <span class="fl">1</span>     <span class="co"># true intercept</span>
+<span class="va">beta1</span> <span class="op">&lt;-</span> <span class="fl">0.15</span>  <span class="co"># true slope</span>
 <span class="co">## simulate an imaginary dependent variable (e.g., age between 15-75)</span>
-<span class="no">X</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(<span class="fl">15</span>:<span class="fl">75</span>,<span class="no">nobs</span>,<span class="kw">replace</span><span class="kw">=</span><span class="fl">TRUE</span>)
-<span class="no">Y</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="no">nobs</span>,<span class="kw">mean</span><span class="kw">=</span><span class="no">beta0</span> + <span class="no">beta1</span> * <span class="no">X</span>,<span class="kw">sd</span><span class="kw">=</span><span class="fl">1</span>)
+<span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fl">15</span><span class="op">:</span><span class="fl">75</span>,<span class="va">nobs</span>,replace<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">nobs</span>,mean<span class="op">=</span><span class="va">beta0</span> <span class="op">+</span> <span class="va">beta1</span> <span class="op">*</span> <span class="va">X</span>,sd<span class="op">=</span><span class="fl">1</span><span class="op">)</span>
 
 <span class="co">## or, equivalently</span>
-<span class="co">## Y &lt;- beta0 + beta1 * X + rnorm(nobs,mean=0,sd=1)</span></pre></body></html></div>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="co">## png(file.path(OMPATH,"Rmodules/figures/diffanalLM.png"))</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mar</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">5</span>, <span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">5</span>) + <span class="fl">0.1</span>))
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">X</span>,<span class="no">Y</span>,<span class="kw">pch</span><span class="kw">=</span><span class="fl">20</span>,<span class="kw">xlab</span><span class="kw">=</span><span class="st">"age"</span>,<span class="kw">ylab</span><span class="kw">=</span><span class="st">"expression"</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span>(<span class="no">beta0</span>,<span class="no">beta1</span>,<span class="kw">col</span><span class="kw">=</span><span class="st">"red"</span>,<span class="kw">lty</span><span class="kw">=</span><span class="fl">3</span>,<span class="kw">lwd</span><span class="kw">=</span><span class="fl">2</span>)</pre></body></html></div>
+<span class="co">## Y &lt;- beta0 + beta1 * X + rnorm(nobs,mean=0,sd=1)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## png(file.path(OMPATH,"Rmodules/figures/diffanalLM.png"))</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/pROC/man/plot.roc.html">plot</a></span><span class="op">(</span><span class="va">X</span>,<span class="va">Y</span>,pch<span class="op">=</span><span class="fl">20</span>,xlab<span class="op">=</span><span class="st">"age"</span>,ylab<span class="op">=</span><span class="st">"expression"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span><span class="va">beta0</span>,<span class="va">beta1</span>,col<span class="op">=</span><span class="st">"red"</span>,lty<span class="op">=</span><span class="fl">3</span>,lwd<span class="op">=</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <p><img src="Linear_Regression_files/figure-html/plot.data-1.png" width="700"></p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r">## notice the use of 'expression' to display mathematical symbols
-##text(50,2,labels=expression(Y=beta[0]+beta[1]*X),las=1)</pre></body></html></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## notice the use of 'expression' to display mathematical symbols</span>
+<span class="co">##text(50,2,labels=expression(Y=beta[0]+beta[1]*X),las=1)</span></code></pre></div>
 <p>We now fit a linear model to the generated data by <code>lm</code>.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">LM</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span>(<span class="no">Y</span> ~ <span class="no">X</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">LM</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">LM</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">Y</span> <span class="op">~</span> <span class="va">X</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/summary.html">summary</a></span><span class="op">(</span><span class="va">LM</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = Y ~ X)
@@ -231,7 +235,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

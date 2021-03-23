@@ -118,6 +118,9 @@
       <a href="../../articles/docs/KS_Enrichment.html">KS-based Enrichment</a>
     </li>
     <li>
+      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
+    </li>
+    <li>
       <a href="../../articles/docs/GeneSetProjectionGSVA.html">Gene Set Projection based on KS</a>
     </li>
     <li>
@@ -133,9 +136,6 @@
     </li>
     <li class="divider">
     <li class="dropdown-header">Clustering</li>
-    <li>
-      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
-    </li>
     <li>
       <a href="../../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -162,7 +162,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="Mix_Normals_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Mixture of Normals</h1>
@@ -176,15 +176,17 @@
 
     
     
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">BS831</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">mclust</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/montilab/BS831">BS831</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://mclust-org.github.io/mclust/">mclust</a></span><span class="op">)</span></code></pre></div>
 <p>Here we describe the definition and use of few simple functions to generate data and to plot from a univariate mixture of Normal distributions. According to R conventions, we define the four functions <code>rmixnorm</code>, <code>pmixnorm</code>, <code>dmixnorm</code>, and <code>qmixnorm</code>. These functions are defined in the file <code>mixnorm.R</code>. We also briefly introduce the package <a href="https://www.stat.washington.edu/mclust/"><code>Mclust</code></a> (see <a href="https://cran.r-project.org/web/packages/mclust/vignettes/mclust.html">Quick Tour</a>).</p>
 <div id="a-simple-mixnorm-function" class="section level2">
 <h2 class="hasAnchor">
 <a href="#a-simple-mixnorm-function" class="anchor"></a>A simple mixnorm function</h2>
 <p>Below we define simple functions for sampling from, and computing the density of, Gaussian mixtures. In particular, inspect the function <code>rmixnorm</code> for the operational definition of the <em>Data Generating Process</em> discussed in class. We have also defined a function <code>plot.mixnorm</code> (in <code>code/mixnorm.R</code>, not shown here) for plotting a mixnorm’s density function. See <code>Distributions.Rmd</code> for more details on how to write a density plotting function.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="co">## show the code</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">rmixnorm</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## show the code</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">rmixnorm</span><span class="op">)</span> </code></pre></div>
 <pre><code>## function( size=1, p=c(1.0), mu=c(0.0), sigma=c(1.0) )
 ## {
 ##   # generate from sum_j p_j N(mu_j,sigma_j)
@@ -210,30 +212,34 @@
 ##   return( y )
 ## }
 ## &lt;environment: namespace:BS831&gt;</code></pre>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">dmixnorm</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">dmixnorm</span><span class="op">)</span></code></pre></div>
 <pre><code>## function( x, p=c(1.0), mu=c(0.0), sigma=c(1.0) )
 ## {
 ##   matrix(sapply(x, dnorm, mean=mu, sd=sigma), length(x), length(p), byrow=T) %*% p
 ## }
 ## &lt;environment: namespace:BS831&gt;</code></pre>
 <p>Below, we generate a sample from a 3-component Gaussian mixture, and show the data histogram together with the density plot.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">345</span>) <span class="co"># for reproducible results</span>
-<span class="no">M3</span> <span class="kw">&lt;-</span> <span class="fu">rmixnorm</span>(<span class="fl">500</span>,<span class="kw">p</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span>/<span class="fl">3</span>,<span class="fl">3</span>),<span class="kw">mu</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span>),<span class="kw">sigma</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span>))
-<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="no">M3</span>,<span class="kw">probability</span><span class="kw">=</span><span class="fl">TRUE</span>)
-<span class="fu">plot.mixnorm</span>(<span class="fl">1000</span>,<span class="kw">p</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span>/<span class="fl">3</span>,<span class="fl">3</span>),<span class="kw">mu</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span>),<span class="kw">sigma</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span>),<span class="kw">add</span><span class="kw">=</span><span class="fl">TRUE</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">345</span><span class="op">)</span> <span class="co"># for reproducible results</span>
+<span class="va">M3</span> <span class="op">&lt;-</span> <span class="fu">rmixnorm</span><span class="op">(</span><span class="fl">500</span>,p<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">3</span>,<span class="fl">3</span><span class="op">)</span>,mu<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span><span class="op">)</span>,sigma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">M3</span>,probability<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
+<span class="fu">plot.mixnorm</span><span class="op">(</span><span class="fl">1000</span>,p<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">3</span>,<span class="fl">3</span><span class="op">)</span>,mu<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span><span class="op">)</span>,sigma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>,add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><img src="Mix_Normals_files/figure-html/rmixnorm-1.png" width="700"></p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="co">## Plot's truncated. Let's try the other way around ..</span>
-<span class="fu">plot.mixnorm</span>(<span class="fl">1000</span>,<span class="kw">p</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span>/<span class="fl">3</span>,<span class="fl">3</span>),<span class="kw">mu</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span>),<span class="kw">sigma</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span>))
-<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="no">M3</span>,<span class="kw">probability</span><span class="kw">=</span><span class="fl">TRUE</span>,<span class="kw">add</span><span class="kw">=</span><span class="fl">TRUE</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span>(<span class="kw">v</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span>),<span class="kw">lty</span><span class="kw">=</span><span class="fl">3</span>,<span class="kw">col</span><span class="kw">=</span><span class="st">'red'</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Plot's truncated. Let's try the other way around ..</span>
+<span class="fu">plot.mixnorm</span><span class="op">(</span><span class="fl">1000</span>,p<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">3</span>,<span class="fl">3</span><span class="op">)</span>,mu<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span><span class="op">)</span>,sigma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">M3</span>,probability<span class="op">=</span><span class="cn">TRUE</span>,add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span> 
+<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span><span class="op">)</span>,lty<span class="op">=</span><span class="fl">3</span>,col<span class="op">=</span><span class="st">'red'</span><span class="op">)</span></code></pre></div>
 <p><img src="Mix_Normals_files/figure-html/rmixnorm-2.png" width="700"></p>
 </div>
 <div id="the-mclust-package" class="section level2">
 <h2 class="hasAnchor">
 <a href="#the-mclust-package" class="anchor"></a>The MClust package</h2>
 <p>Here we briefly show the use of <a href="http://www.stat.washington.edu/mclust/">MClust</a> (see <a href="https://cran.r-project.org/web/packages/mclust/vignettes/mclust.html">vignette</a>), a package that implements the fitting of Gaussian mixture models (univariate and multivariate), and which uses Expectation Maximization (EM) for parameter estimation, and the BIC approximation of the marginal likelihood P(D|M) for model selection. We start by fitting and testing models with between 1 and 6 mixture components with unequal (i.e., cluster-specific) variances.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">MC3fit</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://mclust-org.github.io/mclust/reference/Mclust.html">Mclust</a></span>(<span class="no">M3</span>,<span class="kw">G</span><span class="kw">=</span><span class="fl">1</span>:<span class="fl">6</span>,<span class="kw">model</span><span class="kw">=</span><span class="st">"V"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">MC3fit</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">MC3fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://mclust-org.github.io/mclust/reference/Mclust.html">Mclust</a></span><span class="op">(</span><span class="va">M3</span>,G<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>,model<span class="op">=</span><span class="st">"V"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/summary.html">summary</a></span><span class="op">(</span><span class="va">MC3fit</span><span class="op">)</span></code></pre></div>
 <pre><code>## ---------------------------------------------------- 
 ## Gaussian finite mixture model fitted by EM algorithm 
 ## ---------------------------------------------------- 
@@ -246,7 +252,8 @@
 ## Clustering table:
 ##   1   2 
 ## 144 356</code></pre>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">MC3fit</span>$<span class="no">parameters</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">MC3fit</span><span class="op">$</span><span class="va">parameters</span><span class="op">)</span></code></pre></div>
 <pre><code>## $pro
 ## [1] 0.2497157 0.7502843
 ## 
@@ -269,19 +276,22 @@
 ## 
 ## $variance$scale
 ## [1]  1.113905 14.396095</code></pre>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="co">## boxplot the data as a function of their cluster assignment</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot</a></span>(<span class="no">M3</span>~<span class="no">MC3fit</span>$<span class="no">classification</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## boxplot the data as a function of their cluster assignment</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot</a></span><span class="op">(</span><span class="va">M3</span><span class="op">~</span><span class="va">MC3fit</span><span class="op">$</span><span class="va">classification</span><span class="op">)</span></code></pre></div>
 <p><img src="Mix_Normals_files/figure-html/mclust1-1.png" width="700"></p>
 <p>Even with 500 points, because of the large variance of the 2nd and 3rd components, the fitting procedure was not capable of guessing the ‘correct’ number of clusters. Let’s try by either increasing the sample size or decreasing the variance.</p>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">123</span>)
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span>
 <span class="co">## increase the sample size</span>
-<span class="no">M3</span> <span class="kw">&lt;-</span> <span class="fu">rmixnorm</span>(<span class="fl">5000</span>,<span class="kw">p</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span>/<span class="fl">3</span>,<span class="fl">3</span>),<span class="kw">mu</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span>),<span class="kw">sigma</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span>))
-<span class="fu">plot.mixnorm</span>(<span class="fl">5000</span>,<span class="kw">p</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span>/<span class="fl">3</span>,<span class="fl">3</span>),<span class="kw">mu</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span>),<span class="kw">sigma</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span>),<span class="kw">main</span><span class="kw">=</span><span class="st">"5,000 data points"</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="no">M3</span>,<span class="kw">probability</span><span class="kw">=</span><span class="fl">TRUE</span>,<span class="kw">add</span><span class="kw">=</span><span class="fl">TRUE</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span>(<span class="kw">v</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span>),<span class="kw">lty</span><span class="kw">=</span><span class="fl">3</span>,<span class="kw">col</span><span class="kw">=</span><span class="st">'red'</span>)</pre></body></html></div>
+<span class="va">M3</span> <span class="op">&lt;-</span> <span class="fu">rmixnorm</span><span class="op">(</span><span class="fl">5000</span>,p<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">3</span>,<span class="fl">3</span><span class="op">)</span>,mu<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span><span class="op">)</span>,sigma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span>
+<span class="fu">plot.mixnorm</span><span class="op">(</span><span class="fl">5000</span>,p<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">3</span>,<span class="fl">3</span><span class="op">)</span>,mu<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span><span class="op">)</span>,sigma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>,main<span class="op">=</span><span class="st">"5,000 data points"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">M3</span>,probability<span class="op">=</span><span class="cn">TRUE</span>,add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span><span class="op">)</span>,lty<span class="op">=</span><span class="fl">3</span>,col<span class="op">=</span><span class="st">'red'</span><span class="op">)</span></code></pre></div>
 <p><img src="Mix_Normals_files/figure-html/mclust.two-1.png" width="700"></p>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">MC3fit</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://mclust-org.github.io/mclust/reference/Mclust.html">Mclust</a></span>(<span class="no">M3</span>,<span class="kw">G</span><span class="kw">=</span><span class="fl">1</span>:<span class="fl">6</span>,<span class="kw">model</span><span class="kw">=</span><span class="st">"V"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">MC3fit</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">MC3fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://mclust-org.github.io/mclust/reference/Mclust.html">Mclust</a></span><span class="op">(</span><span class="va">M3</span>,G<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>,model<span class="op">=</span><span class="st">"V"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/summary.html">summary</a></span><span class="op">(</span><span class="va">MC3fit</span><span class="op">)</span></code></pre></div>
 <pre><code>## ---------------------------------------------------- 
 ## Gaussian finite mixture model fitted by EM algorithm 
 ## ---------------------------------------------------- 
@@ -294,7 +304,8 @@
 ## Clustering table:
 ##    1    2    3 
 ## 1751 1766 1483</code></pre>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">MC3fit</span>$<span class="no">parameters</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">MC3fit</span><span class="op">$</span><span class="va">parameters</span><span class="op">)</span></code></pre></div>
 <pre><code>## $pro
 ## [1] 0.3394103 0.3340429 0.3265468
 ## 
@@ -317,19 +328,22 @@
 ## 
 ## $variance$scale
 ## [1] 1.036242 3.580035 8.569311</code></pre>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="co">## boxplot the data as a function of their cluster assignment</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot</a></span>(<span class="no">M3</span>~<span class="no">MC3fit</span>$<span class="no">classification</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span>(<span class="kw">h</span><span class="kw">=</span><span class="no">MC3fit</span>$<span class="no">parameters</span>$<span class="no">mean</span>,<span class="kw">col</span><span class="kw">=</span><span class="st">"red"</span>,<span class="kw">lty</span><span class="kw">=</span><span class="fl">3</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## boxplot the data as a function of their cluster assignment</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot</a></span><span class="op">(</span><span class="va">M3</span><span class="op">~</span><span class="va">MC3fit</span><span class="op">$</span><span class="va">classification</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>h<span class="op">=</span><span class="va">MC3fit</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">mean</span>,col<span class="op">=</span><span class="st">"red"</span>,lty<span class="op">=</span><span class="fl">3</span><span class="op">)</span></code></pre></div>
 <p><img src="Mix_Normals_files/figure-html/mclust.two-2.png" width="700"></p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="co">## decrease the variance</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">123</span>)
-<span class="no">M3</span> <span class="kw">&lt;-</span> <span class="fu">rmixnorm</span>(<span class="fl">500</span>,<span class="kw">p</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span>/<span class="fl">3</span>,<span class="fl">3</span>),<span class="kw">mu</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span>),<span class="kw">sigma</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">1</span>))
-<span class="fu">plot.mixnorm</span>(<span class="fl">500</span>,<span class="kw">p</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span>/<span class="fl">3</span>,<span class="fl">3</span>),<span class="kw">mu</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span>),<span class="kw">sigma</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">1</span>),<span class="kw">main</span><span class="kw">=</span><span class="st">"500 data points"</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="no">M3</span>,<span class="kw">probability</span><span class="kw">=</span><span class="fl">TRUE</span>,<span class="kw">add</span><span class="kw">=</span><span class="fl">TRUE</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span>(<span class="kw">v</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span>),<span class="kw">lty</span><span class="kw">=</span><span class="fl">3</span>,<span class="kw">col</span><span class="kw">=</span><span class="st">'red'</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## decrease the variance</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span>
+<span class="va">M3</span> <span class="op">&lt;-</span> <span class="fu">rmixnorm</span><span class="op">(</span><span class="fl">500</span>,p<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">3</span>,<span class="fl">3</span><span class="op">)</span>,mu<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span><span class="op">)</span>,sigma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span>
+<span class="fu">plot.mixnorm</span><span class="op">(</span><span class="fl">500</span>,p<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">3</span>,<span class="fl">3</span><span class="op">)</span>,mu<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span><span class="op">)</span>,sigma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span>,main<span class="op">=</span><span class="st">"500 data points"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">M3</span>,probability<span class="op">=</span><span class="cn">TRUE</span>,add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span>,<span class="fl">10</span><span class="op">)</span>,lty<span class="op">=</span><span class="fl">3</span>,col<span class="op">=</span><span class="st">'red'</span><span class="op">)</span></code></pre></div>
 <p><img src="Mix_Normals_files/figure-html/mclust.two-3.png" width="700"></p>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">MC3fit</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://mclust-org.github.io/mclust/reference/Mclust.html">Mclust</a></span>(<span class="no">M3</span>,<span class="kw">G</span><span class="kw">=</span><span class="fl">1</span>:<span class="fl">6</span>,<span class="kw">model</span><span class="kw">=</span><span class="st">"V"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">MC3fit</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">MC3fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://mclust-org.github.io/mclust/reference/Mclust.html">Mclust</a></span><span class="op">(</span><span class="va">M3</span>,G<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>,model<span class="op">=</span><span class="st">"V"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/summary.html">summary</a></span><span class="op">(</span><span class="va">MC3fit</span><span class="op">)</span></code></pre></div>
 <pre><code>## ---------------------------------------------------- 
 ## Gaussian finite mixture model fitted by EM algorithm 
 ## ---------------------------------------------------- 
@@ -342,7 +356,8 @@
 ## Clustering table:
 ##   1   2   3 
 ## 165 170 165</code></pre>
-<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">MC3fit</span>$<span class="no">parameters</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">MC3fit</span><span class="op">$</span><span class="va">parameters</span><span class="op">)</span></code></pre></div>
 <pre><code>## $pro
 ## [1] 0.3298465 0.3423652 0.3277883
 ## 
@@ -383,7 +398,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

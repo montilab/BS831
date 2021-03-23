@@ -118,6 +118,9 @@
       <a href="../../articles/docs/KS_Enrichment.html">KS-based Enrichment</a>
     </li>
     <li>
+      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
+    </li>
+    <li>
       <a href="../../articles/docs/GeneSetProjectionGSVA.html">Gene Set Projection based on KS</a>
     </li>
     <li>
@@ -133,9 +136,6 @@
     </li>
     <li class="divider">
     <li class="dropdown-header">Clustering</li>
-    <li>
-      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
-    </li>
     <li>
       <a href="../../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -162,7 +162,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="Heatmaps_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Heatmaps</h1>
@@ -176,23 +176,25 @@
 
     
     
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">BS831</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">cba</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">heatmap.plus</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">pheatmap</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">Biobase</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">ggdendro</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">scales</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">gtable</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">gridExtra</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ComplexHeatmap</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">circlize</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/montilab/BS831">BS831</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">cba</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">heatmap.plus</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">pheatmap</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">Biobase</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/andrie/ggdendro">ggdendro</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://scales.r-lib.org">scales</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-lib/gtable">gtable</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">gridExtra</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jokergoo/ComplexHeatmap">ComplexHeatmap</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jokergoo/circlize">circlize</a></span><span class="op">)</span></code></pre></div>
 <div id="visualization-of-a-gene-expression-dataset-the-drug-matrix" class="section level2">
 <h2 class="hasAnchor">
 <a href="#visualization-of-a-gene-expression-dataset-the-drug-matrix" class="anchor"></a>Visualization of a Gene Expression Dataset: the Drug Matrix</h2>
 <p>We will use the DrugMatrix subset previously described for our examples. This data corresponds to chemical perturbation experiments, whereby rats are exposed to different chemicals, and their liver’s RNA is profiled. The chemicals are annotated both in terms of their carcinogenicity and their genotoxicity, and we will use these two phenotypes to color-code the samples in the visualized heatmaps.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">dm10</span>)
-<span class="no">DM</span> <span class="kw">&lt;-</span> <span class="fu">variationFilter</span>(<span class="no">dm10</span>, <span class="kw">ngenes</span><span class="kw">=</span><span class="fl">500</span>,<span class="kw">do.plot</span><span class="kw">=</span><span class="fl">FALSE</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">dm10</span><span class="op">)</span>
+<span class="va">DM</span> <span class="op">&lt;-</span> <span class="fu">variationFilter</span><span class="op">(</span><span class="va">dm10</span>, ngenes<span class="op">=</span><span class="fl">500</span>,do.plot<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <pre><code>## Variation filtering based on mad .. done.
 ## Selecting top 500 by mad .. done, 500 genes selected.</code></pre>
 </div>
@@ -201,8 +203,9 @@
 <a href="#the-function-heatmap-plus" class="anchor"></a>The Function <code>heatmap.plus</code>
 </h2>
 <p>We will begin by using <code>heatmap.plus</code> to visualize the data. Let us first define a simple function to create a color gradient to be used for coloring the gene expression heatmaps (this function is already defined in the <code>CBMRtools</code> package).</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">colGradient</span> <span class="kw">&lt;-</span> <span class="kw">function</span>( <span class="no">cols</span>, <span class="no">length</span>, <span class="no">cmax</span><span class="kw">=</span><span class="fl">255</span> )
-{
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">colGradient</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span> <span class="va">cols</span>, <span class="va">length</span>, <span class="va">cmax</span><span class="op">=</span><span class="fl">255</span> <span class="op">)</span>
+<span class="op">{</span>
   <span class="co">## e.g., to create a white-to-red gradient with 10 levels</span>
   <span class="co">##</span>
   <span class="co">##   col.gradient(cols=c('white','red'),length=10)</span>
@@ -211,27 +214,29 @@
   <span class="co">##</span>
   <span class="co">##   col.gradient(cols=c('blue','white','red'),length=9)</span>
   <span class="co">##</span>
-  <span class="no">ramp</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/colorRamp.html">colorRamp</a></span>(<span class="no">cols</span>)
-  <span class="fu"><a href="https://rdrr.io/r/grDevices/rgb.html">rgb</a></span>( <span class="fu">ramp</span>(<span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>,<span class="fl">1</span>,<span class="kw">length</span><span class="kw">=</span><span class="no">length</span>)), <span class="kw">max</span><span class="kw">=</span><span class="no">cmax</span> )
-}</pre></body></html></div>
+  <span class="va">ramp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/colorRamp.html">colorRamp</a></span><span class="op">(</span><span class="va">cols</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/grDevices/rgb.html">rgb</a></span><span class="op">(</span> <span class="fu">ramp</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,length<span class="op">=</span><span class="va">length</span><span class="op">)</span><span class="op">)</span>, max<span class="op">=</span><span class="va">cmax</span> <span class="op">)</span>
+<span class="op">}</span></code></pre></div>
 <p>Next, let us establish the color coding of the samples in terms of their carcinogenicity (NA/negative/positive) and genotoxicity (NA/0/1). Notice the use of the function <code>rainbow</code> (to generate multiple colors), and the use of the function <code>match</code> to pair sample annotation to colors.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="co">## color coding of the samples indicating carcinogenicity status and chemical</span>
-<span class="no">chemicals</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">dm10</span>)[,<span class="st">"CHEMICAL"</span>])
-<span class="no">chemPalette</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"white"</span>,<span class="st">"green"</span>,<span class="st">"purple"</span>) <span class="co"># we will use the same colors for carc and gtox</span>
-<span class="no">CSC</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="kw">CARC</span><span class="kw">=</span><span class="no">chemPalette</span>[<span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">DM</span>)[,<span class="st">"Carcinogen_liv"</span>],<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">NA</span>,<span class="st">"NON-CARC"</span>,<span class="st">"CARCINOGEN"</span>))],
-             <span class="kw">GTOX</span><span class="kw">=</span><span class="no">chemPalette</span>[<span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">DM</span>)[,<span class="st">"GenTox"</span>],<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">NA</span>,<span class="fl">0</span>,<span class="fl">1</span>))],
-             <span class="kw">CHEM</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html">rainbow</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">chemicals</span>))[<span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">DM</span>)[,<span class="st">"CHEMICAL"</span>],<span class="no">chemicals</span>)])
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## color coding of the samples indicating carcinogenicity status and chemical</span>
+<span class="va">chemicals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">dm10</span><span class="op">)</span><span class="op">[</span>,<span class="st">"CHEMICAL"</span><span class="op">]</span><span class="op">)</span>
+<span class="va">chemPalette</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"white"</span>,<span class="st">"green"</span>,<span class="st">"purple"</span><span class="op">)</span> <span class="co"># we will use the same colors for carc and gtox</span>
+<span class="va">CSC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/cbind.html">cbind</a></span><span class="op">(</span>CARC<span class="op">=</span><span class="va">chemPalette</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">[</span>,<span class="st">"Carcinogen_liv"</span><span class="op">]</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">NA</span>,<span class="st">"NON-CARC"</span>,<span class="st">"CARCINOGEN"</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>,
+             GTOX<span class="op">=</span><span class="va">chemPalette</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">[</span>,<span class="st">"GenTox"</span><span class="op">]</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">NA</span>,<span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>,
+             CHEM<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html">rainbow</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">chemicals</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">[</span>,<span class="st">"CHEMICAL"</span><span class="op">]</span>,<span class="va">chemicals</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
 
 <span class="co">## color gradient for the expression levels (blue=down-regulated; white=neutral; red=up-regulated)</span>
-<span class="no">bwrPalette</span> <span class="kw">&lt;-</span> <span class="fu">colGradient</span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"blue"</span>,<span class="st">"white"</span>,<span class="st">"red"</span>),<span class="kw">length</span><span class="kw">=</span><span class="fl">13</span>)
+<span class="va">bwrPalette</span> <span class="op">&lt;-</span> <span class="fu">colGradient</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"blue"</span>,<span class="st">"white"</span>,<span class="st">"red"</span><span class="op">)</span>,length<span class="op">=</span><span class="fl">13</span><span class="op">)</span>
 
 <span class="co">## draw the heatmap (hide row and col labels since they'd be</span>
 <span class="co">## unreadable. Also don't sort rows and columns by hierarchical</span>
 <span class="co">## clustering, by setting Rowv and Colv to 'NA')</span>
-<span class="fu"><a href="https://rdrr.io/pkg/heatmap.plus/man/heatmap.plus.package.html">heatmap.plus</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">DM</span>),<span class="kw">Rowv</span><span class="kw">=</span><span class="fl">NA</span>,<span class="kw">Colv</span><span class="kw">=</span><span class="fl">NA</span>,<span class="kw">col</span><span class="kw">=</span><span class="no">bwrPalette</span>,<span class="kw">ColSideColors</span><span class="kw">=</span><span class="no">CSC</span>,<span class="kw">labCol</span><span class="kw">=</span><span class="fl">NA</span>,<span class="kw">labRow</span><span class="kw">=</span><span class="fl">NA</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/pkg/heatmap.plus/man/heatmap.plus.package.html">heatmap.plus</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span>,Rowv<span class="op">=</span><span class="cn">NA</span>,Colv<span class="op">=</span><span class="cn">NA</span>,col<span class="op">=</span><span class="va">bwrPalette</span>,ColSideColors<span class="op">=</span><span class="va">CSC</span>,labCol<span class="op">=</span><span class="cn">NA</span>,labRow<span class="op">=</span><span class="cn">NA</span><span class="op">)</span></code></pre></div>
 <p><img src="Heatmaps_files/figure-html/heatplus1-1.png" width="700"></p>
 <p>We now plot the heatmap with the rows and columns sorted by hierarchical clustering (see <code>Rmodule_hclust.Rmd</code>), by <em>not</em> setting the parameters <code>Rowv</code> and <code>Colv</code>.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/heatmap.plus/man/heatmap.plus.package.html">heatmap.plus</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">DM</span>),<span class="kw">col</span><span class="kw">=</span><span class="no">bwrPalette</span>,<span class="kw">ColSideColors</span><span class="kw">=</span><span class="no">CSC</span>,<span class="kw">labCol</span><span class="kw">=</span><span class="fl">NA</span>,<span class="kw">labRow</span><span class="kw">=</span><span class="fl">NA</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/heatmap.plus/man/heatmap.plus.package.html">heatmap.plus</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span>,col<span class="op">=</span><span class="va">bwrPalette</span>,ColSideColors<span class="op">=</span><span class="va">CSC</span>,labCol<span class="op">=</span><span class="cn">NA</span>,labRow<span class="op">=</span><span class="cn">NA</span><span class="op">)</span></code></pre></div>
 <p><img src="Heatmaps_files/figure-html/heatplus2-1.png" width="700"></p>
 <p>Notice that the color-coding of the expression matrix is somewhat saturated, and does not allow for the highlighting of differential expression among samples. The subsequent visualization functions have a more sophisticated coding of the expression ranges, and will allow for better visualization.</p>
 </div>
@@ -241,28 +246,30 @@
 </h2>
 <p>We next illustrate the use of the function <code>pheatmap</code> from the <code>pheatmap</code> package. This function only requires a numeric matrix as input. As with <code>heatmap.plus</code> it allows for annotation of columns and rows, but with different formatting requirements. It can perform different clustering methods on rows an columns, either by specifying parameters of the clustering method to use, or by inputting the output of free-standing clustering functions such as <code>hclust</code>. Check <code><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html">?pheatmap</a></code> to explore different arguments you can set, there are a lot of them.</p>
 <p>First we will format the phenotype annotation for the columns of the heatmap, as well as specify the colors for each category for each variable.</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">annot</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">DM</span>)[, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Carcinogen_liv"</span>, <span class="st">"GenTox"</span>, <span class="st">"CHEMICAL"</span>)]
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">annot</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"CARC"</span>, <span class="st">"GTOX"</span>, <span class="st">"CHEM"</span>)
-<span class="no">annot</span>$<span class="no">CHEM</span>[<span class="no">annot</span>$<span class="no">CHEM</span> <span class="kw">==</span> <span class="st">""</span>] <span class="kw">&lt;-</span> <span class="fl">NA</span>
-<span class="no">annot</span>$<span class="no">CHEM</span> <span class="kw">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="no">annot</span>$<span class="no">CHEM</span>, <span class="kw">levels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span>(<span class="no">annot</span>$<span class="no">CHEM</span>)[<span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span>(<span class="no">annot</span>$<span class="no">CHEM</span>)<span class="kw">!=</span><span class="st">""</span>])
-<span class="no">annot</span>$<span class="no">GTOX</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span>(<span class="no">annot</span>$<span class="no">GTOX</span>)
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">annot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Carcinogen_liv"</span>, <span class="st">"GenTox"</span>, <span class="st">"CHEMICAL"</span><span class="op">)</span><span class="op">]</span>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">annot</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"CARC"</span>, <span class="st">"GTOX"</span>, <span class="st">"CHEM"</span><span class="op">)</span>
+<span class="va">annot</span><span class="op">$</span><span class="va">CHEM</span><span class="op">[</span><span class="va">annot</span><span class="op">$</span><span class="va">CHEM</span> <span class="op">==</span> <span class="st">""</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span>
+<span class="va">annot</span><span class="op">$</span><span class="va">CHEM</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">annot</span><span class="op">$</span><span class="va">CHEM</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">annot</span><span class="op">$</span><span class="va">CHEM</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">annot</span><span class="op">$</span><span class="va">CHEM</span><span class="op">)</span><span class="op">!=</span><span class="st">""</span><span class="op">]</span><span class="op">)</span>
+<span class="va">annot</span><span class="op">$</span><span class="va">GTOX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">annot</span><span class="op">$</span><span class="va">GTOX</span><span class="op">)</span>
 
-<span class="no">annotCol</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(
-  <span class="kw">CARC</span> <span class="kw">=</span> <span class="no">chemPalette</span>[-<span class="fl">1</span>],
-  <span class="kw">GTOX</span> <span class="kw">=</span> <span class="no">chemPalette</span>[-<span class="fl">1</span>],
-  <span class="kw">CHEM</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html">rainbow</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span>(<span class="no">annot</span>$<span class="no">CHEM</span>)))
-)
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">annotCol</span>$<span class="no">CARC</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"NON-CARC"</span>,<span class="st">"CARCINOGEN"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">annotCol</span>$<span class="no">GTOX</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"0"</span>,<span class="st">"1"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">annotCol</span>$<span class="no">CHEM</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span>(<span class="no">annot</span>$<span class="no">CHEM</span>)</pre></body></html></div>
+<span class="va">annotCol</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
+  CARC <span class="op">=</span> <span class="va">chemPalette</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>,
+  GTOX <span class="op">=</span> <span class="va">chemPalette</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>,
+  CHEM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html">rainbow</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">annot</span><span class="op">$</span><span class="va">CHEM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">annotCol</span><span class="op">$</span><span class="va">CARC</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"NON-CARC"</span>,<span class="st">"CARCINOGEN"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">annotCol</span><span class="op">$</span><span class="va">GTOX</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"0"</span>,<span class="st">"1"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">annotCol</span><span class="op">$</span><span class="va">CHEM</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">annot</span><span class="op">$</span><span class="va">CHEM</span><span class="op">)</span></code></pre></div>
 <p>Next, we will create the heatmap, given the expression matrix from DrugMatrix. Note that the argument <code>scale = "row"</code>, specifies that we want to scale each row (or gene) to mean zero, and let the colors denote the number of standard deviations from the mean.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html">pheatmap</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">DM</span>),
-        <span class="kw">color</span><span class="kw">=</span><span class="no">bwrPalette</span>,
-        <span class="kw">annotation_col</span> <span class="kw">=</span> <span class="no">annot</span>,
-        <span class="kw">annotation_colors</span> <span class="kw">=</span> <span class="no">annotCol</span>,
-        <span class="kw">show_rownames</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
-        <span class="kw">show_colnames</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
-        <span class="kw">scale</span> <span class="kw">=</span> <span class="st">"row"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html">pheatmap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span>,
+        color<span class="op">=</span><span class="va">bwrPalette</span>, 
+        annotation_col <span class="op">=</span> <span class="va">annot</span>,
+        annotation_colors <span class="op">=</span> <span class="va">annotCol</span>,
+        show_rownames <span class="op">=</span> <span class="cn">FALSE</span>,
+        show_colnames <span class="op">=</span> <span class="cn">FALSE</span>,
+        scale <span class="op">=</span> <span class="st">"row"</span><span class="op">)</span></code></pre></div>
 <p><img src="Heatmaps_files/figure-html/pheatplusrun-1.png" width="960" style="display: block; margin: auto;"></p>
 </div>
 <div id="the-package-complexheatmap" class="section level2">
@@ -271,8 +278,9 @@
 </h2>
 <p>Here, we illustrate the use of Bioconductor package <a href="https://bioconductor.org/packages/release/bioc/html/ComplexHeatmap.html"><code>ComplexHeatmap</code></a>, one of the most recently developed and most versatile. Its functionalities go well beyond the ones illustrated here.</p>
 <p>Here, we show the heatmap ordered by hierarchical clustering (both rows and columns), with the columns split into the four main clusters (as would be determined by <code><a href="https://rdrr.io/r/stats/cutree.html">cutree(...,k=4)</a></code>).</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="co">## Scale expression by row </span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">scale_row</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Scale expression by row </span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">scale_row</span><span class="op">)</span></code></pre></div>
 <pre><code>## function(eset){
 ##  rowz&lt;-t(apply(Biobase::exprs(eset), 1, function(z)
 ##          scale(z)))
@@ -280,48 +288,50 @@
 ##  return(eset)
 ## }
 ## &lt;environment: namespace:BS831&gt;</code></pre>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">DMscaled</span> <span class="kw">&lt;-</span> <span class="fu">scale_row</span>(<span class="no">DM</span>)
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">DMscaled</span> <span class="op">&lt;-</span> <span class="fu">scale_row</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span>
 
 <span class="co"># Take columns you want from phenotype data</span>
-<span class="no">ha.t</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ComplexHeatmap/man/HeatmapAnnotation.html">HeatmapAnnotation</a></span>(<span class="kw">CHEMICAL</span><span class="kw">=</span><span class="no">DMscaled</span>$<span class="no">Carcinogen_liv</span>,
-                          <span class="kw">GTOX</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span>(<span class="no">DMscaled</span>$<span class="no">GenTox</span>),
-                          <span class="kw">na_col</span><span class="kw">=</span><span class="st">"ghostwhite"</span>,
-                          <span class="kw">col</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">CHEMICAL</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"NON-CARC"</span><span class="kw">=</span><span class="st">"green"</span>,<span class="kw">CARCINOGEN</span><span class="kw">=</span><span class="st">"red"</span>),
-                                   <span class="kw">GTOX</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'0'</span><span class="kw">=</span><span class="st">"orange"</span>,<span class="st">'1'</span><span class="kw">=</span><span class="st">"purple"</span>)))
+<span class="va">ha.t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ComplexHeatmap/man/HeatmapAnnotation.html">HeatmapAnnotation</a></span><span class="op">(</span>CHEMICAL<span class="op">=</span><span class="va">DMscaled</span><span class="op">$</span><span class="va">Carcinogen_liv</span>,
+                          GTOX<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">DMscaled</span><span class="op">$</span><span class="va">GenTox</span><span class="op">)</span>,
+                          na_col<span class="op">=</span><span class="st">"ghostwhite"</span>,
+                          col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>CHEMICAL<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"NON-CARC"</span><span class="op">=</span><span class="st">"green"</span>,CARCINOGEN<span class="op">=</span><span class="st">"red"</span><span class="op">)</span>,
+                                   GTOX<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'0'</span><span class="op">=</span><span class="st">"orange"</span>,<span class="st">'1'</span><span class="op">=</span><span class="st">"purple"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html">Heatmap</a></span>(<span class="kw pkg">Biobase</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">DMscaled</span>),
-        <span class="kw">name</span><span class="kw">=</span><span class="st">"expression"</span>,
-        <span class="kw">col</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/pkg/circlize/man/colorRamp2.html">colorRamp2</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">3</span>), <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"#072448"</span>, <span class="st">"white"</span>, <span class="st">"#ff6150"</span>)),
-        <span class="kw">top_annotation</span><span class="kw">=</span><span class="no">ha.t</span>,
-        <span class="kw">cluster_rows</span><span class="kw">=</span><span class="fl">TRUE</span>,
-        <span class="kw">cluster_columns</span><span class="kw">=</span><span class="fl">TRUE</span>,
-        <span class="kw">clustering_distance_rows</span><span class="kw">=</span><span class="st">"euclidean"</span>,
-        <span class="kw">clustering_method_rows</span><span class="kw">=</span><span class="st">"ward.D"</span>,
-        <span class="kw">clustering_distance_columns</span><span class="kw">=</span><span class="st">"euclidean"</span>,
-        <span class="kw">clustering_method_columns</span><span class="kw">=</span><span class="st">"ward.D"</span>,
-        <span class="kw">column_split</span><span class="kw">=</span><span class="fl">4</span>,
-        <span class="kw">show_parent_dend_line</span><span class="kw">=</span><span class="fl">TRUE</span>,
-        <span class="kw">row_title</span><span class="kw">=</span><span class="st">""</span>,
-        <span class="kw">show_column_names</span><span class="kw">=</span><span class="fl">FALSE</span>,
-        <span class="kw">show_row_names</span><span class="kw">=</span><span class="fl">FALSE</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html">Heatmap</a></span><span class="op">(</span><span class="fu">Biobase</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DMscaled</span><span class="op">)</span>,
+        name<span class="op">=</span><span class="st">"expression"</span>, 
+        col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/circlize/man/colorRamp2.html">colorRamp2</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#072448"</span>, <span class="st">"white"</span>, <span class="st">"#ff6150"</span><span class="op">)</span><span class="op">)</span>,
+        top_annotation<span class="op">=</span><span class="va">ha.t</span>, 
+        cluster_rows<span class="op">=</span><span class="cn">TRUE</span>,
+        cluster_columns<span class="op">=</span><span class="cn">TRUE</span>,
+        clustering_distance_rows<span class="op">=</span><span class="st">"euclidean"</span>,
+        clustering_method_rows<span class="op">=</span><span class="st">"ward.D"</span>,    
+        clustering_distance_columns<span class="op">=</span><span class="st">"euclidean"</span>,
+        clustering_method_columns<span class="op">=</span><span class="st">"ward.D"</span>, 
+        column_split<span class="op">=</span><span class="fl">4</span>,
+        show_parent_dend_line<span class="op">=</span><span class="cn">TRUE</span>,
+        row_title<span class="op">=</span><span class="st">""</span>,
+        show_column_names<span class="op">=</span><span class="cn">FALSE</span>,
+        show_row_names<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <p><img src="Heatmaps_files/figure-html/ComplexHeamap-1.png" width="700"></p>
 <p>In the following example, we use k-means clustering instead to split the dataset into four clusters (<code>column_km=4</code>) and then we perform hierarchical clustering within each cluster. To ensure reproducibility of results (since k-means has a random component), we set the random seed first.</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">123</span>) <span class="co">## for reproducibility of the k-means results</span>
-<span class="fu"><a href="https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html">Heatmap</a></span>(<span class="kw pkg">Biobase</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">DMscaled</span>),
-        <span class="kw">name</span><span class="kw">=</span><span class="st">"expression"</span>,
-        <span class="kw">col</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/pkg/circlize/man/colorRamp2.html">colorRamp2</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(-<span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">3</span>), <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"#072448"</span>, <span class="st">"white"</span>, <span class="st">"#ff6150"</span>)),
-        <span class="kw">top_annotation</span><span class="kw">=</span><span class="no">ha.t</span>,
-        <span class="kw">cluster_rows</span><span class="kw">=</span><span class="fl">TRUE</span>,
-        <span class="kw">cluster_columns</span><span class="kw">=</span><span class="fl">TRUE</span>,
-        <span class="kw">clustering_distance_rows</span><span class="kw">=</span><span class="st">"euclidean"</span>,
-        <span class="kw">clustering_method_rows</span><span class="kw">=</span><span class="st">"ward.D"</span>,
-        <span class="kw">clustering_distance_columns</span><span class="kw">=</span><span class="st">"euclidean"</span>,
-        <span class="kw">clustering_method_columns</span><span class="kw">=</span><span class="st">"ward.D"</span>,
-        <span class="kw">column_km</span><span class="kw">=</span><span class="fl">4</span>,
-        <span class="kw">show_parent_dend_line</span><span class="kw">=</span><span class="fl">TRUE</span>,
-        <span class="kw">row_title</span><span class="kw">=</span><span class="st">""</span>,
-        <span class="kw">show_column_names</span><span class="kw">=</span><span class="fl">FALSE</span>,
-        <span class="kw">show_row_names</span><span class="kw">=</span><span class="fl">FALSE</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span> <span class="co">## for reproducibility of the k-means results</span>
+<span class="fu"><a href="https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html">Heatmap</a></span><span class="op">(</span><span class="fu">Biobase</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DMscaled</span><span class="op">)</span>,
+        name<span class="op">=</span><span class="st">"expression"</span>, 
+        col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/circlize/man/colorRamp2.html">colorRamp2</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#072448"</span>, <span class="st">"white"</span>, <span class="st">"#ff6150"</span><span class="op">)</span><span class="op">)</span>,
+        top_annotation<span class="op">=</span><span class="va">ha.t</span>, 
+        cluster_rows<span class="op">=</span><span class="cn">TRUE</span>,
+        cluster_columns<span class="op">=</span><span class="cn">TRUE</span>,
+        clustering_distance_rows<span class="op">=</span><span class="st">"euclidean"</span>,
+        clustering_method_rows<span class="op">=</span><span class="st">"ward.D"</span>,    
+        clustering_distance_columns<span class="op">=</span><span class="st">"euclidean"</span>,
+        clustering_method_columns<span class="op">=</span><span class="st">"ward.D"</span>, 
+        column_km<span class="op">=</span><span class="fl">4</span>, 
+        show_parent_dend_line<span class="op">=</span><span class="cn">TRUE</span>,
+        row_title<span class="op">=</span><span class="st">""</span>,
+        show_column_names<span class="op">=</span><span class="cn">FALSE</span>,
+        show_row_names<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <p><img src="Heatmaps_files/figure-html/ComplexHeatmap.kmeans-1.png" width="700"></p>
 </div>
   </div>
@@ -341,7 +351,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -118,6 +118,9 @@
       <a href="../../articles/docs/KS_Enrichment.html">KS-based Enrichment</a>
     </li>
     <li>
+      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
+    </li>
+    <li>
       <a href="../../articles/docs/GeneSetProjectionGSVA.html">Gene Set Projection based on KS</a>
     </li>
     <li>
@@ -133,9 +136,6 @@
     </li>
     <li class="divider">
     <li class="dropdown-header">Clustering</li>
-    <li>
-      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
-    </li>
     <li>
       <a href="../../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -162,7 +162,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="SampleSize_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Sample Size and Statistical Significance</h1>
@@ -177,48 +177,51 @@
     
     
 <p>In this module, we show how testing for multiple hypotheses (genes) can increase the chance of false positives, especially for small sample sizes.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">heatmap.plus</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">heatmap.plus</span><span class="op">)</span></code></pre></div>
 <div id="sample-sizes-effect-on-heatmap-visualization" class="section level1">
 <h1 class="hasAnchor">
 <a href="#sample-sizes-effect-on-heatmap-visualization" class="anchor"></a>Sample Size’s effect on heatmap visualization</h1>
 <p>Here we show the scenario presented in class (slide “Gene markers selection: better than chance?”). In the examples below, we show heatmaps corresponding to random noise, and we show that, if enough hypotheses are tested (in this case, 10,000), and the sample size is sufficiently small (e.g., n=6), we can easily identify ‘genes’ whose expression pattern <em>seems</em> to be strongly associated with the phenotype (in this case, a random head/tail), as suggested by the heatmap with a clear blue-to-red pattern. As the sample size increases (e.g., n=100), it is more difficult to be ‘fooled’, as the corresponding heatmap shows a less clear blue-to-red pattern.</p>
 <p>We start by generating a large [10,000x100] matrix filled with random values drawn from a Gaussian distribution with mean=0 and stdev=0.5.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">123</span>) <span class="co"># for reproducible results</span>
-<span class="no">Nrow</span> <span class="kw">&lt;-</span> <span class="fl">10000</span>
-<span class="no">Ncol</span> <span class="kw">&lt;-</span> <span class="fl">100</span>
-<span class="no">DAT</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="no">Ncol</span>*<span class="no">Nrow</span>,<span class="kw">mean</span><span class="kw">=</span><span class="fl">0</span>,<span class="kw">sd</span><span class="kw">=</span><span class="fl">0.5</span>),<span class="kw">nrow</span><span class="kw">=</span><span class="no">Nrow</span>,<span class="kw">ncol</span><span class="kw">=</span><span class="no">Ncol</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="no">DAT</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span> <span class="co"># for reproducible results</span>
+<span class="va">Nrow</span> <span class="op">&lt;-</span> <span class="fl">10000</span>
+<span class="va">Ncol</span> <span class="op">&lt;-</span> <span class="fl">100</span>
+<span class="va">DAT</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">Ncol</span><span class="op">*</span><span class="va">Nrow</span>,mean<span class="op">=</span><span class="fl">0</span>,sd<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span>,nrow<span class="op">=</span><span class="va">Nrow</span>,ncol<span class="op">=</span><span class="va">Ncol</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">)</span></code></pre></div>
 <p><img src="SampleSize_files/figure-html/random_matrix-1.png" width="700"></p>
 <p>We then pick a small subset of columns from this matrix and randomly assign them a binary (0-1) phenotype. We then pick the top 25 markers associated to 0 and 1, and plot the corresponding heatmaps.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="co">## creating a black-to-red palette for heatmap display</span>
-<span class="no">ramp.br</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/colorRamp.html">colorRamp</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>( <span class="st">"blue"</span>,<span class="st">"white"</span>,<span class="st">"red"</span>))
-<span class="no">palette.blue2red</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/rgb.html">rgb</a></span>( <span class="fu">ramp.br</span>(<span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>, <span class="fl">1</span>, <span class="kw">length</span> <span class="kw">=</span> <span class="fl">14</span>)), <span class="kw">max</span> <span class="kw">=</span> <span class="fl">255</span>)
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## creating a black-to-red palette for heatmap display</span>
+<span class="va">ramp.br</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/colorRamp.html">colorRamp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span> <span class="st">"blue"</span>,<span class="st">"white"</span>,<span class="st">"red"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">palette.blue2red</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/rgb.html">rgb</a></span><span class="op">(</span> <span class="fu">ramp.br</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, length <span class="op">=</span> <span class="fl">14</span><span class="op">)</span><span class="op">)</span>, max <span class="op">=</span> <span class="fl">255</span><span class="op">)</span>
 
 <span class="co">## wrapper function extracting t-statistic and p-value from a call to function t.test</span>
-<span class="no">tscore</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">y</span>,<span class="no">x</span>) {
-  <span class="no">tmp</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/t.test.html">t.test</a></span>(<span class="no">y</span>~<span class="no">x</span>)
-  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="kw">score</span><span class="kw">=</span><span class="no">tmp</span>$<span class="no">statistic</span>,<span class="kw">pval</span><span class="kw">=</span><span class="no">tmp</span>$<span class="no">p.value</span>)
-}
+<span class="va">tscore</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">y</span>,<span class="va">x</span><span class="op">)</span> <span class="op">{</span> 
+  <span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/t.test.html">t.test</a></span><span class="op">(</span><span class="va">y</span><span class="op">~</span><span class="va">x</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>score<span class="op">=</span><span class="va">tmp</span><span class="op">$</span><span class="va">statistic</span>,pval<span class="op">=</span><span class="va">tmp</span><span class="op">$</span><span class="va">p.value</span><span class="op">)</span>
+<span class="op">}</span>
 <span class="co">## carry out multiple differential analysis on progressively larger sample sizes</span>
-<span class="kw">for</span> (<span class="no">ndraw</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">6</span>,<span class="fl">14</span>,<span class="fl">30</span>,<span class="fl">100</span>) )
-{
+<span class="kw">for</span> <span class="op">(</span><span class="va">ndraw</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">6</span>,<span class="fl">14</span>,<span class="fl">30</span>,<span class="fl">100</span><span class="op">)</span> <span class="op">)</span> 
+<span class="op">{</span> 
   <span class="co">## randomly select Ncol columns from the full matrix</span>
-  <span class="no">DATi</span> <span class="kw">&lt;-</span> <span class="no">DAT</span>[,<span class="no">colDraw</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(<span class="no">Ncol</span>,<span class="kw">size</span><span class="kw">=</span><span class="no">ndraw</span>)]
+  <span class="va">DATi</span> <span class="op">&lt;-</span> <span class="va">DAT</span><span class="op">[</span>,<span class="va">colDraw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="va">Ncol</span>,size<span class="op">=</span><span class="va">ndraw</span><span class="op">)</span><span class="op">]</span>
   <span class="co">## generate a (head/tail) phenotype of proper size</span>
-  <span class="no">pheno</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'head'</span>,<span class="st">'tail'</span>),<span class="kw">each</span><span class="kw">=</span><span class="no">ndraw</span>/<span class="fl">2</span>))
+  <span class="va">pheno</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'head'</span>,<span class="st">'tail'</span><span class="op">)</span>,each<span class="op">=</span><span class="va">ndraw</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>
   <span class="co">## perform t.test on each data row with respect to the random phenotype</span>
-  <span class="no">DIFi</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="no">DATi</span>,<span class="fl">1</span>,<span class="no">tscore</span>,<span class="kw">x</span><span class="kw">=</span><span class="no">pheno</span>))
-
+  <span class="va">DIFi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">DATi</span>,<span class="fl">1</span>,<span class="va">tscore</span>,x<span class="op">=</span><span class="va">pheno</span><span class="op">)</span><span class="op">)</span>
+  
   <span class="co">## pick top 25 markers in each direction</span>
-  <span class="no">topMarkers</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">DIFi</span>[,<span class="fl">1</span>],<span class="kw">decreasing</span><span class="kw">=</span><span class="fl">FALSE</span>)[<span class="fl">1</span>:<span class="fl">25</span>],<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">DIFi</span>[,<span class="fl">1</span>],<span class="kw">decreasing</span><span class="kw">=</span><span class="fl">TRUE</span>)[<span class="fl">1</span>:<span class="fl">25</span>])
+  <span class="va">topMarkers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">DIFi</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,decreasing<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">25</span><span class="op">]</span>,<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">DIFi</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,decreasing<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">25</span><span class="op">]</span><span class="op">)</span>
   <span class="co">## visualize the corresponding heatmap of 50 markers</span>
-  <span class="no">CSC</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'green'</span>,<span class="st">'orange'</span>)[<span class="no">pheno</span>] <span class="co"># green=head, orange=tail</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/heatmap.plus/man/heatmap.plus.package.html">heatmap.plus</a></span>(<span class="no">DATi</span>[<span class="no">topMarkers</span>,],<span class="kw">col</span><span class="kw">=</span><span class="no">palette.blue2red</span>,<span class="kw">Colv</span><span class="kw">=</span><span class="fl">NA</span>,<span class="kw">Rowv</span><span class="kw">=</span><span class="fl">NA</span>,<span class="kw">ColSideColors</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="no">CSC</span>,<span class="no">CSC</span>),
-               <span class="kw">main</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="st">"sample size ="</span>,<span class="no">ndraw</span>))
-
+  <span class="va">CSC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'green'</span>,<span class="st">'orange'</span><span class="op">)</span><span class="op">[</span><span class="va">pheno</span><span class="op">]</span> <span class="co"># green=head, orange=tail</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/heatmap.plus/man/heatmap.plus.package.html">heatmap.plus</a></span><span class="op">(</span><span class="va">DATi</span><span class="op">[</span><span class="va">topMarkers</span>,<span class="op">]</span>,col<span class="op">=</span><span class="va">palette.blue2red</span>,Colv<span class="op">=</span><span class="cn">NA</span>,Rowv<span class="op">=</span><span class="cn">NA</span>,ColSideColors<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cbind.html">cbind</a></span><span class="op">(</span><span class="va">CSC</span>,<span class="va">CSC</span><span class="op">)</span>,
+               main<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"sample size ="</span>,<span class="va">ndraw</span><span class="op">)</span><span class="op">)</span>
+  
   <span class="co">## show the top markers (by p-value)</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="no">DIFi</span>,<span class="kw">FDR</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/stats/p.adjust.html">p.adjust</a></span>(<span class="no">DIFi</span>[,<span class="fl">2</span>],<span class="kw">method</span><span class="kw">=</span><span class="st">"BH"</span>))[<span class="no">topMarkers</span>,]))
-}</pre></body></html></div>
+  <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cbind.html">cbind</a></span><span class="op">(</span><span class="va">DIFi</span>,FDR<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/p.adjust.html">p.adjust</a></span><span class="op">(</span><span class="va">DIFi</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>,method<span class="op">=</span><span class="st">"BH"</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="va">topMarkers</span>,<span class="op">]</span><span class="op">)</span><span class="op">)</span>
+<span class="op">}</span>  </code></pre></div>
 <p><img src="SampleSize_files/figure-html/sample.size.heatmaps-1.png" width="700"></p>
 <pre><code>##         score.t         pval       FDR
 ## [1,] -11.347225 0.0005607121 0.9976306
@@ -269,7 +272,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

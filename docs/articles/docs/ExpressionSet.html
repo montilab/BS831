@@ -118,6 +118,9 @@
       <a href="../../articles/docs/KS_Enrichment.html">KS-based Enrichment</a>
     </li>
     <li>
+      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
+    </li>
+    <li>
       <a href="../../articles/docs/GeneSetProjectionGSVA.html">Gene Set Projection based on KS</a>
     </li>
     <li>
@@ -133,9 +136,6 @@
     </li>
     <li class="divider">
     <li class="dropdown-header">Clustering</li>
-    <li>
-      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
-    </li>
     <li>
       <a href="../../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -162,7 +162,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="ExpressionSet_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>The ExpressionSet Data Object</h1>
@@ -177,26 +177,31 @@
     
     
 <p>Simple example of use of the R object <code>ExpressionSet</code>, ideal for the storage of gene expression or similarly structured omic data.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">BS831</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">Biobase</span>) <span class="co"># The package with the ExpressionSet definition, among others</span></pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/montilab/BS831">BS831</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">Biobase</span><span class="op">)</span> <span class="co"># The package with the ExpressionSet definition, among others</span></code></pre></div>
 <p>An expression set is a data object consisting of three entities: the expression matrix (<code>exprs</code>), the phenotye data (<code>pData</code>), and the feature data (<code>fData</code>).</p>
 <div class="figure">
 <img src="../figs/ExpressionSet.png" alt=""><p class="caption">ExpressionSet example</p>
 </div>
 <p>We upload an expression set already available. It corresponds to a subset of samples from a gene expression dataset of head and neck squamous carcinoma (HNSC) primary tissue samples from the TCGA project.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="co"># Load toy dataset</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">HNSC_RNASeq_toy_ES</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Load toy dataset</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">HNSC_RNASeq_toy_ES</span><span class="op">)</span>
 
-<span class="no">hnsc</span> <span class="kw">&lt;-</span> <span class="no">HNSC_RNASeq_toy_ES</span>
+<span class="va">hnsc</span> <span class="op">&lt;-</span> <span class="va">HNSC_RNASeq_toy_ES</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">hnsc</span>)        <span class="co"># the expression data</span></pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span>        <span class="co"># the expression data</span></code></pre></div>
 <pre><code>## Features  Samples 
 ##    19844       25</code></pre>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">hnsc</span>)) <span class="co"># the phenotypic annotation</span></pre></body></html></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span><span class="op">)</span> <span class="co"># the phenotypic annotation</span></code></pre></div>
 <pre><code>## [1] 25  6</code></pre>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span>(<span class="no">hnsc</span>)) <span class="co"># the genes' annotation</span></pre></body></html></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span><span class="op">)</span> <span class="co"># the genes' annotation</span></code></pre></div>
 <pre><code>## [1] 19844     3</code></pre>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">hnsc</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>##                 bcr_patient_barcode bcr_sample_barcode tissue_type my_grade
 ## TCGA-CV-6962-11        TCGA-CV-6962    TCGA-CV-6962-11          AN       AN
 ## TCGA-CV-7432-11        TCGA-CV-7432    TCGA-CV-7432-11          AN       AN
@@ -211,7 +216,8 @@
 ## TCGA-CV-7438-11        AN                           oral tongue
 ## TCGA-CV-7440-11        AN                                larynx
 ## TCGA-BA-7269-01 stage iii                           oral tongue</code></pre>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span>(<span class="no">hnsc</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>##             entrez_id gene_symbol
 ## ?|100130426 100130426        &lt;NA&gt;
 ## ?|100133144 100133144        &lt;NA&gt;
@@ -227,13 +233,16 @@
 ## ?|10431                                                              &lt;NA&gt;
 ## ?|155060                                              AI894139 pseudogene</code></pre>
 <p>One of the advantages of using an ExpressionSet is that the three component objects are always properly paired, and subsetting can be carried out straightforwardly.</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">tmp</span> <span class="kw">&lt;-</span> <span class="no">hnsc</span>[<span class="fl">1</span>:<span class="fl">100</span>,<span class="fl">1</span>:<span class="fl">10</span>]
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">tmp</span>)        <span class="co"># the expression data</span></pre></body></html></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tmp</span> <span class="op">&lt;-</span> <span class="va">hnsc</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span>
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">tmp</span><span class="op">)</span>        <span class="co"># the expression data</span></code></pre></div>
 <pre><code>## Features  Samples 
 ##      100       10</code></pre>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">tmp</span>)) <span class="co"># the phenotypic annotation</span></pre></body></html></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">tmp</span><span class="op">)</span><span class="op">)</span> <span class="co"># the phenotypic annotation</span></code></pre></div>
 <pre><code>## [1] 10  6</code></pre>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span>(<span class="no">tmp</span>)) <span class="co"># the genes' annotation</span></pre></body></html></div>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">tmp</span><span class="op">)</span><span class="op">)</span> <span class="co"># the genes' annotation</span></code></pre></div>
 <pre><code>## [1] 100   3</code></pre>
   </div>
 
@@ -250,7 +259,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

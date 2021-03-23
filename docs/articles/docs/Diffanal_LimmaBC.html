@@ -118,6 +118,9 @@
       <a href="../../articles/docs/KS_Enrichment.html">KS-based Enrichment</a>
     </li>
     <li>
+      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
+    </li>
+    <li>
       <a href="../../articles/docs/GeneSetProjectionGSVA.html">Gene Set Projection based on KS</a>
     </li>
     <li>
@@ -133,9 +136,6 @@
     </li>
     <li class="divider">
     <li class="dropdown-header">Clustering</li>
-    <li>
-      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
-    </li>
     <li>
       <a href="../../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -162,7 +162,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="Diffanal_LimmaBC_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Gene Expression Differential Analysis based on Limma</h1>
@@ -178,19 +178,21 @@
     
 <p>Here, we present a couple of simple examples of differential analysis based on <code>limma</code>. In particular, we show how the design matrix can be constructed using different ‘codings’ of the regression variables. We also define a simple wrapper function that can help us remember the different <code>limma</code> steps.</p>
 <p>This document also provides examples of how to embed equations into an R markdown document, and how to cross-reference those equations.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">BS831</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">Biobase</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">limma</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/montilab/BS831">BS831</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">Biobase</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://bioinf.wehi.edu.au/limma">limma</a></span><span class="op">)</span></code></pre></div>
 <div id="load-the-data" class="section level3">
 <h3 class="hasAnchor">
 <a href="#load-the-data" class="anchor"></a>Load the Data</h3>
 <p>We start by loading and pre-processing the necessary expression dataset.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="co">## let us load the ExpressionSet, an already simplified version of the</span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## let us load the ExpressionSet, an already simplified version of the</span>
 <span class="co">## ..breast cancer dataset</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">renamedBreastDB</span>)
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">renamedBreastDB</span><span class="op">)</span>
 
-<span class="no">dat</span> <span class="kw">&lt;-</span> <span class="no">renamedBreastDB</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">dat</span>))</pre></body></html></div>
+<span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">renamedBreastDB</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>##          individual diseaseState
 ## GSM85500        T44     nonbasal
 ## GSM85504       T175     nonbasal
@@ -198,7 +200,8 @@
 ## GSM85496       T161     nonbasal
 ## GSM85510       T162     nonbasal
 ## GSM85509        T74     nonbasal</code></pre>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="no">dat</span>$<span class="no">diseaseState</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">diseaseState</span><span class="op">)</span></code></pre></div>
 <pre><code>## 
 ## nonbasal    basal 
 ##       20       18</code></pre>
@@ -225,23 +228,26 @@ y = \beta_{\not{basal}} X_{\not{basal}} + \beta_{basal}X_{basal},
 \]</span></p>
 <p>where <span class="math inline">\(X_{\not{basal}} = 1,0\)</span>, if the observation is from a nonbasal- or a basal-type tumor, respectively. Conversely, <span class="math inline">\(X_{basal} = 0,1\)</span>, if the observation is from a nonbasal- or a basal-type tumor, respectively.</p>
 <p>The corresponding models in <code>limma</code> are defined based on the two design matrices <code>design1</code>, for model <span class="math inline">\(\eqref{eq:lm1}\)</span>, and <code>design2</code>, for model <span class="math inline">\(\eqref{eq:lm2}\)</span>, as follows.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">design1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html">model.matrix</a></span>( ~ <span class="no">diseaseState</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">dat</span>) )
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">design1</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"baseline"</span>,<span class="st">"basal"</span>)      <span class="co"># let's simplify column names  </span>
-<span class="no">design2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html">model.matrix</a></span>( ~ <span class="fl">0</span> + <span class="no">dat</span>$<span class="no">diseaseState</span> )
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">design2</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span>( <span class="no">dat</span>$<span class="no">diseaseState</span> ) <span class="co"># ditto</span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">design1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html">model.matrix</a></span><span class="op">(</span> <span class="op">~</span> <span class="va">diseaseState</span>, data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span> <span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">design1</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"baseline"</span>,<span class="st">"basal"</span><span class="op">)</span>      <span class="co"># let's simplify column names  </span>
+<span class="va">design2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html">model.matrix</a></span><span class="op">(</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">dat</span><span class="op">$</span><span class="va">diseaseState</span> <span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">design2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span> <span class="va">dat</span><span class="op">$</span><span class="va">diseaseState</span> <span class="op">)</span> <span class="co"># ditto</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="no">design1</span>)) <span class="co"># showing only one instance of each class</span></pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">design1</span><span class="op">)</span><span class="op">)</span> <span class="co"># showing only one instance of each class</span></code></pre></div>
 <pre><code>##          baseline basal
 ## GSM85500        1     0
 ## GSM85480        1     1</code></pre>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="no">design2</span>)) <span class="co"># ditto</span></pre></body></html></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">design2</span><span class="op">)</span><span class="op">)</span> <span class="co"># ditto</span></code></pre></div>
 <pre><code>##    nonbasal basal
 ## 1         1     0
 ## 21        0     1</code></pre>
 <p>The different designs require slightly different approaches to model fitting. In model <span class="math inline">\(\eqref{eq:lm1}\)</span>, we want to extract the p-value corresponding to the <span class="math inline">\(\beta_{group}\)</span> parameter. In model <span class="math inline">\(\eqref{eq:lm2}\)</span>, we care about the <em>difference</em> <span class="math inline">\(\beta_{basal} - \beta_{\not{basal}}\)</span>.</p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="co">## model (1)</span>
-<span class="no">fit1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/lmFit.html">lmFit</a></span>(<span class="no">dat</span>,<span class="no">design1</span>) <span class="co"># fitting of linear model</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fit1</span>$<span class="no">coefficients</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## model (1)</span>
+<span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/lmFit.html">lmFit</a></span><span class="op">(</span><span class="va">dat</span>,<span class="va">design1</span><span class="op">)</span> <span class="co"># fitting of linear model</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">fit1</span><span class="op">$</span><span class="va">coefficients</span><span class="op">)</span></code></pre></div>
 <pre><code>##          baseline     basal
 ## AGR3     9.241425 -5.476069
 ## SCGB2A2  9.049974 -4.020716
@@ -249,9 +255,10 @@ y = \beta_{\not{basal}} X_{\not{basal}} + \beta_{basal}X_{basal},
 ## CALML5   6.314069  2.564793
 ## KRT23    6.348392  3.193484
 ## FOXA1    7.215394 -3.997576</code></pre>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">fit1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html">eBayes</a></span>(<span class="no">fit1</span>)       <span class="co"># pooling of variance across like-genes</span>
-<span class="no">fit1table</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/toptable.html">topTable</a></span>(<span class="no">fit1</span>,<span class="kw">coef</span><span class="kw">=</span><span class="st">"basal"</span>,<span class="kw">adjust</span><span class="kw">=</span><span class="st">"BH"</span>,<span class="kw">number</span><span class="kw">=</span><span class="fl">Inf</span>,<span class="kw">sort.by</span><span class="kw">=</span><span class="st">"P"</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fit1table</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html">eBayes</a></span><span class="op">(</span><span class="va">fit1</span><span class="op">)</span>       <span class="co"># pooling of variance across like-genes</span>
+<span class="va">fit1table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/toptable.html">topTable</a></span><span class="op">(</span><span class="va">fit1</span>,coef<span class="op">=</span><span class="st">"basal"</span>,adjust<span class="op">=</span><span class="st">"BH"</span>,number<span class="op">=</span><span class="cn">Inf</span>,sort.by<span class="op">=</span><span class="st">"P"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">fit1table</span><span class="op">)</span></code></pre></div>
 <pre><code>##       affy_hg_u133_plus_2 hgnc_symbol
 ## MLPH          218211_s_at        MLPH
 ## FOXA1           237086_at       FOXA1
@@ -273,9 +280,10 @@ y = \beta_{\not{basal}} X_{\not{basal}} + \beta_{basal}X_{basal},
 ## AGR2  -5.139503 7.915368 -12.95288 1.488409e-16 1.116307e-13 27.48939
 ## SFRP1  4.144489 8.377033  12.32914 8.162432e-16 4.897459e-13 25.83515
 ## SIDT1 -2.605517 6.013343 -12.23990 1.045491e-15 5.227453e-13 25.59416</code></pre>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="co">## model (2)</span>
-<span class="no">fit2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/lmFit.html">lmFit</a></span>(<span class="no">dat</span>,<span class="no">design2</span>) <span class="co"># fitting of linear model</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fit2</span>$<span class="no">coefficients</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## model (2)</span>
+<span class="va">fit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/lmFit.html">lmFit</a></span><span class="op">(</span><span class="va">dat</span>,<span class="va">design2</span><span class="op">)</span> <span class="co"># fitting of linear model</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">fit2</span><span class="op">$</span><span class="va">coefficients</span><span class="op">)</span></code></pre></div>
 <pre><code>##          nonbasal    basal
 ## AGR3     9.241425 3.765357
 ## SCGB2A2  9.049974 5.029258
@@ -283,11 +291,12 @@ y = \beta_{\not{basal}} X_{\not{basal}} + \beta_{basal}X_{basal},
 ## CALML5   6.314069 8.878863
 ## KRT23    6.348392 9.541876
 ## FOXA1    7.215394 3.217818</code></pre>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="co">## let's define the contrast matrix we need</span>
-<span class="no">contrast.matrix</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/makeContrasts.html">makeContrasts</a></span>((<span class="no">basal</span>-<span class="no">nonbasal</span>),<span class="kw">levels</span><span class="kw">=</span><span class="no">design2</span>)
-<span class="no">fit2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/contrasts.fit.html">contrasts.fit</a></span>(<span class="no">fit2</span>,<span class="no">contrast.matrix</span>)
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## let's define the contrast matrix we need</span>
+<span class="va">contrast.matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/makeContrasts.html">makeContrasts</a></span><span class="op">(</span><span class="op">(</span><span class="va">basal</span><span class="op">-</span><span class="va">nonbasal</span><span class="op">)</span>,levels<span class="op">=</span><span class="va">design2</span><span class="op">)</span>
+<span class="va">fit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/contrasts.fit.html">contrasts.fit</a></span><span class="op">(</span><span class="va">fit2</span>,<span class="va">contrast.matrix</span><span class="op">)</span>
 <span class="co">## notice that the contrast coefficient takes the same values as the basal coefficient in design1</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fit2</span>$<span class="no">coefficients</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">fit2</span><span class="op">$</span><span class="va">coefficients</span><span class="op">)</span></code></pre></div>
 <pre><code>##          Contrasts
 ##           (basal - nonbasal)
 ##   AGR3             -5.476069
@@ -296,9 +305,10 @@ y = \beta_{\not{basal}} X_{\not{basal}} + \beta_{basal}X_{basal},
 ##   CALML5            2.564793
 ##   KRT23             3.193484
 ##   FOXA1            -3.997576</code></pre>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="no">fit2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html">eBayes</a></span>(<span class="no">fit2</span>)       <span class="co"># pooling of variance across like-genes</span>
-<span class="no">fit2table</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/toptable.html">topTable</a></span>(<span class="no">fit2</span>,<span class="kw">coef</span><span class="kw">=</span><span class="fl">1</span>,<span class="kw">adjust</span><span class="kw">=</span><span class="st">"BH"</span>,<span class="kw">number</span><span class="kw">=</span><span class="fl">Inf</span>,<span class="kw">sort.by</span><span class="kw">=</span><span class="st">"P"</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fit2table</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html">eBayes</a></span><span class="op">(</span><span class="va">fit2</span><span class="op">)</span>       <span class="co"># pooling of variance across like-genes</span>
+<span class="va">fit2table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/toptable.html">topTable</a></span><span class="op">(</span><span class="va">fit2</span>,coef<span class="op">=</span><span class="fl">1</span>,adjust<span class="op">=</span><span class="st">"BH"</span>,number<span class="op">=</span><span class="cn">Inf</span>,sort.by<span class="op">=</span><span class="st">"P"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">fit2table</span><span class="op">)</span></code></pre></div>
 <pre><code>##       affy_hg_u133_plus_2 hgnc_symbol
 ## MLPH          218211_s_at        MLPH
 ## FOXA1           237086_at       FOXA1
@@ -321,10 +331,12 @@ y = \beta_{\not{basal}} X_{\not{basal}} + \beta_{basal}X_{basal},
 ## SFRP1  4.144489 8.377033  12.32914 8.162432e-16 4.897459e-13 25.83515
 ## SIDT1 -2.605517 6.013343 -12.23990 1.045491e-15 5.227453e-13 25.59416</code></pre>
 <p>Regardless of the ‘coding’, the results are the same.</p>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="co">## compare the results from the two 'codings'</span>
-<span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span>(<span class="no">fit2table</span>[,<span class="st">"t"</span>],<span class="no">fit1table</span>[<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">fit2table</span>),<span class="st">"t"</span>])</pre></body></html></div>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## compare the results from the two 'codings'</span>
+<span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span><span class="op">(</span><span class="va">fit2table</span><span class="op">[</span>,<span class="st">"t"</span><span class="op">]</span>,<span class="va">fit1table</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">fit2table</span><span class="op">)</span>,<span class="st">"t"</span><span class="op">]</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
-<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="no">fit2table</span>[,<span class="st">"t"</span>],<span class="no">fit1table</span>[<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">fit2table</span>),<span class="st">"t"</span>],<span class="kw">xlab</span><span class="kw">=</span><span class="st">"design2"</span>,<span class="kw">ylab</span><span class="kw">=</span><span class="st">"design1"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/plot.roc.html">plot</a></span><span class="op">(</span><span class="va">fit2table</span><span class="op">[</span>,<span class="st">"t"</span><span class="op">]</span>,<span class="va">fit1table</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">fit2table</span><span class="op">)</span>,<span class="st">"t"</span><span class="op">]</span>,xlab<span class="op">=</span><span class="st">"design2"</span>,ylab<span class="op">=</span><span class="st">"design1"</span><span class="op">)</span></code></pre></div>
 <p><img src="Diffanal_LimmaBC_files/figure-html/limma.compare-1.png" width="700"></p>
 </div>
 <div id="defining-a-wrapper-function" class="section level3">
@@ -332,51 +344,54 @@ y = \beta_{\not{basal}} X_{\not{basal}} + \beta_{basal}X_{basal},
 <a href="#defining-a-wrapper-function" class="anchor"></a>Defining a wrapper function</h3>
 <p>Since running <code>limma</code> requires memorizing several commands that are not easy to remember, here we define a simple wrapper function that will relief us from remembering them all. Incidentally, this is also (a simplified version of) the wrapper function defined in <code>CBMRtools</code>, and it corresponds to the <code>design2</code>, model <span class="math inline">\(\eqref{eq:lm2}\)</span>, shown above.</p>
 <p>It should be noted that this simple wrapper function does not allow you to specify additional covariates (confounders). In that case, you will have to either define a more advanced wrapper (any volunteer?), or revert back to the direct use of limma commands.</p>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">run_limma</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(
-    <span class="no">eset</span>,                <span class="co"># the expression set</span>
-    <span class="no">treatment</span>,           <span class="co"># pData variable name of the phenotype</span>
-    <span class="no">cond</span>,                <span class="co"># label of the 'treatment' group</span>
-    <span class="no">control</span>,             <span class="co"># label of the 'control' group</span>
-    <span class="no">sort.by</span><span class="kw">=</span><span class="st">"P"</span>,         <span class="co"># sort output by given criterion</span>
-    <span class="no">decreasing</span> <span class="kw">=</span> <span class="fl">FALSE</span>,  <span class="co"># sort order</span>
-    <span class="no">cutoff</span> <span class="kw">=</span> <span class="fl">NA</span>          <span class="co"># extract only genes above/below 'sort.by' cutoff</span>
-)
-{
-    <span class="kw">if</span> ( <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span>(<span class="no">eset</span>))<span class="kw">&lt;</span><span class="fl">1</span> )
-        <span class="fu"><a href="https://rdrr.io/r/base/stop.html">stop</a></span>( <span class="st">"empty fData"</span> )
-
-    <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>( <span class="st">"running limma\n"</span> )
-    <span class="no">test_name</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="no">control</span>, <span class="st">"_vs_"</span>, <span class="no">cond</span>, <span class="kw">sep</span> <span class="kw">=</span> <span class="st">""</span>)
-    <span class="no">treatmentvec</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">eset</span>)[, <span class="no">treatment</span>]
-    <span class="no">eset</span> <span class="kw">&lt;-</span> <span class="no">eset</span>[, <span class="no">treatmentvec</span> <span class="kw">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">cond</span>, <span class="no">control</span>)]
-    <span class="no">treatmentvec</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>( <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">eset</span>)[, <span class="no">treatment</span>] )
-    <span class="no">design</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html">model.matrix</a></span>( ~ <span class="fl">0</span> + <span class="no">treatmentvec</span> )
-    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">design</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span>( <span class="no">treatmentvec</span> )
-    <span class="no">fit</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/lmFit.html">lmFit</a></span>(<span class="no">eset</span>, <span class="no">design</span>)
-    <span class="no">command_str</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="st">"makeContrasts("</span>, <span class="st">"("</span>, <span class="no">cond</span> , <span class="st">"-"</span>, <span class="no">control</span>, <span class="st">")"</span>,
-                         <span class="st">",levels = design)"</span>, <span class="kw">sep</span> <span class="kw">=</span> <span class="st">""</span>)
-    <span class="no">contrast.matrix</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/eval.html">eval</a></span>( <span class="fu"><a href="https://rdrr.io/r/base/parse.html">parse</a></span>(<span class="kw">text</span><span class="kw">=</span><span class="no">command_str</span>) )
-    <span class="no">fit2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/contrasts.fit.html">contrasts.fit</a></span>( <span class="no">fit</span>, <span class="no">contrast.matrix</span> )
-    <span class="no">fit2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html">eBayes</a></span>(<span class="no">fit2</span>)
-
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">run_limma</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span>
+    <span class="va">eset</span>,                <span class="co"># the expression set</span>
+    <span class="va">treatment</span>,           <span class="co"># pData variable name of the phenotype</span>
+    <span class="va">cond</span>,                <span class="co"># label of the 'treatment' group</span>
+    <span class="va">control</span>,             <span class="co"># label of the 'control' group</span>
+    <span class="va">sort.by</span><span class="op">=</span><span class="st">"P"</span>,         <span class="co"># sort output by given criterion</span>
+    <span class="va">decreasing</span> <span class="op">=</span> <span class="cn">FALSE</span>,  <span class="co"># sort order</span>
+    <span class="va">cutoff</span> <span class="op">=</span> <span class="cn">NA</span>          <span class="co"># extract only genes above/below 'sort.by' cutoff</span>
+<span class="op">)</span>
+<span class="op">{</span>
+    <span class="kw">if</span> <span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">eset</span><span class="op">)</span><span class="op">)</span><span class="op">&lt;</span><span class="fl">1</span> <span class="op">)</span> 
+        <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span> <span class="st">"empty fData"</span> <span class="op">)</span>
+    
+    <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span> <span class="st">"running limma\n"</span> <span class="op">)</span>
+    <span class="va">test_name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="va">control</span>, <span class="st">"_vs_"</span>, <span class="va">cond</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span>
+    <span class="va">treatmentvec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">eset</span><span class="op">)</span><span class="op">[</span>, <span class="va">treatment</span><span class="op">]</span>
+    <span class="va">eset</span> <span class="op">&lt;-</span> <span class="va">eset</span><span class="op">[</span>, <span class="va">treatmentvec</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">cond</span>, <span class="va">control</span><span class="op">)</span><span class="op">]</span>
+    <span class="va">treatmentvec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">eset</span><span class="op">)</span><span class="op">[</span>, <span class="va">treatment</span><span class="op">]</span> <span class="op">)</span>
+    <span class="va">design</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html">model.matrix</a></span><span class="op">(</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">treatmentvec</span> <span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">design</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span> <span class="va">treatmentvec</span> <span class="op">)</span>
+    <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/lmFit.html">lmFit</a></span><span class="op">(</span><span class="va">eset</span>, <span class="va">design</span><span class="op">)</span>
+    <span class="va">command_str</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"makeContrasts("</span>, <span class="st">"("</span>, <span class="va">cond</span> , <span class="st">"-"</span>, <span class="va">control</span>, <span class="st">")"</span>, 
+                         <span class="st">",levels = design)"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span>
+    <span class="va">contrast.matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/eval.html">eval</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/parse.html">parse</a></span><span class="op">(</span>text<span class="op">=</span><span class="va">command_str</span><span class="op">)</span> <span class="op">)</span> 
+    <span class="va">fit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/contrasts.fit.html">contrasts.fit</a></span><span class="op">(</span> <span class="va">fit</span>, <span class="va">contrast.matrix</span> <span class="op">)</span>
+    <span class="va">fit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/ebayes.html">eBayes</a></span><span class="op">(</span><span class="va">fit2</span><span class="op">)</span>
+    
     <span class="co">## extract full table</span>
-    <span class="no">fit2.table</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/toptable.html">topTable</a></span>(<span class="no">fit2</span>, <span class="kw">coef</span><span class="kw">=</span><span class="fl">1</span>, <span class="kw">adjust</span><span class="kw">=</span><span class="st">"BH"</span>, <span class="kw">number</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">fit2</span>), <span class="kw">sort.by</span><span class="kw">=</span><span class="no">sort.by</span>)
+    <span class="va">fit2.table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/limma/man/toptable.html">topTable</a></span><span class="op">(</span><span class="va">fit2</span>, coef<span class="op">=</span><span class="fl">1</span>, adjust<span class="op">=</span><span class="st">"BH"</span>, number<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">fit2</span><span class="op">)</span>, sort.by<span class="op">=</span><span class="va">sort.by</span><span class="op">)</span>
 
     <span class="co">## extract genes above/below cutoff</span>
-    <span class="kw">if</span>( !<span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span>(<span class="no">cutoff</span>) ) {
-        <span class="kw">if</span> (<span class="no">decreasing</span>) {
-            <span class="no">fit2.table</span> <span class="kw">&lt;-</span> <span class="no">fit2.table</span>[<span class="no">fit2.table</span>[,<span class="no">sort.by</span>] <span class="kw">&gt;</span> <span class="no">cutoff</span>,]
-        }
-        <span class="kw">else</span> {
-            <span class="no">fit2.table</span> <span class="kw">&lt;-</span> <span class="no">fit2.table</span>[<span class="no">fit2.table</span>[,<span class="no">sort.by</span>] <span class="kw">&lt;</span> <span class="no">cutoff</span>,]
-        }
-    }
-    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="no">fit2.table</span>)
-}</pre></body></html></div>
+    <span class="kw">if</span><span class="op">(</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">cutoff</span><span class="op">)</span> <span class="op">)</span> <span class="op">{</span>
+        <span class="kw">if</span> <span class="op">(</span><span class="va">decreasing</span><span class="op">)</span> <span class="op">{</span>
+            <span class="va">fit2.table</span> <span class="op">&lt;-</span> <span class="va">fit2.table</span><span class="op">[</span><span class="va">fit2.table</span><span class="op">[</span>,<span class="va">sort.by</span><span class="op">]</span> <span class="op">&gt;</span> <span class="va">cutoff</span>,<span class="op">]</span>
+        <span class="op">}</span>
+        <span class="kw">else</span> <span class="op">{</span>
+            <span class="va">fit2.table</span> <span class="op">&lt;-</span> <span class="va">fit2.table</span><span class="op">[</span><span class="va">fit2.table</span><span class="op">[</span>,<span class="va">sort.by</span><span class="op">]</span> <span class="op">&lt;</span> <span class="va">cutoff</span>,<span class="op">]</span>
+        <span class="op">}</span>
+    <span class="op">}</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">fit2.table</span><span class="op">)</span>
+<span class="op">}</span></code></pre></div>
 <p>Now, let us test the newly defined function on our data.</p>
-<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="no">fit3table</span> <span class="kw">&lt;-</span> <span class="fu">run_limma</span>(<span class="no">dat</span>,<span class="kw">treatment</span><span class="kw">=</span><span class="st">"diseaseState"</span>,<span class="kw">cond</span><span class="kw">=</span><span class="st">"basal"</span>,<span class="kw">control</span><span class="kw">=</span><span class="st">"nonbasal"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fit3table</span> <span class="op">&lt;-</span> <span class="fu">run_limma</span><span class="op">(</span><span class="va">dat</span>,treatment<span class="op">=</span><span class="st">"diseaseState"</span>,cond<span class="op">=</span><span class="st">"basal"</span>,control<span class="op">=</span><span class="st">"nonbasal"</span><span class="op">)</span></code></pre></div>
 <pre><code>## running limma</code></pre>
-<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fit3table</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">fit3table</span><span class="op">)</span></code></pre></div>
 <pre><code>##       affy_hg_u133_plus_2 hgnc_symbol
 ## MLPH          218211_s_at        MLPH
 ## FOXA1           237086_at       FOXA1
@@ -398,8 +413,9 @@ y = \beta_{\not{basal}} X_{\not{basal}} + \beta_{basal}X_{basal},
 ## AGR2  -5.139503 7.915368 -12.95288 1.488409e-16 1.116307e-13 27.48939
 ## SFRP1  4.144489 8.377033  12.32914 8.162432e-16 4.897459e-13 25.83515
 ## SIDT1 -2.605517 6.013343 -12.23990 1.045491e-15 5.227453e-13 25.59416</code></pre>
-<div class="sourceCode" id="cb28"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span>(<span class="no">fit2table</span>[,<span class="st">"t"</span>],<span class="no">fit3table</span>[<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">fit2table</span>),<span class="st">"t"</span>])</pre></body></html></div>
-<pre><code>## [1] "'is.NA' value mismatch: 2974 in current 0 in target"</code></pre>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span><span class="op">(</span><span class="va">fit2table</span><span class="op">[</span>,<span class="st">"t"</span><span class="op">]</span>,<span class="va">fit3table</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">fit2table</span><span class="op">)</span>,<span class="st">"t"</span><span class="op">]</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] "'is.NA' value mismatch: 2973 in current 0 in target"</code></pre>
 </div>
   </div>
 
@@ -416,7 +432,7 @@ y = \beta_{\not{basal}} X_{\not{basal}} + \beta_{basal}X_{basal},
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

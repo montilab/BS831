@@ -118,6 +118,9 @@
       <a href="../../articles/docs/KS_Enrichment.html">KS-based Enrichment</a>
     </li>
     <li>
+      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
+    </li>
+    <li>
       <a href="../../articles/docs/GeneSetProjectionGSVA.html">Gene Set Projection based on KS</a>
     </li>
     <li>
@@ -133,9 +136,6 @@
     </li>
     <li class="divider">
     <li class="dropdown-header">Clustering</li>
-    <li>
-      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
-    </li>
     <li>
       <a href="../../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -162,7 +162,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="HyperEnrichment_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>HyperGeometric Enrichment</h1>
@@ -176,7 +176,8 @@
 
     
     
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">BS831</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/montilab/BS831">BS831</a></span><span class="op">)</span></code></pre></div>
 <p>Here, we show the use of the <a href="https://en.wikipedia.org/wiki/Hypergeometric_distribution"> hyper-geometric distribution</a> to test for enrichment of a (biologically relevant) category (e.g., a pathway) in a differential gene expression signature. We will show the use of the functions <code>phyper</code> and <code>fisher.test</code>. We will then show the definition of a simple script to perform “hyper-enrichment” across multiple categories/pathways.</p>
 <p>Recall the set-up from the slides (<code>BS831_class05_ComparativeEnrichment.pptx</code>). <img src="../figs/hyper.enrichment.png" alt="enrichment"></p>
 <div id="loading-the-data" class="section level3">
@@ -184,12 +185,14 @@
 <a href="#loading-the-data" class="anchor"></a>Loading the Data</h3>
 <p>We start by loading the package containing the hyperEnrichment script.</p>
 <p>We start by loading the code containing the hyperEnrichment scripts.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">hyper</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">hyper</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">hyperGsets</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">hyperGsets</span><span class="op">)</span></code></pre></div>
 <pre><code>## GeneSet Object containing:  1320 gene sets</code></pre>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="co"># show the size of the first 10 genesets</span>
-<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span>(<span class="fu">getGeneSet</span>(<span class="no">hyperGsets</span>)[<span class="fl">1</span>:<span class="fl">10</span>],<span class="no">length</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># show the size of the first 10 genesets</span>
+<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="fu">getGeneSet</span><span class="op">(</span><span class="va">hyperGsets</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span>,<span class="va">length</span><span class="op">)</span></code></pre></div>
 <pre><code>##               KEGG_GLYCOLYSIS_GLUCONEOGENESIS 
 ##                                            62 
 ##                  KEGG_CITRATE_CYCLE_TCA_CYCLE 
@@ -210,14 +213,16 @@
 ##                                            17 
 ##           KEGG_PRIMARY_BILE_ACID_BIOSYNTHESIS 
 ##                                            16</code></pre>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="co"># show the size of the signatures</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span>(<span class="no">hyperSig</span>,<span class="no">length</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># show the size of the signatures</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">hyperSig</span>,<span class="va">length</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## control.UP control.DN     TAZ.UP     TAZ.DN     YAP.UP     YAP.DN TAZ+YAP.UP 
 ##         11         23         41         35        356        470        166 
 ## TAZ+YAP.DN  DPAGT1.UP  DPAGT1.DN 
 ##        381         70        199</code></pre>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="co"># let's rename the signatures</span>
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">hyperSig</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"UP"</span>,<span class="st">"REPRESSED"</span>,<span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"DN"</span>,<span class="st">"ACTIVATED"</span>,<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">hyperSig</span>)))</pre></body></html></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># let's rename the signatures</span>
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">hyperSig</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"UP"</span>,<span class="st">"REPRESSED"</span>,<span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"DN"</span>,<span class="st">"ACTIVATED"</span>,<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">hyperSig</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>The genesets (the categories) represent a subset of the genesets contained in the MSgigDB’s c2.cp compendium. The signatures represent the up- and down-regulated genes in oral cancer cell lines where one of several regulators (TAZ, YAP, TAZ/YAP, DPAGT1) was knocked down (KD).</p>
 <p>For example, the “YAP” signature was obtained by performing differential analysis on a 6-sample datasets corresponding to “knockdown <em>vs.</em> control” (3 <em>vs.</em> 3) experiments performed on the HSC3 oral cancer cell line. The genes significantly down-regulated (up-regulated) upon knockdown represent the genes assumed to be <em>activated</em> (<em>repressed</em>) by TAZ.</p>
 </div>
@@ -226,28 +231,31 @@
 <a href="#enrichment-test-by-phyper" class="anchor"></a>Enrichment test by <code>phyper</code>
 </h3>
 <p>We first test for enrichment of a single geneset in a single signature using the function <code>phyper</code> (the cumulative function of the hyper-geometric distribution). The background population is set to 23,467, which represents the number of annotated genes in the dataset used to derive the differential signature.</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="co">## background population</span>
-<span class="no">backpop</span> <span class="kw">&lt;-</span> <span class="fl">23467</span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## background population</span>
+<span class="va">backpop</span> <span class="op">&lt;-</span> <span class="fl">23467</span>
 
 <span class="co">## let us extract the signature of YAP-activated genes</span>
-<span class="no">signature</span> <span class="kw">&lt;-</span> <span class="no">hyperSig</span>$<span class="no">YAP.ACTIVATED</span>
+<span class="va">signature</span> <span class="op">&lt;-</span> <span class="va">hyperSig</span><span class="op">$</span><span class="va">YAP.ACTIVATED</span>
 
 <span class="co">## and a REACTOME pathway</span>
-<span class="no">pathway</span> <span class="kw">&lt;-</span> <span class="fu">getGeneSet</span>(<span class="no">hyperGsets</span>)<span class="kw">[[</span><span class="st">"REACTOME_TRANSCRIPTION"</span>]]
+<span class="va">pathway</span> <span class="op">&lt;-</span> <span class="fu">getGeneSet</span><span class="op">(</span><span class="va">hyperGsets</span><span class="op">)</span><span class="op">[[</span><span class="st">"REACTOME_TRANSCRIPTION"</span><span class="op">]</span><span class="op">]</span>
 
 <span class="co">## let's check the overlap (if any)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>( <span class="no">overlap</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/sets.html">intersect</a></span>(<span class="no">signature</span>,<span class="no">pathway</span>)) )</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span> <span class="va">overlap</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sets.html">intersect</a></span><span class="op">(</span><span class="va">signature</span>,<span class="va">pathway</span><span class="op">)</span><span class="op">)</span> <span class="op">)</span></code></pre></div>
 <pre><code>## [1] 17</code></pre>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="co">## let us take a look at the phyper arguments (call ?phyper for more details)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/args.html">args</a></span>(<span class="no">phyper</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## let us take a look at the phyper arguments (call ?phyper for more details)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/args.html">args</a></span><span class="op">(</span><span class="va">phyper</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## function (q, m, n, k, lower.tail = TRUE, log.p = FALSE) 
 ## NULL</code></pre>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="co">## let us apply the function to our data (see figure)</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/Hypergeometric.html">phyper</a></span>( <span class="kw">q</span><span class="kw">=</span><span class="no">overlap</span>-<span class="fl">1</span>,               <span class="co"># number of red marbles in the draw - 1 (see below)</span>
-        <span class="kw">m</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">pathway</span>),         <span class="co"># number of red marbles in urn</span>
-        <span class="kw">n</span><span class="kw">=</span><span class="no">backpop</span>-<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">pathway</span>), <span class="co"># number of green marbles in urn </span>
-        <span class="kw">k</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">signature</span>),       <span class="co"># Number of drawn marbles</span>
-        <span class="kw">lower.tail</span><span class="kw">=</span><span class="fl">FALSE</span>)          <span class="co"># compute P( X &gt; overlap ), hence the '-1' above</span></pre></body></html></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## let us apply the function to our data (see figure)</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/Hypergeometric.html">phyper</a></span><span class="op">(</span> q<span class="op">=</span><span class="va">overlap</span><span class="op">-</span><span class="fl">1</span>,               <span class="co"># number of red marbles in the draw - 1 (see below)</span>
+        m<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">pathway</span><span class="op">)</span>,         <span class="co"># number of red marbles in urn</span>
+        n<span class="op">=</span><span class="va">backpop</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">pathway</span><span class="op">)</span>, <span class="co"># number of green marbles in urn </span>
+        k<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">signature</span><span class="op">)</span>,       <span class="co"># Number of drawn marbles</span>
+        lower.tail<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>          <span class="co"># compute P( X &gt; overlap ), hence the '-1' above</span></code></pre></div>
 <pre><code>## [1] 1.262929e-06</code></pre>
 <p>Clearly, the category (pathway) “REACTOME_TRANSCRIPTOME” is highly significantly enriched in the signature of YAP-activated genes.</p>
 </div>
@@ -256,7 +264,8 @@
 <a href="#enrichment-test-by-fisher-test" class="anchor"></a>Enrichment test by <code>fisher.test</code>
 </h3>
 <p>We then show how we can obtain equivalent results using the <code>fisher.test</code> function. We first need to properly fill-in a contingency table, and then apply the function.</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="co">## we need to define the contingency table</span>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## we need to define the contingency table</span>
 <span class="co">##</span>
 <span class="co">##       | DRAWN   !DRAWN | TOT</span>
 <span class="co">## ------+----------------+----</span>
@@ -265,17 +274,18 @@
 <span class="co">## ------+----------------+----</span>
 <span class="co">##   TOT |   k      n-k   |  n</span>
 
-<span class="no">contable</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(
-    <span class="kw">dg</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">signature</span>)-<span class="no">overlap</span>,
-    <span class="kw">dr</span><span class="kw">=</span><span class="no">overlap</span>,
-    <span class="kw">ng</span><span class="kw">=</span><span class="no">backpop</span>-<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">signature</span>)-<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">pathway</span>)+<span class="no">overlap</span>,
-    <span class="kw">nr</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">pathway</span>)-<span class="no">overlap</span>),<span class="fl">2</span>,<span class="fl">2</span>,<span class="kw">dimnames</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"GREEN"</span>,<span class="st">"RED"</span>),<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"DRAWN"</span>,<span class="st">"not DRAWN"</span>)))
+<span class="va">contable</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
+    dg<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">signature</span><span class="op">)</span><span class="op">-</span><span class="va">overlap</span>,
+    dr<span class="op">=</span><span class="va">overlap</span>,
+    ng<span class="op">=</span><span class="va">backpop</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">signature</span><span class="op">)</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">pathway</span><span class="op">)</span><span class="op">+</span><span class="va">overlap</span>,
+    nr<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">pathway</span><span class="op">)</span><span class="op">-</span><span class="va">overlap</span><span class="op">)</span>,<span class="fl">2</span>,<span class="fl">2</span>,dimnames<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"GREEN"</span>,<span class="st">"RED"</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"DRAWN"</span>,<span class="st">"not DRAWN"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">contable</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">contable</span><span class="op">)</span></code></pre></div>
 <pre><code>##       DRAWN not DRAWN
 ## GREEN   453     22804
 ## RED      17       193</code></pre>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/stats/fisher.test.html">fisher.test</a></span>(<span class="no">contable</span>,<span class="kw">alt</span><span class="kw">=</span><span class="st">"less"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/fisher.test.html">fisher.test</a></span><span class="op">(</span><span class="va">contable</span>,alt<span class="op">=</span><span class="st">"less"</span><span class="op">)</span></code></pre></div>
 <pre><code>## 
 ##  Fisher's Exact Test for Count Data
 ## 
@@ -293,8 +303,9 @@
 <h3 class="hasAnchor">
 <a href="#defining-and-applying-a-hyper-enrichment-function" class="anchor"></a>Defining and applying a “Hyper-Enrichment” function</h3>
 <p>We here define a (relatively) simple function, <code>hyperEnrichment</code>, to run hyper-geometric-based enrichment tests on multiple signatures and mutiple genesets.</p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="co">## defined in CBMRtools</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">hyperEnrichment</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## defined in CBMRtools</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">hyperEnrichment</span><span class="op">)</span></code></pre></div>
 <pre><code>## function
 ## (
 ##    drawn,          # one or more sets of 'drawn' items (e.g., genes). Basically, a list of signatures.
@@ -420,8 +431,9 @@
 ## }
 ## &lt;environment: namespace:BS831&gt;</code></pre>
 <p>We then apply it to the list of oral cancer knockdown signatures and two MSigDB geneset compendia, the set of canonical pathways <a href="http://software.broadinstitute.org/gsea/msigdb/genesets.jsp?collection=CP"> c2.cp</a> and a set of hallmark genesets <a href="http://software.broadinstitute.org/gsea/msigdb/genesets.jsp?collection=H"> h.all</a> [<a href="http://www.ncbi.nlm.nih.gov/pubmed/26771021">Liberzon et al., 2015</a>].</p>
-<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">openxlsx</span>)
-<span class="no">hyperE</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/hyperEnrichment.html">hyperEnrichment</a></span>(<span class="kw">drawn</span><span class="kw">=</span><span class="no">hyperSig</span>,<span class="kw">categories</span><span class="kw">=</span><span class="fu">getGeneSet</span>(<span class="no">hyperGsets</span>),<span class="kw">ntotal</span><span class="kw">=</span><span class="no">backpop</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ycphs.github.io/openxlsx/index.html">openxlsx</a></span><span class="op">)</span> 
+<span class="va">hyperE</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/hyperEnrichment.html">hyperEnrichment</a></span><span class="op">(</span>drawn<span class="op">=</span><span class="va">hyperSig</span>,categories<span class="op">=</span><span class="fu">getGeneSet</span><span class="op">(</span><span class="va">hyperGsets</span><span class="op">)</span>,ntotal<span class="op">=</span><span class="va">backpop</span><span class="op">)</span> </code></pre></div>
 <pre><code>## Testing 10 drawsets on 1320 categories and 8428 total items ..
 ## *** Testing control.REPRESSED .. 4/11 annotated genes found (min fdr: 1)
 ## *** Testing control.ACTIVATED .. 8/23 annotated genes found (min fdr: 0.057)
@@ -442,7 +454,8 @@
 ## N(FDR&lt;=0.25):       130
 ## N(FDR&lt;=0.05):        67
 ## N(FDR&lt;=0.01):        41</code></pre>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">hyperE</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">hyperE</span><span class="op">)</span></code></pre></div>
 <pre><code>##      set                 pval     fdr                 set annotated set size
 ## [1,] "control.REPRESSED" "0.0051" "0.278181818181818" "1"           "11"    
 ## [2,] "control.REPRESSED" "0.0056" "0.29568"           "1"           "11"    
@@ -471,8 +484,9 @@
 ## [4,] "BGN"  
 ## [5,] "BGN"  
 ## [6,] "SPON2"</code></pre>
-<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="no">hyperE.fdr25</span> <span class="kw">&lt;-</span> <span class="no">hyperE</span>[<span class="no">hyperE</span>[,<span class="st">'fdr'</span>]<span class="kw">&lt;=</span><span class="fl">0.25</span>,]
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">hyperE.fdr25</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">hyperE.fdr25</span> <span class="op">&lt;-</span> <span class="va">hyperE</span><span class="op">[</span><span class="va">hyperE</span><span class="op">[</span>,<span class="st">'fdr'</span><span class="op">]</span><span class="op">&lt;=</span><span class="fl">0.25</span>,<span class="op">]</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">hyperE.fdr25</span><span class="op">)</span></code></pre></div>
 <pre><code>##      set                 pval      fdr                   set annotated set size
 ## [1,] "control.ACTIVATED" "4.3e-05" "0.00423582089552239" "3"           "23"    
 ## [2,] "control.ACTIVATED" "0.00037" "0.0299631901840491"  "2"           "23"    
@@ -494,12 +508,14 @@
 ## [4,] "KEGG_HEMATOPOIETIC_CELL_LINEAGE"                  "IL1R2,CSF2"     
 ## [5,] "WNT_SIGNALING"                                    "FOSL1,WNT5A"    
 ## [6,] "REACTOME_DEGRADATION_OF_THE_EXTRACELLULAR_MATRIX" "MMP1,MMP13"</code></pre>
-<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="co">## let us save it as a '.xlsx' object for you to inspect</span>
-<span class="fu"><a href="https://rdrr.io/pkg/openxlsx/man/write.xlsx.html">write.xlsx</a></span>(<span class="no">hyperE.fdr25</span>, <span class="kw">file</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="kw">package</span><span class="kw">=</span><span class="st">"BS831"</span>), <span class="st">"hyperE.fdr25.xls"</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## let us save it as a '.xlsx' object for you to inspect</span>
+<span class="fu"><a href="https://rdrr.io/pkg/openxlsx/man/write.xlsx.html">write.xlsx</a></span><span class="op">(</span><span class="va">hyperE.fdr25</span>, file<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package<span class="op">=</span><span class="st">"BS831"</span><span class="op">)</span>, <span class="st">"hyperE.fdr25.xls"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Let’s load a different geneset compendium (hallmark genesets)</p>
-<div class="sourceCode" id="cb28"><html><body><pre class="r"><span class="no">HALL</span> <span class="kw">&lt;-</span> <span class="fu">new</span>(<span class="st">"GeneSet"</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="kw">package</span><span class="kw">=</span><span class="st">"BS831"</span>), <span class="st">"h.all.v6.1.symbols.gmt"</span>))
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">HALL</span> <span class="op">&lt;-</span> <span class="fu">new</span><span class="op">(</span><span class="st">"GeneSet"</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package<span class="op">=</span><span class="st">"BS831"</span><span class="op">)</span>, <span class="st">"h.all.v6.1.symbols.gmt"</span><span class="op">)</span><span class="op">)</span>
 <span class="co"># show the size of the first 10 genesets</span>
-<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span>(<span class="fu">getGeneSet</span>(<span class="no">HALL</span>)[<span class="fl">1</span>:<span class="fl">10</span>],<span class="no">length</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="fu">getGeneSet</span><span class="op">(</span><span class="va">HALL</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span>,<span class="va">length</span><span class="op">)</span></code></pre></div>
 <pre><code>##    HALLMARK_TNFA_SIGNALING_VIA_NFKB                    HALLMARK_HYPOXIA 
 ##                                 200                                 200 
 ##    HALLMARK_CHOLESTEROL_HOMEOSTASIS            HALLMARK_MITOTIC_SPINDLE 
@@ -510,7 +526,8 @@
 ##                                  87                                 150 
 ##             HALLMARK_G2M_CHECKPOINT                  HALLMARK_APOPTOSIS 
 ##                                 200                                 161</code></pre>
-<div class="sourceCode" id="cb30"><html><body><pre class="r"><span class="no">hyperHALL</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../../reference/hyperEnrichment.html">hyperEnrichment</a></span>(<span class="kw">drawn</span><span class="kw">=</span><span class="no">hyperSig</span>,<span class="kw">categories</span><span class="kw">=</span><span class="fu">getGeneSet</span>(<span class="no">HALL</span>),<span class="kw">ntotal</span><span class="kw">=</span><span class="no">backpop</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">hyperHALL</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/hyperEnrichment.html">hyperEnrichment</a></span><span class="op">(</span>drawn<span class="op">=</span><span class="va">hyperSig</span>,categories<span class="op">=</span><span class="fu">getGeneSet</span><span class="op">(</span><span class="va">HALL</span><span class="op">)</span>,ntotal<span class="op">=</span><span class="va">backpop</span><span class="op">)</span></code></pre></div>
 <pre><code>## Testing 10 drawsets on 50 categories and 4386 total items ..
 ## *** Testing control.REPRESSED .. insufficient annotated genes in the drawn set:  NA 
 ## not enough items drawn
@@ -532,8 +549,9 @@
 ## N(FDR&lt;=0.25):        80
 ## N(FDR&lt;=0.05):        34
 ## N(FDR&lt;=0.01):        15</code></pre>
-<div class="sourceCode" id="cb32"><html><body><pre class="r"><span class="no">hyperHALL.fdr25</span> <span class="kw">&lt;-</span> <span class="no">hyperHALL</span>[<span class="no">hyperHALL</span>[,<span class="st">'fdr'</span>]<span class="kw">&lt;=</span><span class="fl">0.25</span>,]
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">hyperHALL.fdr25</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">hyperHALL.fdr25</span> <span class="op">&lt;-</span> <span class="va">hyperHALL</span><span class="op">[</span><span class="va">hyperHALL</span><span class="op">[</span>,<span class="st">'fdr'</span><span class="op">]</span><span class="op">&lt;=</span><span class="fl">0.25</span>,<span class="op">]</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">hyperHALL.fdr25</span><span class="op">)</span></code></pre></div>
 <pre><code>##      set                 pval      fdr                  set annotated set size
 ## [1,] "control.ACTIVATED" "0.00095" "0.01425"            "3"           "23"    
 ## [2,] "control.ACTIVATED" "0.0033"  "0.0353571428571429" "2"           "23"    
@@ -571,7 +589,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

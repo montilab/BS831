@@ -118,6 +118,9 @@
       <a href="../../articles/docs/KS_Enrichment.html">KS-based Enrichment</a>
     </li>
     <li>
+      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
+    </li>
+    <li>
       <a href="../../articles/docs/GeneSetProjectionGSVA.html">Gene Set Projection based on KS</a>
     </li>
     <li>
@@ -133,9 +136,6 @@
     </li>
     <li class="divider">
     <li class="dropdown-header">Clustering</li>
-    <li>
-      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
-    </li>
     <li>
       <a href="../../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -162,7 +162,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="Clustering_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Clustering and Heatmap Visualization</h1>
@@ -176,33 +176,36 @@
 
     
     
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">BS831</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">Biobase</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">mclust</span>)
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/montilab/BS831">BS831</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">Biobase</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://mclust-org.github.io/mclust/">mclust</a></span><span class="op">)</span>
 <span class="co">#source("http://bioconductor.org/biocLite.R")</span>
 <span class="co">#biocLite("ConsensusClusterPlus")</span>
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">ConsensusClusterPlus</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">cba</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">pheatmap</span>)</pre></body></html></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">ConsensusClusterPlus</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">cba</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">pheatmap</span><span class="op">)</span></code></pre></div>
 <p>In this module, we illustrate the use of Hierarchical Clustering, Consensus Clustering, and Model Based Clustering (or Probabilistic Clustering) based on Finite Mixtures.</p>
 <p>Notice that in this case, all three metods correctly partition the data, and Consensus Clustering and Probabilistic Clustering select the ‘correct’ number of clusters. We put ‘correct’ between quotes, since the known disease state partition is not necessarily the data-driven dominant partition (see <a href="http://montilab.bumc.bu.edu/~montilab/bibliography/MachineLearning2003_052_0091_ConsensusClustering.pdf">Monti et al., Machine Learning 2003</a>, Section 4.2.2, and note) for a discussion of this point).</p>
 <div id="loading-the-data" class="section level3">
 <h3 class="hasAnchor">
 <a href="#loading-the-data" class="anchor"></a>Loading the Data</h3>
 <p>We start by uploading the necessary data (a Breast Cancer dataset), and restricting the dataset to the 3 largest sample groups.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">AEDAT.collapsed.mad4k</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">AEDAT.collapsed.mad4k</span><span class="op">)</span>
 
-<span class="no">eset</span> <span class="kw">&lt;-</span> <span class="no">AEDAT.collapsed.mad4k</span>
-<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="no">eset</span>$<span class="no">Characteristics.DiseaseState</span>)</pre></body></html></div>
+<span class="va">eset</span> <span class="op">&lt;-</span> <span class="va">AEDAT.collapsed.mad4k</span>
+<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">eset</span><span class="op">$</span><span class="va">Characteristics.DiseaseState</span><span class="op">)</span></code></pre></div>
 <pre><code>## 
 ##    BRCA1-associated      non-basal-like              normal sporadic basal-like 
 ##                   2                  20                   7                  18</code></pre>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="co">## restrict to 3 classes</span>
-<span class="no">samples.keep</span> <span class="kw">&lt;-</span> <span class="no">eset</span>$<span class="no">Characteristics.DiseaseState</span> <span class="kw">%in%</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"non-basal-like"</span>,<span class="st">"sporadic basal-like"</span>,<span class="st">"normal"</span>)
-<span class="no">cancerSet</span> <span class="kw">&lt;-</span> <span class="no">eset</span>[,<span class="no">samples.keep</span>]
-<span class="no">pheno</span> <span class="kw">&lt;-</span> <span class="no">cancerSet</span>$<span class="no">Characteristics.DiseaseState</span>
-<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="no">pheno</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## restrict to 3 classes</span>
+<span class="va">samples.keep</span> <span class="op">&lt;-</span> <span class="va">eset</span><span class="op">$</span><span class="va">Characteristics.DiseaseState</span> <span class="op">%in%</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"non-basal-like"</span>,<span class="st">"sporadic basal-like"</span>,<span class="st">"normal"</span><span class="op">)</span>
+<span class="va">cancerSet</span> <span class="op">&lt;-</span> <span class="va">eset</span><span class="op">[</span>,<span class="va">samples.keep</span><span class="op">]</span>
+<span class="va">pheno</span> <span class="op">&lt;-</span> <span class="va">cancerSet</span><span class="op">$</span><span class="va">Characteristics.DiseaseState</span>
+<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">pheno</span><span class="op">)</span></code></pre></div>
 <pre><code>## pheno
 ##      non-basal-like              normal sporadic basal-like 
 ##                  20                   7                  18</code></pre>
@@ -211,76 +214,79 @@
 <h3 class="hasAnchor">
 <a href="#hierarchical-clustering-and-heatmap" class="anchor"></a>Hierarchical Clustering and Heatmap</h3>
 <p>We first apply simple hierarchical clustering to the 4K-gene dataset. As it is shown below, the clustering results already perfectly recapitulate the known stratification.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="co">## hclustering + heatmap</span>
-<span class="no">assayData</span> <span class="kw">&lt;-</span> <span class="kw pkg">Biobase</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">cancerSet</span>)
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## hclustering + heatmap</span>
+<span class="va">assayData</span> <span class="op">&lt;-</span> <span class="fu">Biobase</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">cancerSet</span><span class="op">)</span>
 
 <span class="co">## use Eculidean distance for columns/samples</span>
 <span class="co">## use ward as agglomeration rule</span>
-<span class="no">hc01.col</span> <span class="kw">&lt;-</span> <span class="fu">hcopt</span>(<span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="no">assayData</span>)),<span class="kw">method</span><span class="kw">=</span><span class="st">"ward.D"</span>)
+<span class="va">hc01.col</span> <span class="op">&lt;-</span> <span class="fu">hcopt</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">assayData</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"ward.D"</span><span class="op">)</span>
 
 <span class="co">## use 1-correlation as distance for for rows/genes</span>
 <span class="co">## use ward as agglomeration rule</span>
-<span class="no">hc01.row</span> <span class="kw">&lt;-</span> <span class="fu">hcopt</span>(<span class="fu"><a href="https://rdrr.io/r/stats/dist.html">as.dist</a></span>(<span class="fl">1</span>-<span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="no">assayData</span>))),<span class="kw">method</span><span class="kw">=</span><span class="st">"ward.D"</span>)
+<span class="va">hc01.row</span> <span class="op">&lt;-</span> <span class="fu">hcopt</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html">as.dist</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">assayData</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"ward.D"</span><span class="op">)</span>
 
 <span class="co">## making heatmap</span>
-<span class="no">annot</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span>(<span class="no">cancerSet</span>$<span class="no">Characteristics.DiseaseState</span>))
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">annot</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">assayData</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">annot</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"DiseaseState"</span>)
+<span class="va">annot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">cancerSet</span><span class="op">$</span><span class="va">Characteristics.DiseaseState</span><span class="op">)</span><span class="op">)</span> 
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">annot</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">assayData</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">annot</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"DiseaseState"</span><span class="op">)</span>
 
-<span class="no">annotCol</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">DiseaseState</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"green"</span>, <span class="st">"orange"</span>, <span class="st">"purple"</span>))
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">annotCol</span>$<span class="no">DiseaseState</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span>(<span class="no">annot</span>$<span class="no">DiseaseState</span>)
+<span class="va">annotCol</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>DiseaseState <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"green"</span>, <span class="st">"orange"</span>, <span class="st">"purple"</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">annotCol</span><span class="op">$</span><span class="va">DiseaseState</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">annot</span><span class="op">$</span><span class="va">DiseaseState</span><span class="op">)</span>
+                 
+<span class="va">heatmaptitle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Breast Cancer Dataset: "</span>, <span class="st">"top MAD-filtered 4k genes"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span>
 
-<span class="no">heatmaptitle</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="st">"Breast Cancer Dataset: "</span>, <span class="st">"top MAD-filtered 4k genes"</span>, <span class="kw">sep</span> <span class="kw">=</span> <span class="st">""</span>)
-
-<span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html">pheatmap</a></span>(<span class="no">assayData</span>,
-         <span class="kw">title</span><span class="kw">=</span><span class="no">heatmaptitle</span>,
-         <span class="kw">color</span><span class="kw">=</span><span class="fu">colGradient</span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"blue"</span>,<span class="st">"white"</span>,<span class="st">"red"</span>),<span class="kw">length</span><span class="kw">=</span><span class="fl">15</span>),
-         <span class="kw">annotation_col</span> <span class="kw">=</span> <span class="no">annot</span>,
-         <span class="kw">annotation_colors</span> <span class="kw">=</span> <span class="no">annotCol</span>,
-         <span class="kw">cluster_rows</span><span class="kw">=</span><span class="no">hc01.row</span>,
-         <span class="kw">cluster_cols</span><span class="kw">=</span><span class="no">hc01.col</span>,
-         <span class="kw">show_rownames</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
-         <span class="kw">show_colnames</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
-         <span class="kw">scale</span> <span class="kw">=</span> <span class="st">"row"</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html">pheatmap</a></span><span class="op">(</span><span class="va">assayData</span>,
+         title<span class="op">=</span><span class="va">heatmaptitle</span>,
+         color<span class="op">=</span><span class="fu">colGradient</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"blue"</span>,<span class="st">"white"</span>,<span class="st">"red"</span><span class="op">)</span>,length<span class="op">=</span><span class="fl">15</span><span class="op">)</span>,
+         annotation_col <span class="op">=</span> <span class="va">annot</span>,
+         annotation_colors <span class="op">=</span> <span class="va">annotCol</span>,
+         cluster_rows<span class="op">=</span><span class="va">hc01.row</span>,
+         cluster_cols<span class="op">=</span><span class="va">hc01.col</span>,
+         show_rownames <span class="op">=</span> <span class="cn">FALSE</span>,
+         show_colnames <span class="op">=</span> <span class="cn">FALSE</span>,
+         scale <span class="op">=</span> <span class="st">"row"</span><span class="op">)</span></code></pre></div>
 <p><img src="Clustering_files/figure-html/hclust-1.png" width="700"></p>
 </div>
 <div id="consensus-clustering-and-heatmap" class="section level3">
 <h3 class="hasAnchor">
 <a href="#consensus-clustering-and-heatmap" class="anchor"></a>Consensus Clustering and Heatmap</h3>
 <p>We next apply Consensus Clustering, to try to determine, in a data-driven fashion, the number of clusters.</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="co">## next, run consensus clustering</span>
-<span class="no">CCout</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ConsensusClusterPlus/man/ConsensusClusterPlus.html">ConsensusClusterPlus</a></span>(<span class="kw pkg">Biobase</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">cancerSet</span>),<span class="kw">maxK</span><span class="kw">=</span><span class="fl">6</span>,<span class="kw">reps</span><span class="kw">=</span><span class="fl">50</span>,<span class="kw">pItem</span><span class="kw">=</span><span class="fl">0.8</span>,<span class="kw">pFeature</span><span class="kw">=</span><span class="fl">1</span>,
-                              <span class="kw">innerLinkage</span><span class="kw">=</span><span class="st">"ward.D"</span>, <span class="kw">finalLinkage</span><span class="kw">=</span><span class="st">"ward.D"</span>,
-                              <span class="kw">title</span><span class="kw">=</span><span class="st">"cc"</span>,<span class="kw">clusterAlg</span><span class="kw">=</span><span class="st">"hc"</span>,<span class="kw">distance</span><span class="kw">=</span><span class="st">"euclidean"</span>,<span class="kw">seed</span><span class="kw">=</span><span class="fl">1262118388.71279</span>,
-                              <span class="kw">plot</span><span class="kw">=</span><span class="kw">NULL</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## next, run consensus clustering</span>
+<span class="va">CCout</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ConsensusClusterPlus/man/ConsensusClusterPlus.html">ConsensusClusterPlus</a></span><span class="op">(</span><span class="fu">Biobase</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">cancerSet</span><span class="op">)</span>,maxK<span class="op">=</span><span class="fl">6</span>,reps<span class="op">=</span><span class="fl">50</span>,pItem<span class="op">=</span><span class="fl">0.8</span>,pFeature<span class="op">=</span><span class="fl">1</span>,
+                              innerLinkage<span class="op">=</span><span class="st">"ward.D"</span>, finalLinkage<span class="op">=</span><span class="st">"ward.D"</span>,
+                              title<span class="op">=</span><span class="st">"cc"</span>,clusterAlg<span class="op">=</span><span class="st">"hc"</span>,distance<span class="op">=</span><span class="st">"euclidean"</span>,seed<span class="op">=</span><span class="fl">1262118388.71279</span>,
+                              plot<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span></code></pre></div>
 <p><img src="Clustering_files/figure-html/consensus.clustering-1.png" width="700"><img src="Clustering_files/figure-html/consensus.clustering-2.png" width="700"><img src="Clustering_files/figure-html/consensus.clustering-3.png" width="700"><img src="Clustering_files/figure-html/consensus.clustering-4.png" width="700"><img src="Clustering_files/figure-html/consensus.clustering-5.png" width="700"><img src="Clustering_files/figure-html/consensus.clustering-6.png" width="700"><img src="Clustering_files/figure-html/consensus.clustering-7.png" width="700"><img src="Clustering_files/figure-html/consensus.clustering-8.png" width="700"><img src="Clustering_files/figure-html/consensus.clustering-9.png" width="700"></p>
 <p>Based on the inspection of the consensus clustering plots, we select 3 as the ‘optimal’ number of clusters.</p>
 <p>Consensus Clustering partitions the samples according to the known disease state.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="co">## notice the use of a variable (rather then using 3 directly in the following commands)</span>
-<span class="no">nc</span> <span class="kw">&lt;-</span> <span class="fl">3</span>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## notice the use of a variable (rather then using 3 directly in the following commands)</span>
+<span class="va">nc</span> <span class="op">&lt;-</span> <span class="fl">3</span>
 
 <span class="co">## remake heatmap, include both subtype and cluster assignments for visual comparison</span>
-<span class="no">annot1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="no">annot</span>,<span class="kw">cluster</span><span class="kw">=</span><span class="no">CCout</span><span class="kw">[[</span><span class="no">nc</span>]]$<span class="no">consensusClass</span>)
-<span class="no">annotCol</span>$<span class="no">cluster</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html">rainbow</a></span>(<span class="kw">n</span><span class="kw">=</span><span class="no">nc</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">annotCol</span>$<span class="no">cluster</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="no">annot1</span>$<span class="no">cluster</span>)
+<span class="va">annot1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">annot</span>,cluster<span class="op">=</span><span class="va">CCout</span><span class="op">[[</span><span class="va">nc</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">consensusClass</span><span class="op">)</span>
+<span class="va">annotCol</span><span class="op">$</span><span class="va">cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html">rainbow</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">nc</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">annotCol</span><span class="op">$</span><span class="va">cluster</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">annot1</span><span class="op">$</span><span class="va">cluster</span><span class="op">)</span>
 
 <span class="co">## use cluster tree from consensus clustering for column ordering in heatmap</span>
-<span class="no">clust.col</span> <span class="kw">&lt;-</span> <span class="no">CCout</span><span class="kw">[[</span><span class="no">nc</span>]]$<span class="no">consensusTree</span>
+<span class="va">clust.col</span> <span class="op">&lt;-</span> <span class="va">CCout</span><span class="op">[[</span><span class="va">nc</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">consensusTree</span>
 <span class="co">## determine row ordering based on de-novo clustering</span>
-<span class="no">clust.row</span> <span class="kw">&lt;-</span> <span class="fu">hcopt</span>(<span class="fu"><a href="https://rdrr.io/r/stats/dist.html">as.dist</a></span>(<span class="fl">1</span>-<span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">cancerSet</span>)))),<span class="kw">method</span><span class="kw">=</span><span class="st">"ward.D"</span>)
+<span class="va">clust.row</span> <span class="op">&lt;-</span> <span class="fu">hcopt</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html">as.dist</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">cancerSet</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"ward.D"</span><span class="op">)</span>
 
 <span class="co">##featureNames(cancerSet) &lt;- fData(cancerSet)$hgnc_symbol</span>
-<span class="no">heatmaptitle</span> <span class="kw">&lt;-</span> <span class="st">"Heatmap consensus clustering assignment vs. subtype\n top 4k z-score normalized"</span>
-<span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html">pheatmap</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">cancerSet</span>),
-         <span class="kw">title</span><span class="kw">=</span><span class="no">heatmaptitle</span>,
-         <span class="kw">color</span><span class="kw">=</span><span class="fu">colGradient</span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"blue"</span>,<span class="st">"white"</span>,<span class="st">"red"</span>),<span class="kw">length</span><span class="kw">=</span><span class="fl">15</span>),
-         <span class="kw">annotation_col</span> <span class="kw">=</span> <span class="no">annot</span>,
-         <span class="kw">annotation_colors</span> <span class="kw">=</span> <span class="no">annotCol</span>,
-         <span class="kw">cluster_rows</span><span class="kw">=</span><span class="no">clust.row</span>,
-         <span class="kw">cluster_cols</span><span class="kw">=</span><span class="no">clust.col</span>,
-         <span class="kw">show_rownames</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
-         <span class="kw">show_colnames</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
-         <span class="kw">scale</span> <span class="kw">=</span> <span class="st">"row"</span>)</pre></body></html></div>
+<span class="va">heatmaptitle</span> <span class="op">&lt;-</span> <span class="st">"Heatmap consensus clustering assignment vs. subtype\n top 4k z-score normalized"</span>
+<span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html">pheatmap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">cancerSet</span><span class="op">)</span>,
+         title<span class="op">=</span><span class="va">heatmaptitle</span>,
+         color<span class="op">=</span><span class="fu">colGradient</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"blue"</span>,<span class="st">"white"</span>,<span class="st">"red"</span><span class="op">)</span>,length<span class="op">=</span><span class="fl">15</span><span class="op">)</span>,
+         annotation_col <span class="op">=</span> <span class="va">annot</span>,
+         annotation_colors <span class="op">=</span> <span class="va">annotCol</span>,
+         cluster_rows<span class="op">=</span><span class="va">clust.row</span>,
+         cluster_cols<span class="op">=</span><span class="va">clust.col</span>,
+         show_rownames <span class="op">=</span> <span class="cn">FALSE</span>,
+         show_colnames <span class="op">=</span> <span class="cn">FALSE</span>,
+         scale <span class="op">=</span> <span class="st">"row"</span><span class="op">)</span></code></pre></div>
 <p><img src="Clustering_files/figure-html/cc.heatmap-1.png" width="700"></p>
 </div>
 <div id="probabilistic-clustering-finite-mixtures" class="section level3">
@@ -288,8 +294,9 @@
 <a href="#probabilistic-clustering-finite-mixtures" class="anchor"></a>Probabilistic Clustering (Finite Mixtures)</h3>
 <p>Finally, we apply Probabilistic Clustering as implemented in <code>Mclust</code>. We score models with numbers of clusters in the 1-4 range.</p>
 <p>Probabilisti Clustering also selects the ‘correct’ number of clusters (3) and partitions samples according to the known disease state.</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">MC</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://mclust-org.github.io/mclust/reference/Mclust.html">Mclust</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="kw pkg">Biobase</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">cancerSet</span>)),<span class="kw">G</span><span class="kw">=</span><span class="fl">1</span>:<span class="fl">4</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">MC</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">MC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://mclust-org.github.io/mclust/reference/Mclust.html">Mclust</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu">Biobase</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">cancerSet</span><span class="op">)</span><span class="op">)</span>,G<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">MC</span><span class="op">)</span></code></pre></div>
 <pre><code>## ---------------------------------------------------- 
 ## Gaussian finite mixture model fitted by EM algorithm 
 ## ---------------------------------------------------- 
@@ -302,8 +309,9 @@
 ## Clustering table:
 ##  1  2  3 
 ## 18 20  7</code></pre>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="co">## show cluster assignments (and disease state)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="no">MC</span>$<span class="no">classification</span>,<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">cancerSet</span>)$<span class="no">Characteristics.DiseaseState</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## show cluster assignments (and disease state)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">MC</span><span class="op">$</span><span class="va">classification</span>,<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">cancerSet</span><span class="op">)</span><span class="op">$</span><span class="va">Characteristics.DiseaseState</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>##          MC.classification pData.cancerSet..Characteristics.DiseaseState
 ## GSM85480                 1                           sporadic basal-like
 ## GSM85490                 1                           sporadic basal-like
@@ -311,8 +319,9 @@
 ## GSM85484                 1                           sporadic basal-like
 ## GSM85478                 1                           sporadic basal-like
 ## GSM85516                 3                                        normal</code></pre>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="co">## contingency table</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/ftable.html">ftable</a></span>(<span class="no">MC</span>$<span class="no">classification</span>,<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span>(<span class="no">cancerSet</span>)$<span class="no">Characteristics.DiseaseState</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## contingency table</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/ftable.html">ftable</a></span><span class="op">(</span><span class="va">MC</span><span class="op">$</span><span class="va">classification</span>,<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">cancerSet</span><span class="op">)</span><span class="op">$</span><span class="va">Characteristics.DiseaseState</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>##    non-basal-like normal sporadic basal-like
 ##                                             
 ## 1               0      0                  18
@@ -334,7 +343,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

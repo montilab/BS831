@@ -118,6 +118,9 @@
       <a href="../../articles/docs/KS_Enrichment.html">KS-based Enrichment</a>
     </li>
     <li>
+      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
+    </li>
+    <li>
       <a href="../../articles/docs/GeneSetProjectionGSVA.html">Gene Set Projection based on KS</a>
     </li>
     <li>
@@ -133,9 +136,6 @@
     </li>
     <li class="divider">
     <li class="dropdown-header">Clustering</li>
-    <li>
-      <a href="../../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
-    </li>
     <li>
       <a href="../../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -162,7 +162,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="quantileNormalization_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Quantile Normalization</h1>
@@ -177,18 +177,20 @@
     
     
 <p>Here, we present a simple example of quantile normalization. We will apply it directly to the matrix of gene expression profiles (from RNAseq data). However, notice that in microarrays, this normalization is usually performed at the probe level, before multiple probes are summarized into a single gene/transcript measurement.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">BS931</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">Biobase</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">limma</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/montilab/BS831">BS831</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">Biobase</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://bioinf.wehi.edu.au/limma">limma</a></span><span class="op">)</span></code></pre></div>
 <div id="loading-the-data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#loading-the-data" class="anchor"></a>Loading the Data</h2>
 <p>We load a “toy” dataset, representing a subset of de-identified samples from the TCGA HNSCC dataset, consisting of 15 adjacent epithelial (AE) and 15 grade-2 (g2) tumor samples. Since these are raw counts, we log2 transform them, to better approximate a normal distribution.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">HNSC_htseq_raw_counts_toy_AEvsG2</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">HNSC_htseq_raw_counts_toy_AEvsG2</span><span class="op">)</span>
 
-<span class="no">DAT</span> <span class="kw">&lt;-</span> <span class="no">HNSC_htseq_raw_counts_toy_AEvsG2</span>
-<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">DAT</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log2</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">DAT</span>)+<span class="fl">1</span>) <span class="co"># +1 to avoid log(0) = -infinity</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="no">DAT</span>$<span class="no">patient.neoplasm_histologic_grade</span>))</pre></body></html></div>
+<span class="va">DAT</span> <span class="op">&lt;-</span> <span class="va">HNSC_htseq_raw_counts_toy_AEvsG2</span>
+<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log2</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">)</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span> <span class="co"># +1 to avoid log(0) = -infinity</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">$</span><span class="va">patient.neoplasm_histologic_grade</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## 
 ## AE g2 
 ## 15 15</code></pre>
@@ -197,58 +199,65 @@
 <h2 class="hasAnchor">
 <a href="#comparing-two-samples-quantiles" class="anchor"></a>Comparing Two Samples’ Quantiles</h2>
 <p>Here we show how the quantiles of two samples’ distributions compare to each other. As you can see, while close, there are differences between the two.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">probs</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fl">0</span>,<span class="fl">1</span>,<span class="fl">.01</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">DAT</span>)[,<span class="fl">1</span>],<span class="kw">probs</span><span class="kw">=</span><span class="no">probs</span>),<span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">DAT</span>)[,<span class="fl">2</span>],<span class="kw">probs</span><span class="kw">=</span><span class="no">probs</span>),
-     <span class="kw">xlab</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">sampleNames</a></span>(<span class="no">DAT</span>)[<span class="fl">1</span>],<span class="kw">ylab</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">sampleNames</a></span>(<span class="no">DAT</span>)[<span class="fl">2</span>],<span class="kw">main</span><span class="kw">=</span><span class="st">"quantiles of raw data"</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span>(<span class="fl">0</span>,<span class="fl">1</span>,<span class="kw">col</span><span class="kw">=</span><span class="st">"red"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">probs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,<span class="fl">.01</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/pROC/man/plot.roc.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,probs<span class="op">=</span><span class="va">probs</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>,probs<span class="op">=</span><span class="va">probs</span><span class="op">)</span>,
+     xlab<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">sampleNames</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,ylab<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">sampleNames</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>,main<span class="op">=</span><span class="st">"quantiles of raw data"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,col<span class="op">=</span><span class="st">"red"</span><span class="op">)</span></code></pre></div>
 <p><img src="quantileNormalization_files/figure-html/explore-1.png" width="700"></p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">DAT</span>)[,<span class="fl">1</span>]),<span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">DAT</span>)[,<span class="fl">2</span>]),
-     <span class="kw">xlab</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">sampleNames</a></span>(<span class="no">DAT</span>)[<span class="fl">1</span>],<span class="kw">ylab</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">sampleNames</a></span>(<span class="no">DAT</span>)[<span class="fl">2</span>],<span class="kw">main</span><span class="kw">=</span><span class="st">"sorted raw data"</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span>(<span class="fl">0</span>,<span class="fl">1</span>,<span class="kw">col</span><span class="kw">=</span><span class="st">"red"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/plot.roc.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span>,
+     xlab<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">sampleNames</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,ylab<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">sampleNames</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>,main<span class="op">=</span><span class="st">"sorted raw data"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,col<span class="op">=</span><span class="st">"red"</span><span class="op">)</span></code></pre></div>
 <p><img src="quantileNormalization_files/figure-html/explore-2.png" width="700"></p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="co">## let's boxplot each sample's distribution (similar but not identical)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">DAT</span>)+<span class="fl">1</span>,<span class="kw">col</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"lightblue"</span>,<span class="st">"pink"</span>)[<span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span>(<span class="no">DAT</span>$<span class="no">patient.neoplasm_histologic_grade</span>)],<span class="kw">las</span><span class="kw">=</span><span class="fl">2</span>,<span class="kw">log</span><span class="kw">=</span><span class="st">"y"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## let's boxplot each sample's distribution (similar but not identical)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">)</span><span class="op">+</span><span class="fl">1</span>,col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"lightblue"</span>,<span class="st">"pink"</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">$</span><span class="va">patient.neoplasm_histologic_grade</span><span class="op">)</span><span class="op">]</span>,las<span class="op">=</span><span class="fl">2</span>,log<span class="op">=</span><span class="st">"y"</span><span class="op">)</span></code></pre></div>
 <p><img src="quantileNormalization_files/figure-html/explore-3.png" width="700"></p>
 </div>
 <div id="performing-quantile-normalization" class="section level2">
 <h2 class="hasAnchor">
 <a href="#performing-quantile-normalization" class="anchor"></a>Performing Quantile Normalization</h2>
 <p>Below, we show operationally how to carry out quantile normalization using ranking and sorting.</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="co">## save the original ranking (within each column)</span>
-<span class="no">rnk</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">DAT</span>),<span class="fl">2</span>,<span class="no">rank</span>,<span class="kw">ties.method</span><span class="kw">=</span><span class="st">"first"</span>)
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## save the original ranking (within each column)</span>
+<span class="va">rnk</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">)</span>,<span class="fl">2</span>,<span class="va">rank</span>,ties.method<span class="op">=</span><span class="st">"first"</span><span class="op">)</span>
 
 <span class="co">## notice that</span>
 <span class="co">##   X == sort(X)[rank(X,ties='first')]</span>
 <span class="co">## this equivalence will be used below</span>
 
 <span class="co">## sort each column from smallest to largest</span>
-<span class="no">srt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">DAT</span>),<span class="fl">2</span>,<span class="no">sort</span>)
+<span class="va">srt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">)</span>,<span class="fl">2</span>,<span class="va">sort</span><span class="op">)</span>
 
 <span class="co">## compute row means ..</span>
-<span class="no">MN</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowMeans</a></span>(<span class="no">srt</span>)
+<span class="va">MN</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowMeans</a></span><span class="op">(</span><span class="va">srt</span><span class="op">)</span>
 
 <span class="co">## replace each row entry in the expression matrix with the mean of that row</span>
 <span class="co">## .. and reorder according to original ranking</span>
-<span class="no">NRM</span> <span class="kw">&lt;-</span> <span class="no">DAT</span>
-<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">NRM</span>)[,] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="no">rnk</span>,<span class="fl">2</span>,<span class="kw">function</span>(<span class="no">z</span>) <span class="no">MN</span>[<span class="no">z</span>]) <span class="co"># use of [,] preserves row and column names</span></pre></body></html></div>
+<span class="va">NRM</span> <span class="op">&lt;-</span> <span class="va">DAT</span>
+<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">NRM</span><span class="op">)</span><span class="op">[</span>,<span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">rnk</span>,<span class="fl">2</span>,<span class="kw">function</span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="va">MN</span><span class="op">[</span><span class="va">z</span><span class="op">]</span><span class="op">)</span> <span class="co"># use of [,] preserves row and column names</span></code></pre></div>
 </div>
 <div id="comparing-the-samples-quantiles-after-normalization" class="section level2">
 <h2 class="hasAnchor">
 <a href="#comparing-the-samples-quantiles-after-normalization" class="anchor"></a>Comparing The Samples’ Quantiles After Normalization</h2>
 <p>Let us now see how the quantiles of the normalized data, as well as their boxplots, look like.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="co">## now, let us compare quantiles of two samples again</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">NRM</span>)[,<span class="fl">1</span>],<span class="kw">probs</span><span class="kw">=</span><span class="no">probs</span>),<span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">NRM</span>)[,<span class="fl">2</span>],<span class="kw">probs</span><span class="kw">=</span><span class="no">probs</span>),
-     <span class="kw">xlab</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">sampleNames</a></span>(<span class="no">DAT</span>)[<span class="fl">1</span>],<span class="kw">ylab</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">sampleNames</a></span>(<span class="no">DAT</span>)[<span class="fl">2</span>],<span class="kw">main</span><span class="kw">=</span><span class="st">"quantiles of normalized data"</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span>(<span class="fl">0</span>,<span class="fl">1</span>,<span class="kw">col</span><span class="kw">=</span><span class="st">"red"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## now, let us compare quantiles of two samples again</span>
+<span class="fu"><a href="https://rdrr.io/pkg/pROC/man/plot.roc.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">NRM</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,probs<span class="op">=</span><span class="va">probs</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">NRM</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>,probs<span class="op">=</span><span class="va">probs</span><span class="op">)</span>,
+     xlab<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">sampleNames</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,ylab<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">sampleNames</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>,main<span class="op">=</span><span class="st">"quantiles of normalized data"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,col<span class="op">=</span><span class="st">"red"</span><span class="op">)</span></code></pre></div>
 <p><img src="quantileNormalization_files/figure-html/plot.qnormalized-1.png" width="700"></p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="co">## by construction, the following two sorted vectors should be identical</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">NRM</span>)[,<span class="fl">1</span>]),<span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">NRM</span>)[,<span class="fl">2</span>]),
-     <span class="kw">xlab</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">sampleNames</a></span>(<span class="no">DAT</span>)[<span class="fl">1</span>],<span class="kw">ylab</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">sampleNames</a></span>(<span class="no">DAT</span>)[<span class="fl">2</span>],<span class="kw">main</span><span class="kw">=</span><span class="st">"sorted normalized data"</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span>(<span class="fl">0</span>,<span class="fl">1</span>,<span class="kw">col</span><span class="kw">=</span><span class="st">"red"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## by construction, the following two sorted vectors should be identical</span>
+<span class="fu"><a href="https://rdrr.io/pkg/pROC/man/plot.roc.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">NRM</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">NRM</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span>,
+     xlab<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">sampleNames</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,ylab<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">sampleNames</a></span><span class="op">(</span><span class="va">DAT</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>,main<span class="op">=</span><span class="st">"sorted normalized data"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,col<span class="op">=</span><span class="st">"red"</span><span class="op">)</span></code></pre></div>
 <p><img src="quantileNormalization_files/figure-html/plot.qnormalized-2.png" width="700"></p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="co">## let's boxplot each sample's distribution (identical)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span>(<span class="no">NRM</span>)+<span class="fl">1</span>,
-        <span class="kw">col</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"lightblue"</span>,<span class="st">"pink"</span>)[<span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span>(<span class="no">NRM</span>$<span class="no">patient.neoplasm_histologic_grade</span>)],<span class="kw">las</span><span class="kw">=</span><span class="fl">2</span>,<span class="kw">log</span><span class="kw">=</span><span class="st">"y"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## let's boxplot each sample's distribution (identical)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">NRM</span><span class="op">)</span><span class="op">+</span><span class="fl">1</span>,
+        col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"lightblue"</span>,<span class="st">"pink"</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">NRM</span><span class="op">$</span><span class="va">patient.neoplasm_histologic_grade</span><span class="op">)</span><span class="op">]</span>,las<span class="op">=</span><span class="fl">2</span>,log<span class="op">=</span><span class="st">"y"</span><span class="op">)</span></code></pre></div>
 <p><img src="quantileNormalization_files/figure-html/plot.qnormalized-3.png" width="700"></p>
 </div>
   </div>
@@ -268,7 +277,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
