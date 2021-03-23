@@ -34,7 +34,7 @@ build_article(name, pkg=".", lazy=FALSE)
 <p align="justify">
 The goal of this course is for the participants to develop a good
 understanding and hands-on skills in the design and analysis of 
-<quote>omics</quote> data from microarray and high-throughput sequencing
+'omics' data from microarray and high-throughput sequencing
 experiments, including data collection and management, statistical
 techniques for the identification of genes that have differential
 expression in different biological conditions, development of
