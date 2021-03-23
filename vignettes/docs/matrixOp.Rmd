@@ -66,9 +66,9 @@ It should be noted that there are actually native R functions for the
 efficient sum of a matrix rows and columns (`rowSums` and
 `colSums`). However, the point of this basic demonstration holds.
 
-The gain in efficiency is due to the fact that in the `for` loop formulation, all the operations are performed in R (which is an interpreted language, hence inefficient), and in the `apply` formulation there are 1M function calls, which is also inefficient. In the `%*%` formulation, there is a single R function call, and all the number crunching is performed in whatever (compiled) language the `%*%` is implemented, most likely Fortran.
+The gain in efficiency is due to the fact that in the `for` loop formulation, all the operations are performed in R (which is an interpreted language, hence inefficient), and in the `apply` formulation there are 1M function calls (1M calls of the `sum` function), which is also inefficient. In the `%*%` formulation, there is a single R function call, and all the number crunching is performed in whatever (compiled) language the `%*%` is implemented, most likely Fortran.
 
-In fact, notice that the gain in efficiency of the `%*%` over `apply` is largely lost when computing the column sum, since there are only 10 columns, hence only ten R function calls. The gain in efficient with respect to the `for` loop is still there.
+In fact, notice that the gain in efficiency of the `%*%` over `apply` is largely lost when computing the column sum, since there are only 10 columns, hence only ten calls of the `sum` function. The gain in efficient with respect to the `for` loop is still there.
 
 ```{r colSum.for}
 ## use of apply function

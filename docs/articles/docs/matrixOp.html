@@ -195,20 +195,20 @@
 <span class="va">T0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="va">tmp0</span> <span class="op">&lt;-</span> <span class="fu">forSum</span><span class="op">(</span><span class="va">X</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">T0</span><span class="op">)</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##   1.413   0.010   1.424</code></pre>
+##   1.521   0.016   1.546</code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## use of apply function</span>
 <span class="va">T1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="va">tmp1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">X</span>,<span class="fl">1</span>,<span class="va">sum</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">T1</span><span class="op">)</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##   1.738   0.066   1.805</code></pre>
+##   1.877   0.075   1.967</code></pre>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## use of matrix multiplication</span>
 <span class="va">In</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">10</span><span class="op">)</span> <span class="co"># define a unit vector</span>
 <span class="va">T2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="va">tmp2</span> <span class="op">&lt;-</span> <span class="va">X</span> <span class="op">%*%</span> <span class="va">In</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">T2</span><span class="op">)</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##    0.02    0.00    0.02</code></pre>
+##   0.023   0.000   0.022</code></pre>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## let's measure the speed-up</span>
 <span class="va">T1</span><span class="op">[</span><span class="st">"sys.self"</span><span class="op">]</span><span class="op">/</span><span class="va">T2</span><span class="op">[</span><span class="st">"sys.self"</span><span class="op">]</span> <span class="co"># CPU</span></code></pre></div>
@@ -217,45 +217,45 @@
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">T1</span><span class="op">[</span><span class="st">"user.self"</span><span class="op">]</span><span class="op">/</span><span class="va">T2</span><span class="op">[</span><span class="st">"user.self"</span><span class="op">]</span> <span class="co"># CPU + R/W</span></code></pre></div>
 <pre><code>## user.self 
-##      86.9</code></pre>
+##   81.6087</code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">T0</span><span class="op">[</span><span class="st">"user.self"</span><span class="op">]</span><span class="op">/</span><span class="va">T2</span><span class="op">[</span><span class="st">"user.self"</span><span class="op">]</span> <span class="co"># CPU + R/W</span></code></pre></div>
 <pre><code>## user.self 
-##     70.65</code></pre>
+##  66.13043</code></pre>
 <p>As you can see, the matrix-based sum achieves an 80-fold speed-up relative to the <code>apply</code>-based implementation, and more than a 600-fold speed-up relative to the <code>for loop</code>-based implementation.</p>
 <p>It should be noted that there are actually native R functions for the efficient sum of a matrix rows and columns (<code>rowSums</code> and <code>colSums</code>). However, the point of this basic demonstration holds.</p>
-<p>The gain in efficiency is due to the fact that in the <code>for</code> loop formulation, all the operations are performed in R (which is an interpreted language, hence inefficient), and in the <code>apply</code> formulation there are 1M function calls, which is also inefficient. In the <code><a href="https://rdrr.io/r/base/matmult.html">%*%</a></code> formulation, there is a single R function call, and all the number crunching is performed in whatever (compiled) language the <code><a href="https://rdrr.io/r/base/matmult.html">%*%</a></code> is implemented, most likely Fortran.</p>
-<p>In fact, notice that the gain in efficiency of the <code><a href="https://rdrr.io/r/base/matmult.html">%*%</a></code> over <code>apply</code> is largely lost when computing the column sum, since there are only 10 columns, hence only ten R function calls. The gain in efficient with respect to the <code>for</code> loop is still there.</p>
+<p>The gain in efficiency is due to the fact that in the <code>for</code> loop formulation, all the operations are performed in R (which is an interpreted language, hence inefficient), and in the <code>apply</code> formulation there are 1M function calls (1M calls of the <code>sum</code> function), which is also inefficient. In the <code><a href="https://rdrr.io/r/base/matmult.html">%*%</a></code> formulation, there is a single R function call, and all the number crunching is performed in whatever (compiled) language the <code><a href="https://rdrr.io/r/base/matmult.html">%*%</a></code> is implemented, most likely Fortran.</p>
+<p>In fact, notice that the gain in efficiency of the <code><a href="https://rdrr.io/r/base/matmult.html">%*%</a></code> over <code>apply</code> is largely lost when computing the column sum, since there are only 10 columns, hence only ten calls of the <code>sum</code> function. The gain in efficient with respect to the <code>for</code> loop is still there.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## use of apply function</span>
 <span class="va">T3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="va">tmp3</span> <span class="op">&lt;-</span> <span class="fu">forSum</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">T3</span><span class="op">)</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##   0.807   0.021   0.827</code></pre>
+##   0.881   0.028   0.916</code></pre>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## use of apply function</span>
 <span class="va">T4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="va">tmp4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">X</span>,<span class="fl">2</span>,<span class="va">sum</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">T4</span><span class="op">)</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##   0.093   0.029   0.122</code></pre>
+##   0.102   0.031   0.132</code></pre>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## use of matrix multiplication</span>
 <span class="va">In</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1000000</span><span class="op">)</span> <span class="co"># define a unit vector</span>
 <span class="va">T5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="va">tmp5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span> <span class="op">%*%</span> <span class="va">In</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">T5</span><span class="op">)</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##   0.054   0.020   0.073</code></pre>
+##   0.057   0.022   0.078</code></pre>
 <p>As noted, cognizant of this issue, R provides efficient functions to perform row and column sums.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">T6</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">T6</span><span class="op">)</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##   0.024   0.005   0.029</code></pre>
+##   0.027   0.005   0.031</code></pre>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">T7</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">T7</span><span class="op">)</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##   0.009   0.000   0.009</code></pre>
+##    0.01    0.00    0.01</code></pre>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
