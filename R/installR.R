@@ -23,6 +23,7 @@ installR <- function() {
                "openxlsx",
                "pamr",
                "pheatmap",
+               "pkgdown",
                "pROC",
                "Rmisc",
                "randomForest",
@@ -32,6 +33,7 @@ installR <- function() {
                "roxygen2",
                "statmod",
                "tsne",
+               "umap",
                "VennDiagram"
                )
      install.packages(pkgs,repos="http://cran.r-project.org")

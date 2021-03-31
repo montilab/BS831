@@ -22,7 +22,7 @@ fast.tscore <- function(x, cls=NULL, y=NULL, generalized=FALSE, do.test=FALSE,
   ##
   alternative <- match.arg(alternative)
 
-  if ( xor(is.null(y),is.null(cls)) )
+  if ( !xor(is.null(y),is.null(cls)) )
     stop( "must specify either y or cls" )
 
   if ( is.null(y) )
