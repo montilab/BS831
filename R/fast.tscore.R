@@ -5,7 +5,7 @@
 ##
 fast.tscore <- function(x, cls=NULL, y=NULL, generalized=FALSE, do.test=FALSE,
                         var.equal=FALSE, min.sd=NULL, alternative=c("two.sided","greater","less"),
-                        verbose=TRUE )
+                        verbose=FALSE )
 {
   ## INPUT:
   ##    x - m x n1 matrix (genes by experiments, condition 1)
@@ -44,7 +44,7 @@ fast.tscore <- function(x, cls=NULL, y=NULL, generalized=FALSE, do.test=FALSE,
   score <- NULL
   x.idx <- 1:ncol(x)
 
-  VERBOSE( verbose, ifelse( robust, "\tWilcoxon test .. ", "\tt test .. " ) )
+  VERBOSE( verbose, "\tt test .. " )
 
   n1 <- (ncol(x)); if (n1<2) stop( "need at least 2 obs per class" )
   n2 <- (ncol(y)); if (n2<2) stop( "need at least 2 obs per class" )
