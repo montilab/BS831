@@ -78,7 +78,7 @@ precision <- function( x, dir=1 )
 #################################################
 ## function: FAST SUM
 #################################################
-fast.sum <- function(x,cls=NULL,na.rm=F)
+fast.sum <- function(x,cls=NULL,na.rm=FALSE)
 {
   if (is.vector(x))
     return( fast.sum(matrix(x,1,length(x)),cls=cls) )
@@ -94,6 +94,7 @@ fast.sum <- function(x,cls=NULL,na.rm=F)
 #################################################
 ## function: FAST MEAN
 #################################################
+#' @export
 fast.mean <- function( x, cls=NULL, na.rm=FALSE )
 {
   if (is.vector(x))
@@ -128,6 +129,7 @@ fast.mean <- function( x, cls=NULL, na.rm=FALSE )
 #################################################
 ## function: FAST SD
 #################################################
+#' @export
 fast.sd <- function( x, cls=NULL, do.sqrt=TRUE, pooled=FALSE, var.equal=TRUE, na.rm=FALSE )
 {
   if (is.null(dim(x))) stop( "a 2D object expected" )
