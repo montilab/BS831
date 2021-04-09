@@ -109,3 +109,48 @@ summarize_results <- function(res, eset, class_id, control, treatment){
   res$log2fc[index] <- -abs(res$log2fc[index])
   return(res)
 }
+##################################################################
+## DESEQ DIFFANAL (w/ optional covariates)
+##################################################################
+#' @import Biobase
+#' @import DESeq2
+#' @export
+deseqDiffanal <- function( dat, pheno, covariate=NULL, verbose=TRUE )
+{
+  ## BEGIN input checks
+  if ( !is(dat,"ExpressionSet"))
+    stop( "dat expected to be an ExpressionSet: ", class(dat) )
+  if ( !(pheno %in% colnames(pData(dat))) )
+    stop( "unrecognized pheno:", pheno )
+  if ( !is.null(covariate) && !all(covariate %in% colnames(pData(dat))) )
+    stop( "unrecognized covariate:", paste(covariate,sep=", ") )
+  ## END input checks
+
+  ## Define the regression formula.
+  ## The phenotype is always last (so that DESeq2::results pulls it by default)
+  formula <- {
+    if (is.null(covariate))
+      ## ~ pheno
+      eval(paste("~",parse(text=pheno)))
+    else
+      ## ~ cov_1 + ... + cov_n + pheno
+      eval(paste("~",paste(sapply(covariate,function(Z) parse(text=Z)),collapse=" + "),
+                 "+",parse(text=pheno)))
+  }
+  VERBOSE(verbose, "formula: ", formula, "\n")
+
+  ## Properly format the dataset (and remove phenotype NA's if any)
+  datI <- dat[,!is.na(pData(dat)[,pheno])]
+  VERBOSE( verbose, paste0(paste(table(pData(datI)[,pheno]),collapse=" vs. "), "\n") )
+  dds <-DESeq2::DESeqDataSetFromMatrix(countData = exprs(datI),
+                                       colData = pData(datI),
+                                       design = eval(parse(text=formula)))
+
+  ## Perform differential analysis
+  dds <-DESeq2::DESeq(dds, parallel=TRUE)
+  dds_res <- DESeq2::results(dds, parallel = TRUE)
+  dds_res$dispersion <- DESeq2::dispersions(dds)
+
+  ## return results
+  dds_res
+}
