@@ -5,7 +5,7 @@ development:
 
 template:
   params:
-    bootswatch: simplex
+    bootswatch: cosmo
 
 authors:
   Stefano Monti:
