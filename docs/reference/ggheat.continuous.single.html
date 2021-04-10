@@ -6,13 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title><code>ggheat.continuous.single</code> ggheatmap function for plotting a single eset — ggheat.continuous.single • BS831</title>
+<title>ggheat.continuous.single ggheatmap function for plotting a single eset — ggheat.continuous.single • BS831</title>
 
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
@@ -41,7 +41,7 @@
   <link href="../extra.css" rel="stylesheet">
   <script src="../extra.js"></script>
 
-<meta property="og:title" content="<code>ggheat.continuous.single</code> ggheatmap function for plotting a single eset — ggheat.continuous.single" />
+<meta property="og:title" content="ggheat.continuous.single ggheatmap function for plotting a single eset — ggheat.continuous.single" />
 <meta property="og:description" content="ggheat.continuous.single ggheatmap function for plotting a single eset" />
 
 
@@ -160,6 +160,9 @@
       <a href="../articles/docs/KS_Enrichment.html">KS-based Enrichment</a>
     </li>
     <li>
+      <a href="../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
+    </li>
+    <li>
       <a href="../articles/docs/GeneSetProjectionGSVA.html">Gene Set Projection based on KS</a>
     </li>
     <li>
@@ -175,9 +178,6 @@
     </li>
     <li class="divider"></li>
     <li class="dropdown-header">Clustering</li>
-    <li>
-      <a href="../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
-    </li>
     <li>
       <a href="../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -216,23 +216,23 @@
     <p><code>ggheat.continuous.single</code> ggheatmap function for plotting a single eset</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ggheat.continuous.single</span>(
-  <span class='no'>eset</span>,
-  <span class='no'>hc</span>,
-  <span class='no'>hr</span>,
-  <span class='kw'>hmcolors</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>hmtitle</span> <span class='kw'>=</span> <span class='st'>"expression"</span>,
-  <span class='no'>col_lab</span>,
-  <span class='no'>col_legend</span>,
-  <span class='kw'>ylabstr</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='kw'>fout</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>p.heights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1.5</span>, <span class='fl'>0.5</span>, <span class='fl'>5</span>),
-  <span class='kw'>xsize</span> <span class='kw'>=</span> <span class='fl'>4</span>,
-  <span class='kw'>ysize</span> <span class='kw'>=</span> <span class='fl'>4</span>,
-  <span class='kw'>ysizelab</span> <span class='kw'>=</span> <span class='fl'>7</span>,
-  <span class='kw'>xright</span> <span class='kw'>=</span> <span class='fl'>0.24</span>,
-  <span class='kw'>override.hc</span> <span class='kw'>=</span> <span class='fl'>NA</span>
-)</pre>
+    <pre class="usage"><span class='fu'>ggheat.continuous.single</span><span class='op'>(</span>
+  <span class='va'>eset</span>,
+  <span class='va'>hc</span>,
+  <span class='va'>hr</span>,
+  hmcolors <span class='op'>=</span> <span class='cn'>NA</span>,
+  hmtitle <span class='op'>=</span> <span class='st'>"expression"</span>,
+  <span class='va'>col_lab</span>,
+  <span class='va'>col_legend</span>,
+  ylabstr <span class='op'>=</span> <span class='st'>""</span>,
+  fout <span class='op'>=</span> <span class='cn'>NA</span>,
+  p.heights <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1.5</span>, <span class='fl'>0.5</span>, <span class='fl'>5</span><span class='op'>)</span>,
+  xsize <span class='op'>=</span> <span class='fl'>4</span>,
+  ysize <span class='op'>=</span> <span class='fl'>4</span>,
+  ysizelab <span class='op'>=</span> <span class='fl'>7</span>,
+  xright <span class='op'>=</span> <span class='fl'>0.24</span>,
+  override.hc <span class='op'>=</span> <span class='cn'>NA</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -321,7 +321,7 @@ col_legend&lt;-list(COL1 = list(col_breaks = COL1levels,
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

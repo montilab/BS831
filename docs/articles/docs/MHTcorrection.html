@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Multiple-Hypothesis Correction • BS831</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../../bootstrap-toc.css">
 <script src="../../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -269,8 +269,8 @@
 
 <span class="co"># What does the output look like?</span>
 <span class="va">outList</span><span class="op">$</span><span class="va">Samps_10</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></code></pre></div>
-<pre><code>##      score.t        pval BFp       BHp
-## 27 -3.174271 0.005279612   1 0.7985444</code></pre>
+<pre><code>##     score.t        pval       BFp       BHp
+## 51 3.331967 0.003733701 0.7467403 0.4291216</code></pre>
 <div id="get-family-wise-error-rates-from-bonferroni-alpha-0-05" class="section level3">
 <h3 class="hasAnchor">
 <a href="#get-family-wise-error-rates-from-bonferroni-alpha-0-05" class="anchor"></a>Get family wise error rates from Bonferroni (alpha = 0.05)</h3>
@@ -322,8 +322,11 @@
 
 <span class="co">## What does the output look like?</span>
 <span class="va">haList</span><span class="op">$</span><span class="va">Samps_10</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></code></pre></div>
-<pre><code>##       score.t        pval       BFp       BHp
-## Ha23 3.544877 0.002603729 0.5207458 0.1323147</code></pre>
+<pre><code>##       score.t         pval         BFp         BHp
+## Ha25 5.890020 2.423153e-05 0.004846306 0.004846306
+## Ha11 5.141227 7.018181e-05 0.014036362 0.007018181
+## Ha46 4.824875 1.422735e-04 0.028454700 0.009484900
+## Ha22 4.690544 2.178593e-04 0.043571869 0.010892967</code></pre>
 <p>The rows with the prefix, <em>Ha</em>, come from the distribution for which the alternative hypthesis is true.</p>
 <div id="get-false-positive-and-false-negative-rates" class="section level3">
 <h3 class="hasAnchor">
@@ -370,23 +373,23 @@
 <span class="va">BonFP_FN</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">BonFP_FN</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">BonFP_FN</span><span class="op">)</span></code></pre></div>
 <pre><code>##            FalsePosi FalseNeg
-## Samps_10.1         0     1.00
-## Samps_10.2         0     0.94
-## Samps_10.3         0     0.94
-## Samps_10.4         0     0.98
-## Samps_10.5         0     1.00
-## Samps_10.6         0     0.98</code></pre>
+## Samps_10.1         0     0.92
+## Samps_10.2         0     0.96
+## Samps_10.3         0     1.00
+## Samps_10.4         0     1.00
+## Samps_10.5         0     0.98
+## Samps_10.6         0     1.00</code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Add column for sample size identifier</span>
 <span class="va">BonFP_FN</span><span class="op">$</span><span class="va">SampleSize</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">sub</a></span><span class="op">(</span><span class="st">"[.][[:digit:]]*"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">BonFP_FN</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">BonFP_FN</span><span class="op">)</span></code></pre></div>
 <pre><code>##            FalsePosi FalseNeg SampleSize
-## Samps_10.1         0     1.00   Samps_10
-## Samps_10.2         0     0.94   Samps_10
-## Samps_10.3         0     0.94   Samps_10
-## Samps_10.4         0     0.98   Samps_10
-## Samps_10.5         0     1.00   Samps_10
-## Samps_10.6         0     0.98   Samps_10</code></pre>
+## Samps_10.1         0     0.92   Samps_10
+## Samps_10.2         0     0.96   Samps_10
+## Samps_10.3         0     1.00   Samps_10
+## Samps_10.4         0     1.00   Samps_10
+## Samps_10.5         0     0.98   Samps_10
+## Samps_10.6         0     1.00   Samps_10</code></pre>
 </div>
 <div id="benjamini-hochberg-corrected-p-values" class="section level3">
 <h3 class="hasAnchor">
@@ -398,24 +401,24 @@
 <span class="co">## Concatenate the results for each sample size</span>
 <span class="va">BhFP_FN</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">BhFP_FN</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">BhFP_FN</span><span class="op">)</span></code></pre></div>
-<pre><code>##            FalsePosi FalseNeg
-## Samps_10.1         0     1.00
-## Samps_10.2         0     0.78
-## Samps_10.3         0     0.92
-## Samps_10.4         0     0.96
-## Samps_10.5         0     0.86
-## Samps_10.6         0     0.86</code></pre>
+<pre><code>##              FalsePosi FalseNeg
+## Samps_10.1 0.000000000     0.92
+## Samps_10.2 0.006666667     0.86
+## Samps_10.3 0.000000000     1.00
+## Samps_10.4 0.000000000     0.86
+## Samps_10.5 0.000000000     0.90
+## Samps_10.6 0.000000000     1.00</code></pre>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Add column for sample size identifier</span>
 <span class="va">BhFP_FN</span><span class="op">$</span><span class="va">SampleSize</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">sub</a></span><span class="op">(</span><span class="st">"[.][[:digit:]]*"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">BhFP_FN</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">BhFP_FN</span><span class="op">)</span></code></pre></div>
-<pre><code>##            FalsePosi FalseNeg SampleSize
-## Samps_10.1         0     1.00   Samps_10
-## Samps_10.2         0     0.78   Samps_10
-## Samps_10.3         0     0.92   Samps_10
-## Samps_10.4         0     0.96   Samps_10
-## Samps_10.5         0     0.86   Samps_10
-## Samps_10.6         0     0.86   Samps_10</code></pre>
+<pre><code>##              FalsePosi FalseNeg SampleSize
+## Samps_10.1 0.000000000     0.92   Samps_10
+## Samps_10.2 0.006666667     0.86   Samps_10
+## Samps_10.3 0.000000000     1.00   Samps_10
+## Samps_10.4 0.000000000     0.86   Samps_10
+## Samps_10.5 0.000000000     0.90   Samps_10
+## Samps_10.6 0.000000000     1.00   Samps_10</code></pre>
 </div>
 <div id="plot-results" class="section level3">
 <h3 class="hasAnchor">
@@ -427,12 +430,12 @@
 <span class="va">FP_FN</span><span class="op">$</span><span class="va">correction</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Bonferroni"</span>, <span class="st">"BH"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">BonFP_FN</span><span class="op">)</span><span class="op">)</span> <span class="co"># Add correction type</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">FP_FN</span><span class="op">)</span></code></pre></div>
 <pre><code>##            FalsePosi FalseNeg SampleSize correction
-## Samps_10.1         0     1.00   Samps_10 Bonferroni
-## Samps_10.2         0     0.94   Samps_10 Bonferroni
-## Samps_10.3         0     0.94   Samps_10 Bonferroni
-## Samps_10.4         0     0.98   Samps_10 Bonferroni
-## Samps_10.5         0     1.00   Samps_10 Bonferroni
-## Samps_10.6         0     0.98   Samps_10 Bonferroni</code></pre>
+## Samps_10.1         0     0.92   Samps_10 Bonferroni
+## Samps_10.2         0     0.96   Samps_10 Bonferroni
+## Samps_10.3         0     1.00   Samps_10 Bonferroni
+## Samps_10.4         0     1.00   Samps_10 Bonferroni
+## Samps_10.5         0     0.98   Samps_10 Bonferroni
+## Samps_10.6         0     1.00   Samps_10 Bonferroni</code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Create one column of False Positive and False Negative Rates</span>
 <span class="va">FP_FN</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/gather.html">gather</a></span><span class="op">(</span><span class="va">FP_FN</span>, key <span class="op">=</span> <span class="st">"statistic"</span>, value <span class="op">=</span> <span class="st">"measure"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span>

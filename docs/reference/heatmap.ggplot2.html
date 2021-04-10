@@ -12,7 +12,7 @@
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
@@ -161,6 +161,9 @@ expression set object" />
       <a href="../articles/docs/KS_Enrichment.html">KS-based Enrichment</a>
     </li>
     <li>
+      <a href="../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
+    </li>
+    <li>
       <a href="../articles/docs/GeneSetProjectionGSVA.html">Gene Set Projection based on KS</a>
     </li>
     <li>
@@ -176,9 +179,6 @@ expression set object" />
     </li>
     <li class="divider"></li>
     <li class="dropdown-header">Clustering</li>
-    <li>
-      <a href="../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
-    </li>
     <li>
       <a href="../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -218,37 +218,37 @@ expression set object" />
 expression set object</p>
     </div>
 
-    <pre class="usage"><span class='fu'>heatmap.ggplot2</span>(
-  <span class='no'>eSet</span>,
-  <span class='kw'>brewer.pal.name</span> <span class='kw'>=</span> <span class='st'>"RdBu"</span>,
-  <span class='kw'>brewer.pal.rev</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>brewer.numColors</span> <span class='kw'>=</span> <span class='fl'>11</span>,
-  <span class='kw'>col.legend.brewer</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='kw'>row.legend.brewer</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='kw'>col.clust</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>row.clust</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>col.clust.hc</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>row.clust.hc</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>col.lab</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='kw'>row.lab</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='kw'>heatmap.y.text</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>heatmap.x.text</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>heatmap.y.text.size</span> <span class='kw'>=</span> <span class='fl'>7</span>,
-  <span class='kw'>heatmap.x.text.size</span> <span class='kw'>=</span> <span class='fl'>6</span>,
-  <span class='kw'>heatmap.colorlegend.name</span> <span class='kw'>=</span> <span class='st'>"val"</span>,
-  <span class='kw'>title.text</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='kw'>col.legend.name</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='kw'>row.legend.name</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='kw'>legend.lab.max.char</span> <span class='kw'>=</span> <span class='fl'>15</span>,
-  <span class='kw'>row.scaling</span> <span class='kw'>=</span> <span class='st'>"none"</span>,
-  <span class='kw'>z.norm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>cuttree.col</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>cuttree.row</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>grid.heights</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>grid.widths</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>show</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>heatmap.ggplot2</span><span class='op'>(</span>
+  <span class='va'>eSet</span>,
+  brewer.pal.name <span class='op'>=</span> <span class='st'>"RdBu"</span>,
+  brewer.pal.rev <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  brewer.numColors <span class='op'>=</span> <span class='fl'>11</span>,
+  col.legend.brewer <span class='op'>=</span> <span class='st'>""</span>,
+  row.legend.brewer <span class='op'>=</span> <span class='st'>""</span>,
+  col.clust <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  row.clust <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  col.clust.hc <span class='op'>=</span> <span class='cn'>NA</span>,
+  row.clust.hc <span class='op'>=</span> <span class='cn'>NA</span>,
+  col.lab <span class='op'>=</span> <span class='st'>""</span>,
+  row.lab <span class='op'>=</span> <span class='st'>""</span>,
+  heatmap.y.text <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  heatmap.x.text <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  heatmap.y.text.size <span class='op'>=</span> <span class='fl'>7</span>,
+  heatmap.x.text.size <span class='op'>=</span> <span class='fl'>6</span>,
+  heatmap.colorlegend.name <span class='op'>=</span> <span class='st'>"val"</span>,
+  title.text <span class='op'>=</span> <span class='st'>""</span>,
+  col.legend.name <span class='op'>=</span> <span class='st'>""</span>,
+  row.legend.name <span class='op'>=</span> <span class='st'>""</span>,
+  legend.lab.max.char <span class='op'>=</span> <span class='fl'>15</span>,
+  row.scaling <span class='op'>=</span> <span class='st'>"none"</span>,
+  z.norm <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  cuttree.col <span class='op'>=</span> <span class='fl'>0</span>,
+  cuttree.row <span class='op'>=</span> <span class='fl'>0</span>,
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  grid.heights <span class='op'>=</span> <span class='cn'>NA</span>,
+  grid.widths <span class='op'>=</span> <span class='cn'>NA</span>,
+  show <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -375,72 +375,91 @@ expression set object</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='co'>#Use example data #1, for data set information: ?eSet1</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>eSet.brca.100</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: data set ‘eSet.brca.100’ not found</span></div><div class='input'><span class='no'>eSet1</span><span class='kw'>&lt;-</span><span class='no'>eSet.brca.100</span></div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'eSet.brca.100' not found</span></div><div class='input'><span class='no'>eSet1</span><span class='kw'>&lt;-</span><span class='no'>eSet1</span>[<span class='fl'>1</span>:<span class='fl'>10</span>,<span class='fl'>1</span>:<span class='fl'>25</span>]</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'eSet1' not found</span></div><div class='input'>
-<span class='no'>p1</span><span class='kw'>&lt;-</span><span class='fu'>heatmap.ggplot2</span>(<span class='kw'>eSet</span><span class='kw'>=</span><span class='no'>eSet1</span>, <span class='kw'>col.clust</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>row.clust</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-<span class='kw'>col.clust.hc</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>row.clust.hc</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-<span class='kw'>col.lab</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"HER2_status"</span>, <span class='st'>"ER_status"</span>, <span class='st'>"PR_status"</span>, <span class='st'>"TN_status"</span>), <span class='kw'>row.lab</span> <span class='kw'>=</span> <span class='st'>""</span>,
-<span class='kw'>heatmap.y.text</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>heatmap.x.text</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-<span class='kw'>heatmap.colorlegend.name</span> <span class='kw'>=</span> <span class='st'>"RNASeq_expression"</span>,
-<span class='kw'>title.text</span> <span class='kw'>=</span> <span class='st'>"TCGA BRCA log2 RNA-seq expression, z-score row normalized"</span>,
-<span class='kw'>col.legend.name</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"HER2_status"</span>, <span class='st'>"ER_status"</span>, <span class='st'>"PR_status"</span>, <span class='st'>"TN_status"</span>),
-<span class='kw'>row.legend.name</span> <span class='kw'>=</span> <span class='st'>""</span>,
-<span class='kw'>row.scaling</span> <span class='kw'>=</span> <span class='st'>"z-score.capped"</span>,
-<span class='kw'>z.norm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-<span class='kw'>cuttree.col</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>cuttree.row</span> <span class='kw'>=</span> <span class='fl'>3</span>,
-<span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>show</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: `axis.ticks.margin` is deprecated. Please set `margin` property of `axis.text` instead</span></div><div class='output co'>#&gt; <span class='warning'>Warning: `panel.margin` is deprecated. Please use `panel.spacing` property instead</span></div><div class='output co'>#&gt; <span class='warning'>Warning: `legend.margin` must be specified using `margin()`. For the old behavior use legend.spacing</span></div><div class='output co'>#&gt; <span class='error'>Error in Biobase::exprs(eSet): object 'eSet1' not found</span></div><div class='input'><span class='fu'>grid.arrange</span>(<span class='no'>p1</span>)</div><div class='output co'>#&gt; <span class='error'>Error in grid.arrange(p1): could not find function "grid.arrange"</span></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>eSet.brca.100</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: data set ‘eSet.brca.100’ not found</span></div><div class='input'><span class='va'>eSet1</span><span class='op'>&lt;-</span><span class='va'>eSet.brca.100</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'eSet.brca.100' not found</span></div><div class='input'><span class='va'>eSet1</span><span class='op'>&lt;-</span><span class='va'>eSet1</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>,<span class='fl'>1</span><span class='op'>:</span><span class='fl'>25</span><span class='op'>]</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'eSet1' not found</span></div><div class='input'>
+<span class='va'>p1</span><span class='op'>&lt;-</span><span class='fu'>heatmap.ggplot2</span><span class='op'>(</span>eSet<span class='op'>=</span><span class='va'>eSet1</span>, col.clust <span class='op'>=</span> <span class='cn'>TRUE</span>, row.clust <span class='op'>=</span> <span class='cn'>TRUE</span>, 
+col.clust.hc <span class='op'>=</span> <span class='cn'>NA</span>, row.clust.hc <span class='op'>=</span> <span class='cn'>NA</span>,
+col.lab <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"HER2_status"</span>, <span class='st'>"ER_status"</span>, <span class='st'>"PR_status"</span>, <span class='st'>"TN_status"</span><span class='op'>)</span>, row.lab <span class='op'>=</span> <span class='st'>""</span>, 
+heatmap.y.text <span class='op'>=</span> <span class='cn'>TRUE</span>, heatmap.x.text <span class='op'>=</span> <span class='cn'>TRUE</span>,
+heatmap.colorlegend.name <span class='op'>=</span> <span class='st'>"RNASeq_expression"</span>,
+title.text <span class='op'>=</span> <span class='st'>"TCGA BRCA log2 RNA-seq expression, z-score row normalized"</span>,
+col.legend.name <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"HER2_status"</span>, <span class='st'>"ER_status"</span>, <span class='st'>"PR_status"</span>, <span class='st'>"TN_status"</span><span class='op'>)</span>, 
+row.legend.name <span class='op'>=</span> <span class='st'>""</span>, 
+row.scaling <span class='op'>=</span> <span class='st'>"z-score.capped"</span>, 
+z.norm <span class='op'>=</span> <span class='cn'>FALSE</span>, 
+cuttree.col <span class='op'>=</span> <span class='fl'>4</span>, cuttree.row <span class='op'>=</span> <span class='fl'>3</span>,
+verbose <span class='op'>=</span> <span class='cn'>FALSE</span>, show <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: `axis.ticks.margin` is deprecated. Please set `margin` property of `axis.text` instead</span></div><div class='output co'>#&gt; <span class='warning'>Warning: `panel.margin` is deprecated. Please use `panel.spacing` property instead</span></div><div class='output co'>#&gt; <span class='warning'>Warning: `legend.margin` must be specified using `margin()`. For the old behavior use legend.spacing</span></div><div class='output co'>#&gt; <span class='error'>Error in h(simpleError(msg, call)): error in evaluating the argument 'object' in selecting a method for function 'exprs': object 'eSet1' not found</span></div><div class='input'><span class='fu'>grid.arrange</span><span class='op'>(</span><span class='va'>p1</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in grid.arrange(p1): could not find function "grid.arrange"</span></div><div class='input'>
 
-<span class='no'>x</span><span class='kw'>&lt;-</span><span class='fu'>exprs</span>(<span class='no'>eSet1</span>)</div><div class='output co'>#&gt; <span class='error'>Error in exprs(eSet1): could not find function "exprs"</span></div><div class='input'><span class='no'>hc.row</span><span class='kw'>&lt;-</span><span class='fu'>hcopt</span>(<span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/dist.html'>as.dist</a></span>(<span class='fl'>1</span>-<span class='fu'><a href='https://rdrr.io/r/stats/cor.html'>cor</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='no'>x</span>))),<span class='kw'>method</span><span class='kw'>=</span><span class='st'>"ward.D"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in t(x): object 'x' not found</span></div><div class='input'><span class='no'>hc.col</span> <span class='kw'>&lt;-</span> <span class='fu'>hcopt</span>(<span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/dist.html'>dist</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='no'>x</span>), <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"euclidean"</span>), <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"ward.D"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in t(x): object 'x' not found</span></div><div class='input'>
+<span class='va'>x</span><span class='op'>&lt;-</span><span class='fu'>exprs</span><span class='op'>(</span><span class='va'>eSet1</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in exprs(eSet1): could not find function "exprs"</span></div><div class='input'><span class='va'>hc.row</span><span class='op'>&lt;-</span><span class='fu'>hcopt</span><span class='op'>(</span><span class='fu'>stats</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/dist.html'>as.dist</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>-</span><span class='fu'><a href='https://rdrr.io/r/stats/cor.html'>cor</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>,method<span class='op'>=</span><span class='st'>"ward.D"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in t(x): object 'x' not found</span></div><div class='input'><span class='va'>hc.col</span> <span class='op'>&lt;-</span> <span class='fu'>hcopt</span><span class='op'>(</span><span class='fu'>stats</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/dist.html'>dist</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>, method <span class='op'>=</span> <span class='st'>"euclidean"</span><span class='op'>)</span>, method<span class='op'>=</span><span class='st'>"ward.D"</span><span class='op'>)</span> 
+</div><div class='output co'>#&gt; <span class='error'>Error in t(x): object 'x' not found</span></div><div class='input'>
 <span class='co'>#Adding custom hclust object in col.clust.hc and row.clust.hc</span>
-<span class='no'>p2</span> <span class='kw'>&lt;-</span> <span class='fu'>heatmap.ggplot2</span>(<span class='kw'>eSet</span><span class='kw'>=</span><span class='no'>eSet1</span>, <span class='kw'>col.clust</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>row.clust</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-<span class='kw'>col.clust.hc</span> <span class='kw'>=</span> <span class='no'>hc.col</span>, <span class='kw'>row.clust.hc</span> <span class='kw'>=</span> <span class='no'>hc.row</span>,
-<span class='kw'>col.lab</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"HER2_status"</span>, <span class='st'>"ER_status"</span>, <span class='st'>"PR_status"</span>, <span class='st'>"TN_status"</span>), <span class='kw'>row.lab</span> <span class='kw'>=</span> <span class='st'>""</span>,
-<span class='kw'>heatmap.y.text</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>heatmap.x.text</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-<span class='kw'>heatmap.colorlegend.name</span> <span class='kw'>=</span> <span class='st'>"RNASeq_expression"</span>,
-<span class='kw'>title.text</span> <span class='kw'>=</span> <span class='st'>"TCGA BRCA log2 RNA-seq expression, z-score row normalized"</span>,
-<span class='kw'>col.legend.name</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"HER2_status"</span>, <span class='st'>"ER_status"</span>, <span class='st'>"PR_status"</span>, <span class='st'>"TN_status"</span>),
-<span class='kw'>row.legend.name</span> <span class='kw'>=</span> <span class='st'>""</span>,
-<span class='kw'>row.scaling</span> <span class='kw'>=</span> <span class='st'>"z-score.capped"</span>,
-<span class='kw'>z.norm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-<span class='kw'>cuttree.col</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>cuttree.row</span> <span class='kw'>=</span> <span class='fl'>3</span>,
-<span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>show</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: `axis.ticks.margin` is deprecated. Please set `margin` property of `axis.text` instead</span></div><div class='output co'>#&gt; <span class='warning'>Warning: `panel.margin` is deprecated. Please use `panel.spacing` property instead</span></div><div class='output co'>#&gt; <span class='warning'>Warning: `legend.margin` must be specified using `margin()`. For the old behavior use legend.spacing</span></div><div class='output co'>#&gt; <span class='error'>Error in Biobase::exprs(eSet): object 'eSet1' not found</span></div><div class='input'><span class='fu'>grid.newpage</span>()</div><div class='output co'>#&gt; <span class='error'>Error in grid.newpage(): could not find function "grid.newpage"</span></div><div class='input'><span class='fu'>grid.arrange</span>(<span class='no'>p2</span>)</div><div class='output co'>#&gt; <span class='error'>Error in grid.arrange(p2): could not find function "grid.arrange"</span></div><div class='input'>
+<span class='va'>p2</span> <span class='op'>&lt;-</span> <span class='fu'>heatmap.ggplot2</span><span class='op'>(</span>eSet<span class='op'>=</span><span class='va'>eSet1</span>, col.clust <span class='op'>=</span> <span class='cn'>TRUE</span>, row.clust <span class='op'>=</span> <span class='cn'>TRUE</span>, 
+col.clust.hc <span class='op'>=</span> <span class='va'>hc.col</span>, row.clust.hc <span class='op'>=</span> <span class='va'>hc.row</span>,
+col.lab <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"HER2_status"</span>, <span class='st'>"ER_status"</span>, <span class='st'>"PR_status"</span>, <span class='st'>"TN_status"</span><span class='op'>)</span>, row.lab <span class='op'>=</span> <span class='st'>""</span>, 
+heatmap.y.text <span class='op'>=</span> <span class='cn'>TRUE</span>, heatmap.x.text <span class='op'>=</span> <span class='cn'>TRUE</span>,
+heatmap.colorlegend.name <span class='op'>=</span> <span class='st'>"RNASeq_expression"</span>,
+title.text <span class='op'>=</span> <span class='st'>"TCGA BRCA log2 RNA-seq expression, z-score row normalized"</span>,
+col.legend.name <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"HER2_status"</span>, <span class='st'>"ER_status"</span>, <span class='st'>"PR_status"</span>, <span class='st'>"TN_status"</span><span class='op'>)</span>, 
+row.legend.name <span class='op'>=</span> <span class='st'>""</span>, 
+row.scaling <span class='op'>=</span> <span class='st'>"z-score.capped"</span>, 
+z.norm <span class='op'>=</span> <span class='cn'>FALSE</span>, 
+cuttree.col <span class='op'>=</span> <span class='fl'>4</span>, cuttree.row <span class='op'>=</span> <span class='fl'>3</span>,
+verbose <span class='op'>=</span> <span class='cn'>FALSE</span>, show <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: `axis.ticks.margin` is deprecated. Please set `margin` property of `axis.text` instead</span></div><div class='output co'>#&gt; <span class='warning'>Warning: `panel.margin` is deprecated. Please use `panel.spacing` property instead</span></div><div class='output co'>#&gt; <span class='warning'>Warning: `legend.margin` must be specified using `margin()`. For the old behavior use legend.spacing</span></div><div class='output co'>#&gt; <span class='error'>Error in h(simpleError(msg, call)): error in evaluating the argument 'object' in selecting a method for function 'exprs': object 'eSet1' not found</span></div><div class='input'><span class='fu'>grid.newpage</span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in grid.newpage(): could not find function "grid.newpage"</span></div><div class='input'><span class='fu'>grid.arrange</span><span class='op'>(</span><span class='va'>p2</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in grid.arrange(p2): could not find function "grid.arrange"</span></div><div class='input'>
 
 <span class='co'>#Saving plot in verbose format</span>
-<span class='no'>p3</span> <span class='kw'>&lt;-</span> <span class='fu'>heatmap.ggplot2</span>(<span class='kw'>eSet</span><span class='kw'>=</span><span class='no'>eSet1</span>, <span class='kw'>col.clust</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>row.clust</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-<span class='kw'>col.clust.hc</span> <span class='kw'>=</span> <span class='no'>hc.col</span>, <span class='kw'>row.clust.hc</span> <span class='kw'>=</span> <span class='no'>hc.row</span>,
-<span class='kw'>col.lab</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"HER2_status"</span>, <span class='st'>"ER_status"</span>, <span class='st'>"PR_status"</span>, <span class='st'>"TN_status"</span>), <span class='kw'>row.lab</span> <span class='kw'>=</span> <span class='st'>""</span>,
-<span class='kw'>heatmap.y.text</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>heatmap.x.text</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-<span class='kw'>heatmap.colorlegend.name</span> <span class='kw'>=</span> <span class='st'>"RNASeq_expression"</span>,
-<span class='kw'>title.text</span> <span class='kw'>=</span> <span class='st'>"TCGA BRCA log2 RNA-seq expression, z-score row normalized"</span>,
-<span class='kw'>col.legend.name</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"HER2_status"</span>, <span class='st'>"ER_status"</span>, <span class='st'>"PR_status"</span>, <span class='st'>"TN_status"</span>),
-<span class='kw'>row.legend.name</span> <span class='kw'>=</span> <span class='st'>""</span>,
-<span class='kw'>row.scaling</span> <span class='kw'>=</span> <span class='st'>"z-score.capped"</span>,
-<span class='kw'>z.norm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-<span class='kw'>cuttree.col</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>cuttree.row</span> <span class='kw'>=</span> <span class='fl'>3</span>,
-<span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>show</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: `axis.ticks.margin` is deprecated. Please set `margin` property of `axis.text` instead</span></div><div class='output co'>#&gt; <span class='warning'>Warning: `panel.margin` is deprecated. Please use `panel.spacing` property instead</span></div><div class='output co'>#&gt; <span class='warning'>Warning: `legend.margin` must be specified using `margin()`. For the old behavior use legend.spacing</span></div><div class='output co'>#&gt; <span class='error'>Error in Biobase::exprs(eSet): object 'eSet1' not found</span></div><div class='input'><span class='fu'>grid.newpage</span>()</div><div class='output co'>#&gt; <span class='error'>Error in grid.newpage(): could not find function "grid.newpage"</span></div><div class='input'><span class='fu'>grid.arrange</span>(<span class='no'>p3</span>$<span class='no'>heatmap</span>)</div><div class='output co'>#&gt; <span class='error'>Error in grid.arrange(p3$heatmap): could not find function "grid.arrange"</span></div><div class='input'>
+<span class='va'>p3</span> <span class='op'>&lt;-</span> <span class='fu'>heatmap.ggplot2</span><span class='op'>(</span>eSet<span class='op'>=</span><span class='va'>eSet1</span>, col.clust <span class='op'>=</span> <span class='cn'>TRUE</span>, row.clust <span class='op'>=</span> <span class='cn'>TRUE</span>, 
+col.clust.hc <span class='op'>=</span> <span class='va'>hc.col</span>, row.clust.hc <span class='op'>=</span> <span class='va'>hc.row</span>,
+col.lab <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"HER2_status"</span>, <span class='st'>"ER_status"</span>, <span class='st'>"PR_status"</span>, <span class='st'>"TN_status"</span><span class='op'>)</span>, row.lab <span class='op'>=</span> <span class='st'>""</span>, 
+heatmap.y.text <span class='op'>=</span> <span class='cn'>TRUE</span>, heatmap.x.text <span class='op'>=</span> <span class='cn'>TRUE</span>,
+heatmap.colorlegend.name <span class='op'>=</span> <span class='st'>"RNASeq_expression"</span>,
+title.text <span class='op'>=</span> <span class='st'>"TCGA BRCA log2 RNA-seq expression, z-score row normalized"</span>,
+col.legend.name <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"HER2_status"</span>, <span class='st'>"ER_status"</span>, <span class='st'>"PR_status"</span>, <span class='st'>"TN_status"</span><span class='op'>)</span>, 
+row.legend.name <span class='op'>=</span> <span class='st'>""</span>, 
+row.scaling <span class='op'>=</span> <span class='st'>"z-score.capped"</span>, 
+z.norm <span class='op'>=</span> <span class='cn'>FALSE</span>, 
+cuttree.col <span class='op'>=</span> <span class='fl'>4</span>, cuttree.row <span class='op'>=</span> <span class='fl'>3</span>,
+verbose <span class='op'>=</span> <span class='cn'>TRUE</span>, show <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: `axis.ticks.margin` is deprecated. Please set `margin` property of `axis.text` instead</span></div><div class='output co'>#&gt; <span class='warning'>Warning: `panel.margin` is deprecated. Please use `panel.spacing` property instead</span></div><div class='output co'>#&gt; <span class='warning'>Warning: `legend.margin` must be specified using `margin()`. For the old behavior use legend.spacing</span></div><div class='output co'>#&gt; <span class='error'>Error in h(simpleError(msg, call)): error in evaluating the argument 'object' in selecting a method for function 'exprs': object 'eSet1' not found</span></div><div class='input'><span class='fu'>grid.newpage</span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in grid.newpage(): could not find function "grid.newpage"</span></div><div class='input'><span class='fu'>grid.arrange</span><span class='op'>(</span><span class='va'>p3</span><span class='op'>$</span><span class='va'>heatmap</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in grid.arrange(p3$heatmap): could not find function "grid.arrange"</span></div><div class='input'>
 
 <span class='co'>#Adding custom colors to column and row annotation labels</span>
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>p3</span>$<span class='no'>meta.c</span>$<span class='no'>id</span>)</div><div class='output co'>#&gt; <span class='error'>Error in print(p3$meta.c$id): object 'p3' not found</span></div><div class='input'><span class='no'>meta.c.color.string</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"yellow"</span>, <span class='st'>"khaki3"</span>, <span class='st'>"gold"</span>, <span class='st'>"chocolate"</span>, <span class='st'>"darkred"</span>, <span class='st'>"cyan"</span>)
-<span class='no'>meta.c.color</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>sapply</a></span>(<span class='no'>meta.c.color.string</span>, <span class='no'>to.hex</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='no'>meta.c.color</span>)<span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Negative"</span>, <span class='st'>"Positive"</span>, <span class='st'>"1"</span>, <span class='st'>"2"</span>, <span class='st'>"3"</span>, <span class='st'>"4"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>p3</span>$<span class='no'>meta.r</span>$<span class='no'>id</span>)</div><div class='output co'>#&gt; <span class='error'>Error in print(p3$meta.r$id): object 'p3' not found</span></div><div class='input'><span class='no'>meta.r.color.string</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"pink"</span>, <span class='st'>"azure"</span>, <span class='st'>"green"</span>)
-<span class='no'>meta.r.color</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>sapply</a></span>(<span class='no'>meta.r.color.string</span>, <span class='no'>to.hex</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='no'>meta.r.color</span>)<span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"1"</span>, <span class='st'>"2"</span>, <span class='st'>"3"</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>p3</span><span class='op'>$</span><span class='va'>meta.c</span><span class='op'>$</span><span class='va'>id</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in print(p3$meta.c$id): object 'p3' not found</span></div><div class='input'><span class='va'>meta.c.color.string</span><span class='op'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"yellow"</span>, <span class='st'>"khaki3"</span>, <span class='st'>"gold"</span>, <span class='st'>"chocolate"</span>, <span class='st'>"darkred"</span>, <span class='st'>"cyan"</span><span class='op'>)</span>
+<span class='va'>meta.c.color</span><span class='op'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>sapply</a></span><span class='op'>(</span><span class='va'>meta.c.color.string</span>, <span class='va'>to.hex</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>meta.c.color</span><span class='op'>)</span><span class='op'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Negative"</span>, <span class='st'>"Positive"</span>, <span class='st'>"1"</span>, <span class='st'>"2"</span>, <span class='st'>"3"</span>, <span class='st'>"4"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>p3</span><span class='op'>$</span><span class='va'>meta.r</span><span class='op'>$</span><span class='va'>id</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in print(p3$meta.r$id): object 'p3' not found</span></div><div class='input'><span class='va'>meta.r.color.string</span><span class='op'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"pink"</span>, <span class='st'>"azure"</span>, <span class='st'>"green"</span><span class='op'>)</span>
+<span class='va'>meta.r.color</span><span class='op'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>sapply</a></span><span class='op'>(</span><span class='va'>meta.r.color.string</span>, <span class='va'>to.hex</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>meta.r.color</span><span class='op'>)</span><span class='op'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"1"</span>, <span class='st'>"2"</span>, <span class='st'>"3"</span><span class='op'>)</span>
 
-<span class='no'>p4</span><span class='kw'>&lt;-</span><span class='fu'>heatmap.ggplot2</span>(<span class='kw'>eSet</span><span class='kw'>=</span><span class='no'>eSet1</span>,
-<span class='kw'>col.legend.brewer</span> <span class='kw'>=</span> <span class='no'>meta.c.color</span>,
-<span class='kw'>row.legend.brewer</span> <span class='kw'>=</span> <span class='no'>meta.r.color</span>,
-<span class='kw'>col.clust</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>row.clust</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-<span class='kw'>col.clust.hc</span> <span class='kw'>=</span> <span class='no'>hc.col</span>, <span class='kw'>row.clust.hc</span> <span class='kw'>=</span> <span class='no'>hc.row</span>,
-<span class='kw'>col.lab</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"HER2_status"</span>, <span class='st'>"ER_status"</span>, <span class='st'>"PR_status"</span>, <span class='st'>"TN_status"</span>), <span class='kw'>row.lab</span> <span class='kw'>=</span> <span class='st'>"cluster.row"</span>,
-<span class='kw'>heatmap.y.text</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>heatmap.x.text</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-<span class='kw'>heatmap.colorlegend.name</span> <span class='kw'>=</span> <span class='st'>"RNASeq_expression"</span>,
-<span class='kw'>title.text</span> <span class='kw'>=</span> <span class='st'>"TCGA BRCA log2 RNA-seq expression, z-score row normalized"</span>,
-<span class='kw'>col.legend.name</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"HER2_status"</span>, <span class='st'>"ER_status"</span>, <span class='st'>"PR_status"</span>, <span class='st'>"TN_status"</span>, <span class='st'>"cluster.col"</span>),
-<span class='kw'>row.legend.name</span> <span class='kw'>=</span> <span class='st'>"cluster.row"</span>,
-<span class='kw'>row.scaling</span> <span class='kw'>=</span> <span class='st'>"z-score.capped"</span>,
-<span class='kw'>z.norm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-<span class='kw'>cuttree.col</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>cuttree.row</span> <span class='kw'>=</span> <span class='fl'>3</span>,
-<span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>show</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: `axis.ticks.margin` is deprecated. Please set `margin` property of `axis.text` instead</span></div><div class='output co'>#&gt; <span class='warning'>Warning: `panel.margin` is deprecated. Please use `panel.spacing` property instead</span></div><div class='output co'>#&gt; <span class='warning'>Warning: `legend.margin` must be specified using `margin()`. For the old behavior use legend.spacing</span></div><div class='output co'>#&gt; <span class='error'>Error in Biobase::exprs(eSet): object 'eSet1' not found</span></div><div class='input'><span class='fu'>grid.newpage</span>()</div><div class='output co'>#&gt; <span class='error'>Error in grid.newpage(): could not find function "grid.newpage"</span></div><div class='input'><span class='fu'>grid.arrange</span>(<span class='no'>p4</span>)</div><div class='output co'>#&gt; <span class='error'>Error in grid.arrange(p4): could not find function "grid.arrange"</span></div><div class='input'>
+<span class='va'>p4</span><span class='op'>&lt;-</span><span class='fu'>heatmap.ggplot2</span><span class='op'>(</span>eSet<span class='op'>=</span><span class='va'>eSet1</span>, 
+col.legend.brewer <span class='op'>=</span> <span class='va'>meta.c.color</span>,
+row.legend.brewer <span class='op'>=</span> <span class='va'>meta.r.color</span>,
+col.clust <span class='op'>=</span> <span class='cn'>TRUE</span>, row.clust <span class='op'>=</span> <span class='cn'>TRUE</span>, 
+col.clust.hc <span class='op'>=</span> <span class='va'>hc.col</span>, row.clust.hc <span class='op'>=</span> <span class='va'>hc.row</span>,
+col.lab <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"HER2_status"</span>, <span class='st'>"ER_status"</span>, <span class='st'>"PR_status"</span>, <span class='st'>"TN_status"</span><span class='op'>)</span>, row.lab <span class='op'>=</span> <span class='st'>"cluster.row"</span>, 
+heatmap.y.text <span class='op'>=</span> <span class='cn'>TRUE</span>, heatmap.x.text <span class='op'>=</span> <span class='cn'>TRUE</span>,
+heatmap.colorlegend.name <span class='op'>=</span> <span class='st'>"RNASeq_expression"</span>,
+title.text <span class='op'>=</span> <span class='st'>"TCGA BRCA log2 RNA-seq expression, z-score row normalized"</span>,
+col.legend.name <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"HER2_status"</span>, <span class='st'>"ER_status"</span>, <span class='st'>"PR_status"</span>, <span class='st'>"TN_status"</span>, <span class='st'>"cluster.col"</span><span class='op'>)</span>, 
+row.legend.name <span class='op'>=</span> <span class='st'>"cluster.row"</span>, 
+row.scaling <span class='op'>=</span> <span class='st'>"z-score.capped"</span>, 
+z.norm <span class='op'>=</span> <span class='cn'>FALSE</span>, 
+cuttree.col <span class='op'>=</span> <span class='fl'>4</span>, cuttree.row <span class='op'>=</span> <span class='fl'>3</span>,
+verbose <span class='op'>=</span> <span class='cn'>FALSE</span>, show <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: `axis.ticks.margin` is deprecated. Please set `margin` property of `axis.text` instead</span></div><div class='output co'>#&gt; <span class='warning'>Warning: `panel.margin` is deprecated. Please use `panel.spacing` property instead</span></div><div class='output co'>#&gt; <span class='warning'>Warning: `legend.margin` must be specified using `margin()`. For the old behavior use legend.spacing</span></div><div class='output co'>#&gt; <span class='error'>Error in h(simpleError(msg, call)): error in evaluating the argument 'object' in selecting a method for function 'exprs': object 'eSet1' not found</span></div><div class='input'><span class='fu'>grid.newpage</span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in grid.newpage(): could not find function "grid.newpage"</span></div><div class='input'><span class='fu'>grid.arrange</span><span class='op'>(</span><span class='va'>p4</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in grid.arrange(p4): could not find function "grid.arrange"</span></div><div class='input'>
 
 
 
@@ -460,7 +479,7 @@ expression set object</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -6,13 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title><code>ggheat.continuous.group</code> ggheatmap function for plotting groups of esets, within-group column clustering — ggheat.continuous.group • BS831</title>
+<title>ggheat.continuous.group ggheatmap function for plotting groups of esets, within-group column clustering — ggheat.continuous.group • BS831</title>
 
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
@@ -41,7 +41,7 @@
   <link href="../extra.css" rel="stylesheet">
   <script src="../extra.js"></script>
 
-<meta property="og:title" content="<code>ggheat.continuous.group</code> ggheatmap function for plotting groups of esets, within-group column clustering — ggheat.continuous.group" />
+<meta property="og:title" content="ggheat.continuous.group ggheatmap function for plotting groups of esets, within-group column clustering — ggheat.continuous.group" />
 <meta property="og:description" content="ggheat.continuous.group ggheatmap function for plotting groups of esets, within-group column clustering" />
 
 
@@ -160,6 +160,9 @@
       <a href="../articles/docs/KS_Enrichment.html">KS-based Enrichment</a>
     </li>
     <li>
+      <a href="../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
+    </li>
+    <li>
       <a href="../articles/docs/GeneSetProjectionGSVA.html">Gene Set Projection based on KS</a>
     </li>
     <li>
@@ -175,9 +178,6 @@
     </li>
     <li class="divider"></li>
     <li class="dropdown-header">Clustering</li>
-    <li>
-      <a href="../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
-    </li>
     <li>
       <a href="../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -216,23 +216,23 @@
     <p><code>ggheat.continuous.group</code> ggheatmap function for plotting groups of esets, within-group column clustering</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ggheat.continuous.group</span>(
-  <span class='no'>esetlist</span>,
-  <span class='no'>hclist</span>,
-  <span class='no'>hrlist</span>,
-  <span class='no'>hmcolors</span>,
-  <span class='kw'>hmtitle</span> <span class='kw'>=</span> <span class='st'>"expression"</span>,
-  <span class='no'>col_lab</span>,
-  <span class='no'>col_legend</span>,
-  <span class='kw'>ylabstr</span> <span class='kw'>=</span> <span class='st'>""</span>,
-  <span class='no'>fout</span>,
-  <span class='kw'>p.heights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1.5</span>, <span class='fl'>0.5</span>, <span class='fl'>5</span>),
-  <span class='kw'>xsize</span> <span class='kw'>=</span> <span class='fl'>4</span>,
-  <span class='kw'>ysize</span> <span class='kw'>=</span> <span class='fl'>4</span>,
-  <span class='kw'>ysizelab</span> <span class='kw'>=</span> <span class='fl'>7</span>,
-  <span class='kw'>xleft</span> <span class='kw'>=</span> <span class='fl'>0.15</span>,
-  <span class='kw'>xright</span> <span class='kw'>=</span> <span class='fl'>0.24</span>
-)</pre>
+    <pre class="usage"><span class='fu'>ggheat.continuous.group</span><span class='op'>(</span>
+  <span class='va'>esetlist</span>,
+  <span class='va'>hclist</span>,
+  <span class='va'>hrlist</span>,
+  <span class='va'>hmcolors</span>,
+  hmtitle <span class='op'>=</span> <span class='st'>"expression"</span>,
+  <span class='va'>col_lab</span>,
+  <span class='va'>col_legend</span>,
+  ylabstr <span class='op'>=</span> <span class='st'>""</span>,
+  <span class='va'>fout</span>,
+  p.heights <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1.5</span>, <span class='fl'>0.5</span>, <span class='fl'>5</span><span class='op'>)</span>,
+  xsize <span class='op'>=</span> <span class='fl'>4</span>,
+  ysize <span class='op'>=</span> <span class='fl'>4</span>,
+  ysizelab <span class='op'>=</span> <span class='fl'>7</span>,
+  xleft <span class='op'>=</span> <span class='fl'>0.15</span>,
+  xright <span class='op'>=</span> <span class='fl'>0.24</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -309,35 +309,42 @@ col_legend&lt;-list(COL1 = list(col_breaks = COL1levels,
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>tcga.subset.400g.200s</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: data set ‘tcga.subset.400g.200s’ not found</span></div><div class='input'><span class='no'>dat</span></div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'dat' not found</span></div><div class='input'>
-<span class='no'>subtypelevels</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/levels.html'>levels</a></span>(<span class='no'>dat</span>$<span class='no'>subtype</span>)</div><div class='output co'>#&gt; <span class='error'>Error in levels(dat$subtype): object 'dat' not found</span></div><div class='input'>
-<span class='no'>grps</span><span class='kw'>&lt;-</span><span class='fu'><a href='ggheat.make.groups.html'>ggheat.make.groups</a></span>(<span class='kw'>eset</span> <span class='kw'>=</span> <span class='no'>dat</span>,
-        <span class='kw'>labelcol</span> <span class='kw'>=</span> <span class='st'>"subtype"</span>,  <span class='co'>#column name for grouping in pData(eset)</span>
-        <span class='kw'>labelvals</span> <span class='kw'>=</span> <span class='no'>subtypelevels</span>, <span class='co'>#values to group on (e.g. factor levels of pData(eset)[, labelcol])</span>
-        <span class='kw'>clustFUN</span> <span class='kw'>=</span> <span class='no'>clust_eset</span> <span class='co'>#clustering function for eset</span>
-        )</div><div class='output co'>#&gt; <span class='error'>Error in is.data.frame(x): object 'dat' not found</span></div><div class='input'>
-<span class='no'>col_legend</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>subtype</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>col_breaks</span> <span class='kw'>=</span> <span class='no'>subtypelevels</span>,
-                <span class='kw'>col_values</span> <span class='kw'>=</span> <span class='fu'>brewer.pal</span>(<span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>subtypelevels</span>),<span class='st'>"Set1"</span>),
-                <span class='kw'>col_labels</span> <span class='kw'>=</span> <span class='no'>subtypelevels</span>))</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'subtypelevels' not found</span></div><div class='input'>
-<span class='no'>esetlist</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='no'>grps</span>$<span class='no'>esetlist</span>, <span class='kw'>function</span>(<span class='no'>i</span>) <span class='fu'>scale_row</span>(<span class='no'>i</span>))</div><div class='output co'>#&gt; <span class='error'>Error in lapply(grps$esetlist, function(i) scale_row(i)): object 'grps' not found</span></div><div class='input'>
-<span class='no'>hmcolors</span><span class='kw'>&lt;-</span><span class='kw'>function</span>(<span class='no'>...</span> ) <span class='fu'>scale_fill_gradient2</span>(<span class='kw'>low</span> <span class='kw'>=</span> <span class='st'>"blue"</span>, <span class='kw'>mid</span> <span class='kw'>=</span> <span class='st'>"white"</span>,
-       <span class='kw'>high</span> <span class='kw'>=</span> <span class='st'>"red"</span>, <span class='kw'>midpoint</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>limits</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>3</span>,<span class='fl'>3</span>), <span class='kw'>oob</span><span class='kw'>=</span><span class='no'>squish</span>, <span class='no'>...</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>tcga.subset.400g.200s</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: data set ‘tcga.subset.400g.200s’ not found</span></div><div class='input'><span class='va'>dat</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'dat' not found</span></div><div class='input'>
+<span class='va'>subtypelevels</span><span class='op'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/levels.html'>levels</a></span><span class='op'>(</span><span class='va'>dat</span><span class='op'>$</span><span class='va'>subtype</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in levels(dat$subtype): object 'dat' not found</span></div><div class='input'>
+<span class='va'>grps</span><span class='op'>&lt;-</span><span class='fu'><a href='ggheat.make.groups.html'>ggheat.make.groups</a></span><span class='op'>(</span>eset <span class='op'>=</span> <span class='va'>dat</span>,
+  labelcol <span class='op'>=</span> <span class='st'>"subtype"</span>,  <span class='co'>#column name for grouping in pData(eset)</span>
+  labelvals <span class='op'>=</span> <span class='va'>subtypelevels</span>, <span class='co'>#values to group on (e.g. factor levels of pData(eset)[, labelcol])</span>
+  clustFUN <span class='op'>=</span> <span class='va'>clust_eset</span> <span class='co'>#clustering function for eset</span>
+  <span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in is.data.frame(x): object 'dat' not found</span></div><div class='input'>
+<span class='va'>col_legend</span><span class='op'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>subtype <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>col_breaks <span class='op'>=</span> <span class='va'>subtypelevels</span>,
+    col_values <span class='op'>=</span> <span class='fu'>brewer.pal</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>subtypelevels</span><span class='op'>)</span>,<span class='st'>"Set1"</span><span class='op'>)</span>,
+    col_labels <span class='op'>=</span> <span class='va'>subtypelevels</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'subtypelevels' not found</span></div><div class='input'>
+<span class='va'>esetlist</span><span class='op'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>grps</span><span class='op'>$</span><span class='va'>esetlist</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>i</span><span class='op'>)</span> <span class='fu'>scale_row</span><span class='op'>(</span><span class='va'>i</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in lapply(grps$esetlist, function(i) scale_row(i)): object 'grps' not found</span></div><div class='input'>
+<span class='va'>hmcolors</span><span class='op'>&lt;-</span><span class='kw'>function</span><span class='op'>(</span><span class='va'>...</span> <span class='op'>)</span> <span class='fu'>scale_fill_gradient2</span><span class='op'>(</span>low <span class='op'>=</span> <span class='st'>"blue"</span>, mid <span class='op'>=</span> <span class='st'>"white"</span>,
+       high <span class='op'>=</span> <span class='st'>"red"</span>, midpoint <span class='op'>=</span> <span class='fl'>0</span>, limits<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>3</span>,<span class='fl'>3</span><span class='op'>)</span>, oob<span class='op'>=</span><span class='va'>squish</span>, <span class='va'>...</span><span class='op'>)</span>
 
-<span class='no'>p</span><span class='kw'>&lt;-</span><span class='fu'>ggheat.continuous.group</span>(<span class='no'>esetlist</span>,
-        <span class='no'>grps</span>$<span class='no'>hclist</span>,
-        <span class='no'>grps</span>$<span class='no'>hrlist</span>,
-        <span class='no'>hmcolors</span>,
-        <span class='kw'>hmtitle</span> <span class='kw'>=</span> <span class='st'>"row-zscore GE"</span>,
-        <span class='kw'>col_lab</span> <span class='kw'>=</span> <span class='st'>"subtype"</span>,
-        <span class='kw'>col_legend</span> <span class='kw'>=</span> <span class='no'>col_legend</span>,
-        <span class='kw'>ylabstr</span> <span class='kw'>=</span> <span class='st'>""</span>,
-        <span class='kw'>fout</span>  <span class='kw'>=</span> <span class='fl'>NA</span>,
-        <span class='kw'>p.heights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1.5</span>, <span class='fl'>0.5</span>, <span class='fl'>5</span>),
-        <span class='kw'>xsize</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-        <span class='kw'>ysize</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-        <span class='kw'>ysizelab</span> <span class='kw'>=</span> <span class='fl'>7</span>,
-        <span class='kw'>xleft</span> <span class='kw'>=</span> <span class='fl'>0.10</span>,
-        <span class='kw'>xright</span> <span class='kw'>=</span> <span class='fl'>0.24</span>)</div><div class='output co'>#&gt; <span class='error'>Error in ggheat.continuous.group(esetlist, grps$hclist, grps$hrlist, hmcolors,     hmtitle = "row-zscore GE", col_lab = "subtype", col_legend = col_legend,     ylabstr = "", fout = NA, p.heights = c(1.5, 0.5, 5), xsize = 0,     ysize = 0, ysizelab = 7, xleft = 0.1, xright = 0.24): object 'esetlist' not found</span></div><div class='input'>
+<span class='va'>p</span><span class='op'>&lt;-</span><span class='fu'>ggheat.continuous.group</span><span class='op'>(</span><span class='va'>esetlist</span>,
+  <span class='va'>grps</span><span class='op'>$</span><span class='va'>hclist</span>,
+  <span class='va'>grps</span><span class='op'>$</span><span class='va'>hrlist</span>,
+  <span class='va'>hmcolors</span>,
+  hmtitle <span class='op'>=</span> <span class='st'>"row-zscore GE"</span>,
+  col_lab <span class='op'>=</span> <span class='st'>"subtype"</span>,
+  col_legend <span class='op'>=</span> <span class='va'>col_legend</span>,
+  ylabstr <span class='op'>=</span> <span class='st'>""</span>,
+  fout  <span class='op'>=</span> <span class='cn'>NA</span>,
+  p.heights <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1.5</span>, <span class='fl'>0.5</span>, <span class='fl'>5</span><span class='op'>)</span>,
+  xsize <span class='op'>=</span> <span class='fl'>0</span>,
+  ysize <span class='op'>=</span> <span class='fl'>0</span>,
+  ysizelab <span class='op'>=</span> <span class='fl'>7</span>,
+  xleft <span class='op'>=</span> <span class='fl'>0.10</span>,
+  xright <span class='op'>=</span> <span class='fl'>0.24</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in ggheat.continuous.group(esetlist, grps$hclist, grps$hrlist, hmcolors,     hmtitle = "row-zscore GE", col_lab = "subtype", col_legend = col_legend,     ylabstr = "", fout = NA, p.heights = c(1.5, 0.5, 5), xsize = 0,     ysize = 0, ysizelab = 7, xleft = 0.1, xright = 0.24): object 'esetlist' not found</span></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -354,7 +361,7 @@ col_legend&lt;-list(COL1 = list(col_breaks = COL1levels,
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

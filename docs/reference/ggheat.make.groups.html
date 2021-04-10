@@ -6,13 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title><code>ggheat.make.groups</code> splits eset into list of esets based on phenotype label, do clustering within groups — ggheat.make.groups • BS831</title>
+<title>ggheat.make.groups splits eset into list of esets based on phenotype label, do clustering within groups — ggheat.make.groups • BS831</title>
 
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
@@ -41,7 +41,7 @@
   <link href="../extra.css" rel="stylesheet">
   <script src="../extra.js"></script>
 
-<meta property="og:title" content="<code>ggheat.make.groups</code> splits eset into list of esets based on phenotype label, do clustering within groups — ggheat.make.groups" />
+<meta property="og:title" content="ggheat.make.groups splits eset into list of esets based on phenotype label, do clustering within groups — ggheat.make.groups" />
 <meta property="og:description" content="ggheat.make.groups splits eset into list of esets based on phenotype label, do clustering within groups" />
 
 
@@ -160,6 +160,9 @@
       <a href="../articles/docs/KS_Enrichment.html">KS-based Enrichment</a>
     </li>
     <li>
+      <a href="../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
+    </li>
+    <li>
       <a href="../articles/docs/GeneSetProjectionGSVA.html">Gene Set Projection based on KS</a>
     </li>
     <li>
@@ -175,9 +178,6 @@
     </li>
     <li class="divider"></li>
     <li class="dropdown-header">Clustering</li>
-    <li>
-      <a href="../articles/docs/GenesetMapping4KS.html">Mapping genesets for KS testing</a>
-    </li>
     <li>
       <a href="../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -216,7 +216,7 @@
     <p><code>ggheat.make.groups</code> splits eset into list of esets based on phenotype label, do clustering within groups</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ggheat.make.groups</span>(<span class='no'>eset</span>, <span class='no'>labelcol</span>, <span class='no'>labelvals</span>, <span class='no'>clustFUN</span>, <span class='kw'>fixRowOrd</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>ggheat.make.groups</span><span class='op'>(</span><span class='va'>eset</span>, <span class='va'>labelcol</span>, <span class='va'>labelvals</span>, <span class='va'>clustFUN</span>, fixRowOrd <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -252,7 +252,7 @@ clustFUN clustering function for eset, e.g. clust_eset</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
