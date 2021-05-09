@@ -96,6 +96,7 @@ phyper( q=overlap-1,               # number of red marbles in the draw - 1 (see 
         n=backpop-length(pathway), # number of green marbles in urn 
         k=length(signature),       # Number of drawn marbles
         lower.tail=FALSE)          # compute P( X > overlap ), hence the '-1' above
+                                   # ..to achieve P(X≥overlap)
 ```
 
 Clearly, the category (pathway) "REACTOME_TRANSCRIPTOME" is highly
@@ -137,8 +138,55 @@ run hyper-geometric-based enrichment tests on multiple signatures and
 mutiple genesets.
 
 ```{r hyperEnrichment}
-## defined in BS831/R/hyperEnrichment.R
-print(hyperEnrichment)
+## function copied from hypeR
+hyperEnrichment <- function(
+    signature,
+    genesets,
+    background=length(unique(unlist(genesets))),
+    plotting=TRUE) 
+{
+    if (!is(signature, "vector")) stop("Expected signature to be a vector of symbols\n")
+    if (!is(genesets, "list")) stop("Expected genesets to be a list of genesets\n")
+    
+    signature <- unique(signature)
+    genesets <- lapply(genesets, unique)
+    
+    # Construct table
+    signature.found <- signature[signature %in% unique(unlist(genesets))]
+    n.hits <- sapply(genesets, function(x, y) length(intersect(x, y)), signature.found)
+    n.drawn <- length(signature)
+    n.genesets <- sapply(genesets, length)
+    n.left <- background-n.genesets
+    
+    # Hypergeometric test
+    pvals <- suppressWarnings(stats::phyper(q=n.hits-1,
+                                            m=n.genesets,
+                                            n=n.left,
+                                            k=n.drawn,
+                                            lower.tail=FALSE))
+    
+    # Format data
+    data <- data.frame(label=names(genesets),
+                       pval=signif(pvals, 2),
+                       fdr=signif(stats::p.adjust(pvals, method="fdr"), 2),
+                       signature=length(signature),
+                       geneset=n.genesets,
+                       overlap=n.hits,
+                       background=background,
+                       hits=sapply(genesets, function(x, y) paste(intersect(x, y), collapse=','), signature.found),
+                       stringsAsFactors=FALSE)
+    
+    # Handle plots
+    if (plotting) {
+        plots <- mapply(function(geneset, title) {
+            ggvenn(signature, geneset, "Signature", "Geneset", title)
+        }, genesets, names(genesets), USE.NAMES=TRUE, SIMPLIFY=FALSE)
+    } else {
+        plots <- lapply(genesets, function(x) {ggempty()})
+    }
+    
+    return(list(data=data, plots=plots))
+}
 ```
 
 We then apply it to the list of oral cancer knockdown signatures and two MSigDB geneset compendia, the set of canonical pathways
@@ -151,7 +199,7 @@ h.all</a>
 
 ```{r run_canonical}
 library(openxlsx) 
-hyperE <- hyperEnrichment(drawn=hyperSig,categories=getGeneSet(hyperGsets),ntotal=backpop) 
+hyperE <- hyperEnrichment(signature=hyperSig,categories=getGeneSet(hyperGsets),ntotal=backpop) 
 head(hyperE)
 hyperE.fdr25 <- hyperE[hyperE[,'fdr']<=0.25,]
 head(hyperE.fdr25)
