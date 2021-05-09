@@ -96,7 +96,7 @@ fData(LOAD1) <- fdata
 
 ## save data
 if (overwrite) {
-    saveRDS(LOAD1, file=file.path(OMPATH,"data/LOAD1.RDS"))
+  saveRDS(LOAD1, file=file.path(OMPATH,"data/LOAD1.RDS"))
 }
 ```
 
@@ -151,7 +151,7 @@ fData(LOAD2) <- martMap
 
 ## save data
 if (overwrite) {
-    saveRDS( LOAD2, file=file.path(OMPATH,"data/LOAD2.RDS") )
+  saveRDS( LOAD2, file=file.path(OMPATH,"data/LOAD2.RDS") )
 }
 ```
 
@@ -162,9 +162,8 @@ multiple chip probes associated with the same gene symbol separate until
 the end of the analysis. However, if desired, one can merge the rows
 corresponding to multiple probes.
 
-Here, we define a simple function to collapse multiple rows by
-median. The function is based on the R functions `melt` and `dcast`
-defined in the package `reshape2`.
+Here, we define a simple function to collapse multiple rows by either
+median or mean, using tidyverse functions. 
 
 ```{r collapseByFunction}
 collapseByFun <- function(eset,rowid,method=c("median","mean"))
@@ -189,17 +188,48 @@ collapseByFun <- function(eset,rowid,method=c("median","mean"))
 }
 ```
 
-We now apply `collapseByMedian` to both
+Previously, we had defined a similar function based on the R functions `melt` and `dcast` defined in the package `reshape2`. We will leave it to you to decide whether it is more or less intuitive. Efficiency-wise, they are comparable.
+
+```{r collapseByMedian}
+library(reshape2)
+collapseByMedian <- function(eset, rowid)
+{
+    ## library(reshape2)
+
+    ## remove unmapped probe sets
+    genes <- fData(eset)[, rowid]
+    rows.mapped <- !is.na(genes) & genes != ""
+    eset <- eset[rows.mapped,]
+    genes <- fData(eset)[, rowid]
+
+    ## collapse by median value among duplicate probes
+    df <- data.frame(exprs(eset), genes = genes)
+    df.melt <- melt(df, id.vars = "genes")
+    df.median.collapsed <- dcast(df.melt, genes ~ variable, median)
+
+    ## reassemble collapsed eset
+    fdat <- fData(eset)
+    if ( any(is.na(roworder <- match(df.median.collapsed[,'genes'],fdat[,rowid]))) )
+        stop( "something wrong" )
+    fdat.collapsed <- fdat[roworder,]
+    eset <- ExpressionSet(assayData=as.matrix(df.median.collapsed[, colnames(eset)]),
+                          phenoData=AnnotatedDataFrame(pData(eset)),
+                          featureData=AnnotatedDataFrame(fdat.collapsed))
+    return(eset)
+}
+```
+
+We now apply `collapseByFUn` to both
 LOAD1 (n=`r sum(base::duplicated(fData(LOAD1)[,"gene_symbol"]))` duplicates), and 
 LOAD2 (n=`r sum(base::duplicated(fData(LOAD2)[,"hgnc_symbol"]))` duplicates).
 Notice that running it on a 600+ sample size is somewhat slow.
 
 ```{r collapse.load1, eval=FALSE}
 nrow(LOAD1)
-LOAD1.collapsed <- collapseByFun(LOAD1[1:1000,], rowid="gene_symbol",method="median")
+LOAD1.collapsed <- collapseByFun(LOAD1, rowid="gene_symbol",method="median")
 nrow(LOAD1.collapsed)
 if (overwrite) {
-    saveRDS(LOAD1.collapsed,file=file.path(OMPATH,"data/LOAD1.collapsed.RDS"))
+  saveRDS(LOAD1.collapsed,file=file.path(OMPATH,"data/LOAD1.collapsed.RDS"))
 }
 ```
 
