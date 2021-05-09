@@ -219,7 +219,7 @@ collapseByMedian <- function(eset, rowid)
 }
 ```
 
-We now apply `collapseByFUn` to both
+We now apply `collapseByFun` to both
 LOAD1 (n=`r sum(base::duplicated(fData(LOAD1)[,"gene_symbol"]))` duplicates), and 
 LOAD2 (n=`r sum(base::duplicated(fData(LOAD2)[,"hgnc_symbol"]))` duplicates).
 Notice that running it on a 600+ sample size is somewhat slow.
