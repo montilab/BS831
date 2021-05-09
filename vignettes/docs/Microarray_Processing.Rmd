@@ -25,6 +25,7 @@ knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
 devtools::load_all(".")
 library(GEOquery)
 library(Biobase)
+library(dplyr)
 overwrite <- FALSE
 ```
 
@@ -34,6 +35,7 @@ We start by loading some required packages and functions.
 library(BS831)
 library(GEOquery)
 library(Biobase)
+library(dplyr)
 overwrite <- FALSE
 ```
 
@@ -49,7 +51,7 @@ package.
 ```{r process.data1}
 ## Download expression data from GEO and store in temporary directory
 tmp_dir <- tempdir()
-LOAD <- getGEO(GEO="GSE44772", GSEMatrix=TRUE, destdir=tmp_dir)
+LOAD <- GEOquery::getGEO(GEO="GSE44772", GSEMatrix=TRUE, destdir=tmp_dir)
 LOAD <- LOAD[[1]] # getGEO returns a list, so we extract the first element
 print(LOAD)       # display summary info for the object
 ```
@@ -63,7 +65,10 @@ file from geo, then ran the following command.
 
 ```{r download.gene.annotation}
 ## read.delim can read compressed files
-fdata <- read.delim(file=file.path(system.file("extdata", package="BS831"), "GPL4372.annot"), skip=27,row.names=1)
+fdata <- read.delim(
+  file=file.path(system.file("extdata", package="BS831"), "GPL4372.annot"),
+  skip=27,row.names=1
+)
 print(colnames(fdata))
 ```
 
@@ -72,12 +77,15 @@ some relevant columns, and since we are at it, we also properly sort
 the rows, and rename the columns, for easier handling.
 
 ```{r process.data2}
-## see R/misc.R for a definition of the 'match.nona' function
-fdata <- fdata[match.nona(featureNames(LOAD),rownames(fdata)),c("Gene.symbol","Gene.title","Gene.ID")]
-## modifying fdata colnames for ease of handling
-colnames(fdata) <- gsub("Gene.symbol","gene_symbol",colnames(fdata))
-colnames(fdata) <- gsub("Gene.title","gene_title",colnames(fdata))
-colnames(fdata) <- gsub("Gene.ID","GeneID",colnames(fdata)) 
+## simplifying fdata and matching to expression matrix
+fdata <- dplyr::inner_join(
+  data.frame(rowname=featureNames(LOAD)),      # matching expression and 
+  tibble::rownames_to_column(fdata)) %>%       # ..fdata by rownames
+  tibble::column_to_rownames() %>%
+  dplyr::rename(gene_symbol="Gene.symbol",     # renaming columns
+                gene_title="Gene.title",       # ..
+                GeneID="Gene.ID") %>%          # ..
+  dplyr::select(gene_symbol,gene_title,GeneID) # selecting columns
 
 ## always be super-cautious, double- and triple-check
 if ( any(featureNames(LOAD)!=rownames(fdata)) ) stop( "row mismatch" )
@@ -117,7 +125,7 @@ martMap <- biomaRt::getBM(attributes=c("entrezgene_id","hgnc_symbol","descriptio
 
 ## remove entries with empty gene symbol
 nrow(martMap) # before
-martMap <- martMap[martMap[,"hgnc_symbol"]!="",]
+martMap <- dplyr::filter(martMap, hgnc_symbol!="")
 nrow(martMap) # after
 
 ## notice that there are some duplicated entrez IDs and gene symbols
@@ -127,7 +135,8 @@ sum(base::duplicated(martMap[,"hgnc_symbol"]))
 ## we adopt the simple (perhaps too simple) approach of taking the
 ## first occurence of each EntrezID
 nrow(martMap)
-martMap <- martMap[match(unique(martMap[,"entrezgene_id"]),martMap[,"entrezgene_id"]),]
+martMap <- martMap %>%
+  dplyr::distinct(entrezgene_id,.keep_all=TRUE)
 nrow(martMap)
 
 ## now there are no more replicated EntrezID (but there are still replicate gene symbols)
@@ -157,46 +166,26 @@ Here, we define a simple function to collapse multiple rows by
 median. The function is based on the R functions `melt` and `dcast`
 defined in the package `reshape2`.
 
-```{r collapseByMedian.function}
-library(reshape2)
-collapseByMedian <- function(eset, rowid)
-{
-    ## library(reshape2)
-
-    ## remove unmapped probe sets
-    genes <- fData(eset)[, rowid]
-    rows.mapped <- !is.na(genes) & genes != ""
-    eset <- eset[rows.mapped,]
-    genes <- fData(eset)[, rowid]
-
-    ## collapse by median value among duplicate probes
-    df <- data.frame(exprs(eset), genes = genes)
-    df.melt <- melt(df, id.vars = "genes")
-    df.median.collapsed <- dcast(df.melt, genes ~ variable, median)
-
-    ## reassemble collapsed eset
-    fdat <- fData(eset)
-    if ( any(is.na(roworder <- match(df.median.collapsed[,'genes'],fdat[,rowid]))) )
-        stop( "something wrong" )
-    fdat.collapsed <- fdat[roworder,]
-    eset <- ExpressionSet(assayData=as.matrix(df.median.collapsed[, colnames(eset)]),
-                          phenoData=AnnotatedDataFrame(pData(eset)),
-                          featureData=AnnotatedDataFrame(fdat.collapsed))
-    return(eset)
-}
+```{r collapseByFunction}
 collapseByFun <- function(eset,rowid,method=c("median","mean"))
 {
-    tbl <- data.frame(key=fData(eset)[,rowid],
-                      exprs(eset))
-    tbl1 <- tbl %>% group_by(key) %>% summarize_all(median)
-
-    dat <- as.matrix(tbl1[,-match("key",colnames(tbl1))])
-    rownames(dat) <- tbl1[,match("key",colnames(tbl1))]
-
-    ExpressionSet(assayData=dat,
-                  phenoData=pData(eset)[,match(colnames(dat),sampleNames(eset))],
-                  featureData=fData(eset)[match(rownames(dat),fData(eset)[,rowid]),])
-    
+  method <- match.arg(method)
+  
+  tbl <- data.frame(key=fData(eset)[,rowid],exprs(eset)) %>%
+    dplyr::filter(key!="") %>%
+    group_by(key) %>% 
+    summarize_all({{method}}) %>%
+    tibble::column_to_rownames("key")
+  
+  pdata <- pData(eset)[match.nona(colnames(tbl),sampleNames(eset)),]
+  fdata <- fData(eset)[match.nona(rownames(tbl),fData(eset)[,rowid]),] %>%
+    tibble::remove_rownames() %>%
+    tibble::column_to_rownames({{rowid}})
+  
+  ExpressionSet(assayData=as.matrix(tbl),
+                phenoData=AnnotatedDataFrame(pdata),
+                featureData=AnnotatedDataFrame(fdata))
+  
 }
 ```
 
@@ -207,18 +196,16 @@ Notice that running it on a 600+ sample size is somewhat slow.
 
 ```{r collapse.load1, eval=FALSE}
 nrow(LOAD1)
-LOAD1.collapsed <- collapseByMedian(LOAD1, rowid="gene_symbol")
+LOAD1.collapsed <- collapseByFun(LOAD1[1:1000,], rowid="gene_symbol",method="median")
 nrow(LOAD1.collapsed)
 if (overwrite) {
     saveRDS(LOAD1.collapsed,file=file.path(OMPATH,"data/LOAD1.collapsed.RDS"))
 }
-tbl <- data.frame(key=c("a","b","a","b"),col1=1:4,col2=5:8)
-
 ```
 
 ```{r collapse.load2, eval=FALSE}
 nrow(LOAD2)
-LOAD2.collapsed <- collapseByMedian(LOAD2, rowid="hgnc_symbol")
+LOAD2.collapsed <- collapseByFun(LOAD2, rowid="hgnc_symbol")
 nrow(LOAD2.collapsed)
 if (overwrite) {
     saveRDS(LOAD2.collapsed,file=file.path(OMPATH,"data/LOAD2.collapsed.RDS"))
