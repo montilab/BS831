@@ -238,6 +238,6 @@ nrow(LOAD2)
 LOAD2.collapsed <- collapseByFun(LOAD2, rowid="hgnc_symbol")
 nrow(LOAD2.collapsed)
 if (overwrite) {
-    saveRDS(LOAD2.collapsed,file=file.path(OMPATH,"data/LOAD2.collapsed.RDS"))
+  saveRDS(LOAD2.collapsed,file=file.path(OMPATH,"data/LOAD2.collapsed.RDS"))
 }
 ```
