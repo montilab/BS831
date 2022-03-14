@@ -2,7 +2,7 @@
 #' @import devtools
 #' @import BiocManager
 #' @export
-installR <- function() {
+installR <- function( install_shiny = FALSE) {
      pkgs <- c("cba",
                "caret",
                "combinat",
@@ -19,6 +19,7 @@ installR <- function() {
                "gplots",
                "gridExtra",
                "heatmap.plus",
+               "markdown",
                "matrixStats",
                "mclust",
                "msigdbr",
@@ -34,10 +35,17 @@ installR <- function() {
                "rmarkdown",
                "roxygen2",
                "statmod",
+               "tidyverse",
                "tsne",
                "umap",
                "VennDiagram"
                )
+     if ( install_shiny ) {
+       pkgs <- c(pkgs,list(
+         "shinyjs",
+         "shinythemes"
+       ))
+     }
      install.packages(pkgs,repos="http://cran.r-project.org")
 
      ## packages better installed directly from github
