@@ -14,6 +14,7 @@ installR <- function() {
                "ff",
                "ggdendro",
                "ggplot2",
+               "gitlabr",
                "glmnet",
                "gplots",
                "gridExtra",

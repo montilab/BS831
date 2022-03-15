@@ -160,7 +160,7 @@ ksGenescore(100,91:100,do.plot=TRUE)
 # skewed to the center
 ksGenescore(100,46:55,do.plot=TRUE)
 # randomly distributed
-set.seed(6719); ksGenescore(100,runif(10,min=1,max=100),do.plot=TRUE)
+set.seed(6719); ksGenescore(100,round(runif(10,min=1,max=100)),do.plot=TRUE)
 ```
 
 Notice that the KS test, when used against a uniform distribution, simply tests deviation of an observed sample from a uniform distribution. Thus, in the examples above, the "geneset" `46:55` (of ten genes ranked in the middle and adjacent to each other) is also unlikely to come from a uniform distribution, hence the significant p-value (although weakly so).
