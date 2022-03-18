@@ -20,6 +20,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -62,7 +64,8 @@
       <a href="../../articles/docs/Mix_Normals.html">Mixture of Normals</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Preprocessing and Quality Control</li>
+    </li>
+<li class="dropdown-header">Preprocessing and Quality Control</li>
     <li>
       <a href="../../articles/docs/Microarray_Processing.html">Data Acquisition and ExpressionSet Basics</a>
     </li>
@@ -82,7 +85,8 @@
       <a href="../../articles/docs/quantileNormalization.html">Quantile Normalization</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Comparative Experiments I: Microarrays and Linear Models</li>
+    </li>
+<li class="dropdown-header">Comparative Experiments I: Microarrays and Linear Models</li>
     <li>
       <a href="../../articles/docs/SampleSize.html">Sample Size and Statistical Significance</a>
     </li>
@@ -102,7 +106,8 @@
       <a href="../../articles/docs/Diffanal_LimmaBC.html">Gene Expression Differential Analysis based on Limma</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Comparative Experiments II: RNA-seq and Generalized Lineary Models</li>
+    </li>
+<li class="dropdown-header">Comparative Experiments II: RNA-seq and Generalized Lineary Models</li>
     <li>
       <a href="../../articles/docs/RNAseq_ScalNorm.html">RNA-Seq Data Scaling and Normalization</a>
     </li>
@@ -110,7 +115,8 @@
       <a href="../../articles/docs/DiffanalysisRNAseqComparison.html">RNA-seq Differential Expression Analysis with DEseq2, edgeR and limma</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Comparative Experiments III: Differential Enrichment Analysis</li>
+    </li>
+<li class="dropdown-header">Comparative Experiments III: Differential Enrichment Analysis</li>
     <li>
       <a href="../../articles/docs/HyperEnrichment.html">HyperGeometric Enrichment</a>
     </li>
@@ -127,7 +133,8 @@
       <a href="../../articles/docs/GeneSetProjectionASSIGN.html">Geneset projection based on ASSIGN</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Classification</li>
+    </li>
+<li class="dropdown-header">Classification</li>
     <li>
       <a href="../../articles/docs/featureRedundancy.html">Feature Redundancy: the Good and the Bad</a>
     </li>
@@ -135,7 +142,8 @@
       <a href="../../articles/docs/Classification_Caret.html">Classification Using Caret</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Clustering</li>
+    </li>
+<li class="dropdown-header">Clustering</li>
     <li>
       <a href="../../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -166,10 +174,10 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>The ExpressionSet Data Object</h1>
-                        <h4 class="author">Stefano Monti</h4>
+                        <h4 data-toc-skip class="author">Stefano Monti</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/montilab/BS831/blob/master/vignettes/docs/ExpressionSet.Rmd"><code>vignettes/docs/ExpressionSet.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/montilab/BS831/blob/HEAD/vignettes/docs/ExpressionSet.Rmd"><code>vignettes/docs/ExpressionSet.Rmd</code></a></small>
       <div class="hidden name"><code>ExpressionSet.Rmd</code></div>
 
     </div>
@@ -178,8 +186,8 @@
     
 <p>Simple example of use of the R object <code>ExpressionSet</code>, ideal for the storage of gene expression or similarly structured omic data.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/montilab/BS831">BS831</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">Biobase</span><span class="op">)</span> <span class="co"># The package with the ExpressionSet definition, among others</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/montilab/BS831">BS831</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/Biobase" class="external-link">Biobase</a></span><span class="op">)</span> <span class="co"># The package with the ExpressionSet definition, among others</span></code></pre></div>
 <p>An expression set is a data object consisting of three entities: the expression matrix (<code>exprs</code>), the phenotye data (<code>pData</code>), and the feature data (<code>fData</code>).</p>
 <div class="figure">
 <img src="../figs/ExpressionSet.png" alt=""><p class="caption">ExpressionSet example</p>
@@ -187,79 +195,135 @@
 <p>We upload an expression set already available. It corresponds to a subset of samples from a gene expression dataset of head and neck squamous carcinoma (HNSC) primary tissue samples from the TCGA project.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Load toy dataset</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">HNSC_RNASeq_toy_ES</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">HNSC_RNASeq_toy_ES</span><span class="op">)</span>
 
+<span class="co">## if BS831 not installed but cloned:</span>
+<span class="co">## load(file.path(Sys.getenv("BS831"),"data/HNSC_RNASeq_toy_ES.rda"))</span>
+
+<span class="co">## rename for easier handling</span>
 <span class="va">hnsc</span> <span class="op">&lt;-</span> <span class="va">HNSC_RNASeq_toy_ES</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span>        <span class="co"># the expression data</span></code></pre></div>
-<pre><code>## Features  Samples 
-##    19844       25</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span>        <span class="co"># the expression data</span></code></pre></div>
+<pre><code><span class="co">## Features  Samples </span>
+<span class="co">##    19844       25</span></code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span><span class="op">)</span> <span class="co"># the phenotypic annotation</span></code></pre></div>
-<pre><code>## [1] 25  6</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html" class="external-link">pData</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span><span class="op">)</span> <span class="co"># the phenotypic annotation</span></code></pre></div>
+<pre><code><span class="co">## [1] 25  6</span></code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span><span class="op">)</span> <span class="co"># the genes' annotation</span></code></pre></div>
-<pre><code>## [1] 19844     3</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html" class="external-link">fData</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span><span class="op">)</span> <span class="co"># the genes' annotation</span></code></pre></div>
+<pre><code><span class="co">## [1] 19844     3</span></code></pre>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>##                 bcr_patient_barcode bcr_sample_barcode tissue_type my_grade
-## TCGA-CV-6962-11        TCGA-CV-6962    TCGA-CV-6962-11          AN       AN
-## TCGA-CV-7432-11        TCGA-CV-7432    TCGA-CV-7432-11          AN       AN
-## TCGA-CV-7177-11        TCGA-CV-7177    TCGA-CV-7177-11          AN       AN
-## TCGA-CV-7438-11        TCGA-CV-7438    TCGA-CV-7438-11          AN       AN
-## TCGA-CV-7440-11        TCGA-CV-7440    TCGA-CV-7440-11          AN       AN
-## TCGA-BA-7269-01        TCGA-BA-7269    TCGA-BA-7269-01       Tumor       g1
-##                  my_stage patient.anatomic_neoplasm_subdivision
-## TCGA-CV-6962-11        AN                                larynx
-## TCGA-CV-7432-11        AN                           oral cavity
-## TCGA-CV-7177-11        AN                                larynx
-## TCGA-CV-7438-11        AN                           oral tongue
-## TCGA-CV-7440-11        AN                                larynx
-## TCGA-BA-7269-01 stage iii                           oral tongue</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html" class="external-link">pData</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##                 bcr_patient_barcode bcr_sample_barcode tissue_type my_grade</span>
+<span class="co">## TCGA-CV-6962-11        TCGA-CV-6962    TCGA-CV-6962-11          AN       AN</span>
+<span class="co">## TCGA-CV-7432-11        TCGA-CV-7432    TCGA-CV-7432-11          AN       AN</span>
+<span class="co">## TCGA-CV-7177-11        TCGA-CV-7177    TCGA-CV-7177-11          AN       AN</span>
+<span class="co">## TCGA-CV-7438-11        TCGA-CV-7438    TCGA-CV-7438-11          AN       AN</span>
+<span class="co">## TCGA-CV-7440-11        TCGA-CV-7440    TCGA-CV-7440-11          AN       AN</span>
+<span class="co">## TCGA-BA-7269-01        TCGA-BA-7269    TCGA-BA-7269-01       Tumor       g1</span>
+<span class="co">##                  my_stage patient.anatomic_neoplasm_subdivision</span>
+<span class="co">## TCGA-CV-6962-11        AN                                larynx</span>
+<span class="co">## TCGA-CV-7432-11        AN                           oral cavity</span>
+<span class="co">## TCGA-CV-7177-11        AN                                larynx</span>
+<span class="co">## TCGA-CV-7438-11        AN                           oral tongue</span>
+<span class="co">## TCGA-CV-7440-11        AN                                larynx</span>
+<span class="co">## TCGA-BA-7269-01 stage iii                           oral tongue</span></code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>##             entrez_id gene_symbol
-## ?|100130426 100130426        &lt;NA&gt;
-## ?|100133144 100133144        &lt;NA&gt;
-## ?|100134869 100134869    UBE2Q2P2
-## ?|10357         10357     HMGB1P1
-## ?|10431         10431        &lt;NA&gt;
-## ?|155060       155060   LOC155060
-##                                                          gene_description
-## ?|100130426                                                          &lt;NA&gt;
-## ?|100133144                                                          &lt;NA&gt;
-## ?|100134869 ubiquitin-conjugating enzyme E2Q family member 2 pseudogene 2
-## ?|10357                            high mobility group box 1 pseudogene 1
-## ?|10431                                                              &lt;NA&gt;
-## ?|155060                                              AI894139 pseudogene</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html" class="external-link">fData</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##             entrez_id gene_symbol</span>
+<span class="co">## ?|100130426 100130426        &lt;NA&gt;</span>
+<span class="co">## ?|100133144 100133144        &lt;NA&gt;</span>
+<span class="co">## ?|100134869 100134869    UBE2Q2P2</span>
+<span class="co">## ?|10357         10357     HMGB1P1</span>
+<span class="co">## ?|10431         10431        &lt;NA&gt;</span>
+<span class="co">## ?|155060       155060   LOC155060</span>
+<span class="co">##                                                          gene_description</span>
+<span class="co">## ?|100130426                                                          &lt;NA&gt;</span>
+<span class="co">## ?|100133144                                                          &lt;NA&gt;</span>
+<span class="co">## ?|100134869 ubiquitin-conjugating enzyme E2Q family member 2 pseudogene 2</span>
+<span class="co">## ?|10357                            high mobility group box 1 pseudogene 1</span>
+<span class="co">## ?|10431                                                              &lt;NA&gt;</span>
+<span class="co">## ?|155060                                              AI894139 pseudogene</span></code></pre>
 <p>One of the advantages of using an ExpressionSet is that the three component objects are always properly paired, and subsetting can be carried out straightforwardly.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tmp</span> <span class="op">&lt;-</span> <span class="va">hnsc</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span>
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">tmp</span><span class="op">)</span>        <span class="co"># the expression data</span></code></pre></div>
-<pre><code>## Features  Samples 
-##      100       10</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">tmp</span><span class="op">)</span>        <span class="co"># the expression data</span></code></pre></div>
+<pre><code><span class="co">## Features  Samples </span>
+<span class="co">##      100       10</span></code></pre>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">tmp</span><span class="op">)</span><span class="op">)</span> <span class="co"># the phenotypic annotation</span></code></pre></div>
-<pre><code>## [1] 10  6</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html" class="external-link">pData</a></span><span class="op">(</span><span class="va">tmp</span><span class="op">)</span><span class="op">)</span> <span class="co"># the phenotypic annotation</span></code></pre></div>
+<pre><code><span class="co">## [1] 10  6</span></code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">tmp</span><span class="op">)</span><span class="op">)</span> <span class="co"># the genes' annotation</span></code></pre></div>
-<pre><code>## [1] 100   3</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html" class="external-link">fData</a></span><span class="op">(</span><span class="va">tmp</span><span class="op">)</span><span class="op">)</span> <span class="co"># the genes' annotation</span></code></pre></div>
+<pre><code><span class="co">## [1] 100   3</span></code></pre>
+<div class="section level2">
+<h2 id="summarizedexperiment-object">
+<code>SummarizedExperiment</code> object<a class="anchor" aria-label="anchor" href="#summarizedexperiment-object"></a>
+</h2>
+<p>The <code>ExpressionSet</code> is generally used for array-based experiments and gene expression data, where the rows are features, and the <code>SummarizedExperiment</code> is generally used for sequencing-based experiments, where the rows are GenomicRanges.</p>
+<p>It is possible to easily map an <code>ExpressionSet</code> to a <code>SummarizedExperiment</code>.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/SummarizedExperiment" class="external-link">SummarizedExperiment</a></span><span class="op">)</span>
+<span class="va">sexp</span> <span class="op">&lt;-</span> <span class="fu">SummarizedExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/makeSummarizedExperimentFromExpressionSet.html" class="external-link">makeSummarizedExperimentFromExpressionSet</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">sexp</span><span class="op">)</span><span class="op">)</span> <span class="co"># equivalent to pData</span></code></pre></div>
+<pre><code><span class="co">## DataFrame with 6 rows and 6 columns</span>
+<span class="co">##                 bcr_patient_barcode bcr_sample_barcode tissue_type    my_grade</span>
+<span class="co">##                            &lt;factor&gt;           &lt;factor&gt; &lt;character&gt; &lt;character&gt;</span>
+<span class="co">## TCGA-CV-6962-11        TCGA-CV-6962    TCGA-CV-6962-11          AN          AN</span>
+<span class="co">## TCGA-CV-7432-11        TCGA-CV-7432    TCGA-CV-7432-11          AN          AN</span>
+<span class="co">## TCGA-CV-7177-11        TCGA-CV-7177    TCGA-CV-7177-11          AN          AN</span>
+<span class="co">## TCGA-CV-7438-11        TCGA-CV-7438    TCGA-CV-7438-11          AN          AN</span>
+<span class="co">## TCGA-CV-7440-11        TCGA-CV-7440    TCGA-CV-7440-11          AN          AN</span>
+<span class="co">## TCGA-BA-7269-01        TCGA-BA-7269    TCGA-BA-7269-01       Tumor          g1</span>
+<span class="co">##                    my_stage patient.anatomic_neoplasm_subdivision</span>
+<span class="co">##                 &lt;character&gt;                              &lt;factor&gt;</span>
+<span class="co">## TCGA-CV-6962-11          AN                           larynx     </span>
+<span class="co">## TCGA-CV-7432-11          AN                           oral cavity</span>
+<span class="co">## TCGA-CV-7177-11          AN                           larynx     </span>
+<span class="co">## TCGA-CV-7438-11          AN                           oral tongue</span>
+<span class="co">## TCGA-CV-7440-11          AN                           larynx     </span>
+<span class="co">## TCGA-BA-7269-01   stage iii                           oral tongue</span></code></pre>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">sexp</span><span class="op">)</span><span class="op">)</span> <span class="co"># equivalent to fData</span></code></pre></div>
+<pre><code><span class="co">## DataFrame with 6 rows and 3 columns</span>
+<span class="co">##             entrez_id gene_symbol</span>
+<span class="co">##              &lt;factor&gt;    &lt;factor&gt;</span>
+<span class="co">## ?|100130426 100130426   NA       </span>
+<span class="co">## ?|100133144 100133144   NA       </span>
+<span class="co">## ?|100134869 100134869   UBE2Q2P2 </span>
+<span class="co">## ?|10357     10357       HMGB1P1  </span>
+<span class="co">## ?|10431     10431       NA       </span>
+<span class="co">## ?|155060    155060      LOC155060</span>
+<span class="co">##                                                          gene_description</span>
+<span class="co">##                                                                  &lt;factor&gt;</span>
+<span class="co">## ?|100130426 NA                                                           </span>
+<span class="co">## ?|100133144 NA                                                           </span>
+<span class="co">## ?|100134869 ubiquitin-conjugating enzyme E2Q family member 2 pseudogene 2</span>
+<span class="co">## ?|10357     high mobility group box 1 pseudogene 1                       </span>
+<span class="co">## ?|10431     NA                                                           </span>
+<span class="co">## ?|155060    AI894139 pseudogene</span></code></pre>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-      </div>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
+</div>
 
 </div>
 
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://github.com/tetomonti">Stefano Monti</a>, <a href="https://github.com/anfederico">Anthony Federico</a>, <a href="https://github.com/ericreed">Eric Reed</a>, <a href="https://github.com/lia978">Amy Li</a>.</p>
+  <p></p>
+<p>Developed by <a href="https://github.com/tetomonti" class="external-link">Stefano Monti</a>, <a href="https://github.com/anfederico" class="external-link">Anthony Federico</a>, <a href="https://github.com/ericreed" class="external-link">Eric Reed</a>, <a href="https://github.com/lia978" class="external-link">Amy Li</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -267,6 +331,8 @@
 
   
 
+
+  
 
   </body>
 </html>
