@@ -36,6 +36,10 @@ We upload an expression set already available. It corresponds to a subset of sam
 # Load toy dataset
 data(HNSC_RNASeq_toy_ES)
 
+## if BS831 not installed but cloned:
+## load(file.path(Sys.getenv("BS831"),"data/HNSC_RNASeq_toy_ES.rda"))
+
+## rename for easier handling
 hnsc <- HNSC_RNASeq_toy_ES
 
 dim(hnsc)        # the expression data
@@ -43,7 +47,6 @@ dim(pData(hnsc)) # the phenotypic annotation
 dim(fData(hnsc)) # the genes' annotation
 
 head(pData(hnsc))
-
 head(fData(hnsc))
 ```
 
@@ -53,4 +56,18 @@ tmp <- hnsc[1:100,1:10]
 dim(tmp)        # the expression data
 dim(pData(tmp)) # the phenotypic annotation
 dim(fData(tmp)) # the genes' annotation
+```
+
+## `SummarizedExperiment` object
+
+The `ExpressionSet` is generally used for array-based experiments and gene expression data, where the rows are features, and the `SummarizedExperiment` is generally used for sequencing-based experiments, where the rows are GenomicRanges. 
+
+It is possible to easily map an `ExpressionSet` to a `SummarizedExperiment`.
+
+```{r summarized.experiment}
+library(SummarizedExperiment)
+sexp <- SummarizedExperiment::makeSummarizedExperimentFromExpressionSet(hnsc)
+
+head(colData(sexp)) # equivalent to pData
+head(rowData(sexp)) # equivalent to fData
 ```

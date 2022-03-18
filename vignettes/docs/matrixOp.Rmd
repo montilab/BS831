@@ -22,6 +22,7 @@ make use of the function <code>apply</code>. In the third (most
 efficient) approach, we make use of the cartesian product operator
 `%*%`.
 
+## Use of `for` loop
 ```{r rowSum}
 set.seed(123) # for reproducible results
 N <- 10000000 # 10^7
@@ -40,12 +41,14 @@ Tfor <- system.time(tmp0 <- forSum(X))
 print(Tfor)
 ```
 
+## Use of `apply`
 ```{r rowSum.apply}
 ## use of apply function
 Tsum <- system.time(tmp1 <- apply(X,1,sum))
 print(Tsum)
 ```
 
+## Use of inner product (`%*%`)
 ```{r rowSum.inner}
 ## use of matrix multiplication
 In <- rep(1,10) # define a unit vector
@@ -87,6 +90,7 @@ T5 <- system.time(tmp5 <- t(X) %*% In)
 print(T5)
 ```
 
+## Native row- (and col-)wide R functions
 As noted, cognizant of this issue, R provides efficient functions to perform row and column sums. 
 
 ```{r rowSums}

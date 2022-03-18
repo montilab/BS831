@@ -17,10 +17,9 @@ the quantile functions, respectively. For example, the Normal
 distribution is defined by the four functions `rnorm`, `pnorm`,
 `dnorm`, and `qnorm`.
 
+### Example of standard normal distribution
 Let us generate a sample (X) of 100 points from a standard normal
-(mean 0 and stdev 1); visualize it as a boxplot and a histogram; generate a second
-sample (Y) of points that are linearly related to the first sample (based on the 
-linear equation $y = 2x + \epsilon$, with $\epsilon \sim N(0,1)$.
+(mean 0 and stdev 1); visualize it as a boxplot and a histogram.
 
 ```{r norm0}
 N <- 100 
@@ -29,13 +28,30 @@ par(mfrow=c(1,2))
 boxplot(X)
 hist(X)
 par(mfrow=c(1,1))
+```
 
+Let us now generate a second sample (Y) of points that are linearly related to the first sample (based on the 
+linear equation $y = 2x + \epsilon$, with $\epsilon \sim N(0,1)$.
+```{r}
 Y <- 2 + X + rnorm(N)
 plot(X,Y,pch=20)
 abline(2,1,col="red") # plot a line with intercept 2 and slope 1
 abline(h=0,lty=3)     # show the origin
 abline(v=0,lty=3)     # ..
 ```
+
+Let us see how good a linear model would be at "guessing" the generating model.
+```{r}
+lmY <- lm(Y~X)
+summary(lmY)
+plot(X,Y,pch=20)
+# the "true" line
+abline(2,1,col="red") # plot a line with intercept 2 and slope 1
+# the fitted line (based on the 100 observations)
+abline(lmY$coefficients[1],lmY$coefficients[2],col="blue",lty=3)
+```
+
+Pretty good. And if we were to increase the sample size, the "guessing" (read, the estimation) would get better and better.
 
 Let us now plot the well-known bell-shaped curve and the corresponding CDF.
 
