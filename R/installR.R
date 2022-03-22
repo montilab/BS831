@@ -40,11 +40,28 @@ installR <- function( install_shiny = FALSE) {
                "umap",
                "VennDiagram"
                )
+     bioC_packages <- c(
+         "ASSIGN",
+         "Biobase",
+         "biomaRt",
+         "ComplexHeatmap"
+         "ConsensusClusterPlus",
+         "DESeq2",
+         "edgeR",
+         "GEOquery",
+         "GSVA",
+         "limma",
+         "pdInfoBuilder",
+         "RNASeqPower",
+         "ROC"
+     )
      if ( install_shiny ) {
-       pkgs <- c(pkgs,list(
-         "shinyjs",
-         "shinythemes"
-       ))
+         pkgs <- c(pkgs,list(
+             "reactable"
+             "shinyjs",
+             "shinythemes"
+         ))
+         ##bioC_packages <- c(bioC_packages,list())
      }
      install.packages(pkgs,repos="http://cran.r-project.org")
 
@@ -57,6 +74,5 @@ installR <- function( install_shiny = FALSE) {
          install.packages("BiocManager",repos="http://cran.r-project.org")
      BiocManager::install() ## install basic distribution
                             ## install packages of interest
-     BiocManager::install(c("GEOquery","Biobase","biomaRt","ROC","ConsensusClusterPlus","ASSIGN",
-                            "limma","DESeq2","edgeR","GSVA","RNASeqPower","pdInfoBuilder","ComplexHeatmap"))
+     BiocManager::install(bioC_packages)
 }
