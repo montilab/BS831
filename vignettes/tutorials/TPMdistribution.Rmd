@@ -4,7 +4,7 @@ author: "Stefano Monti"
 output:
   html_document:
     theme: united
-    code_folding: show
+    code_folding: hide
     css: ../style/BS831.css
     toc: yes
     toc_float: no
@@ -23,35 +23,42 @@ require(ggplot2)
 require(BS831)
 OMPATH <- Sys.getenv("OMPATH")
 print(OMPATH)
+SHOW_ANSWERS <- TRUE
 ```
 
 ## Load the Raw Count Data
 
+Let us load the data, show the matrix size, and the count range.
 ```{r load.data}
 data("HNSC_htseq_raw_counts_AEvsG1vsG3")
 dge <- HNSC_htseq_raw_counts_AEvsG1vsG3
 print(dim(dge))
+quantile(exprs(dge),probs=seq(0,1,.1))
 ```
 
 ## Transcripts Per Million (TPM)
 
-We now transform into transcripts per million (TPM) according to the formula:
+We now transform the counts into transcripts per million (TPM) according to the formula:
 
 $$
 TPM_{gene_i} =
 \frac{\frac{Counts_{gene_i}}{Length_{gene_i}/1000}}{\sum_{i=1}^G\frac{Counts_{gene_i}}{Length_{gene_i}/1000}} \times 1E6
 $$
-
 Where $G$ is the total number of genes.
 
-```{r tpm}
+Let us begin by uploading the information about gene lengths.
+```{r gene.length}
 ## retrieve transcript length information
 len <- read.csv(file.path(Sys.getenv("OMPATH"),"data/GC_lengths_GRCh38.87.csv"),row.names=1)
+## match gene length info with count matrix
 cmn <- intersect(featureNames(dge),rownames(len))
 len <- len[cmn,]
 dge <- dge[cmn,]
 if ( any(featureNames(dge)!=rownames(len)) ) stop( "featureNames(dge)!=rownames(len)" )
+```
 
+With this information at hand, we can perform the TPM transformation based on the above formula.
+```{r tpm, echo=SHOW_ANSWERS}
 ## Normalize expression by TPM
 dgeTPM <- dge
 ## per 1000
@@ -61,6 +68,15 @@ expPKB <- apply( exprs(dgeTPM), 2, function(x){ x / len$KB } )
 ## Divide by total
 exprs(dgeTPM) <- apply( expPKB, 2, function(x) { x / sum(x) * 1E6} )
 ## show
+```
+
+Let us show few expression matrix entries before TPM transformation ...
+```{r before}
+exprs(dge)[order(rowSums(exprs(dgeTPM)),decreasing=TRUE),][1:5,1:5]
+```
+
+.. and after.
+```{r after}
 exprs(dgeTPM)[order(rowSums(exprs(dgeTPM)),decreasing=TRUE),][1:5,1:5]
 ```
 
@@ -75,28 +91,30 @@ table(lSize)
 ```
 
 ## TPM's Median vs. MAD 
-```{r med.vs.mad}
+```{r med.vs.mad, echo=SHOW_ANSWERS}
 SS <- data.frame(
-    MED=apply(exprs(dgeTPM),1,median),
-    MAD=apply(exprs(dgeTPM),1,mad))
+    MED=matrixStats::rowMedians(exprs(dgeTPM)),
+    MAD=matrixStats::rowMads(exprs(dgeTPM)))
 ggplot(SS,aes(MED,MAD)) +
     geom_point() +
-    geom_smooth()
+    geom_smooth() +
+    labs(title="linear axes")
 suppressWarnings(
 ggplot(SS,aes(MED,MAD)) +
     geom_point() +
     geom_smooth() +
     scale_x_continuous(trans='log2') +
-    scale_y_continuous(trans='log2'))
+    scale_y_continuous(trans='log2')) +
+    labs(title="log2 axes")
 ```
 
 ## Log2(TPM)'s Median vs. MAD 
 
-```{r log2.med.vs.mad}
+```{r log2.med.vs.mad, echo=SHOW_ANSWERS}
 dgeTPMlog2 <- log2(exprs(dgeTPM)+1)
 SS2 <- data.frame(
-        MED=apply(dgeTPMlog2,1,median),
-        MAD=apply(dgeTPMlog2,1,mad))
+        MED=matrixStats::rowMedians(dgeTPMlog2),
+        MAD=matrixStats::rowMads(dgeTPMlog2))
 ggplot(SS2,aes(MED,MAD)) +
     geom_point() +
     geom_smooth()
