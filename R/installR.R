@@ -46,7 +46,7 @@ installR <- function( install_shiny = FALSE) {
         "ASSIGN",
         "Biobase",
         "biomaRt",
-        "ComplexHeatmap"
+        "ComplexHeatmap",
         "ConsensusClusterPlus",
         "DESeq2",
         "edgeR",
@@ -60,7 +60,7 @@ installR <- function( install_shiny = FALSE) {
     ## additional optional packages
     if ( install_shiny ) {
         pkgs <- c(pkgs,list(
-            "reactable"
+            "reactable",
             "shinyjs",
             "shinythemes"
         ))
