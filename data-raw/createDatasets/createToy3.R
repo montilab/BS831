@@ -1,8 +1,3 @@
-##
-
-
-
-
 ## linear shift between two samples
 ssize <- 100
 beta <- 1.5
