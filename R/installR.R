@@ -2,7 +2,8 @@
 #' @import devtools
 #' @import BiocManager
 #' @export
-installR <- function( install_shiny = FALSE) {
+installR <- function( install_shiny = FALSE)
+{
     ## CRAN packages
     pkgs <- c("cba",
               "caret",
