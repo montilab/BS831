@@ -3,7 +3,7 @@
 #' @import BiocManager
 #' @export
 installR <- function(
-    add=FALSE,             # additional packages not needed by BS831
+    add = FALSE,           # additional packages not needed by BS831
     install_shiny = FALSE  # ditto
 )
 {
