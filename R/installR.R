@@ -64,7 +64,6 @@ installR <- function(
     ## Bioconductor packages
     core_bioC_pkgs <- c(
         "ASSIGN",
-        "BS831",
         "Biobase",
         "biomaRt",
         "ComplexHeatmap",
