@@ -18,7 +18,6 @@ Imports:
     ggplot2,
     gridExtra,
     gtable,
-    heatmap.plus,
     magrittr,
     mclust,
     openxlsx,
