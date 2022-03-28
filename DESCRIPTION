@@ -32,7 +32,7 @@ Imports:
     tsne,
     umap,
     VennDiagram,
-    vennr
+    vennr,
     ASSIGN,
     Biobase,
     biomaRt,
