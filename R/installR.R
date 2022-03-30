@@ -72,7 +72,8 @@ installR <- function(
         "GEOquery",
         "GSVA",
         "edgeR",
-        "limma")
+        "limma",
+        "multtest")
     ## additional optional BioC packages
     add_bioC_pkgs <- c(
         "pdInfoBuilder",
