@@ -46,6 +46,7 @@ installR <- function(
         "gplots",
         "markdown",
         "matrixStats",
+        "MEGENA",
         "msigdbr",
         "pamr",
         "pkgdown",
@@ -59,6 +60,7 @@ installR <- function(
         "statmod",
         "shinyjs",
         "shinythemes",
+        "tidygraph",
         "tidyverse"
     )
     ## Bioconductor packages
