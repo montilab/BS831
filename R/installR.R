@@ -2,81 +2,101 @@
 #' @import devtools
 #' @import BiocManager
 #' @export
-installR <- function( install_shiny = FALSE)
+installR <- function(
+    add = FALSE,           # additional packages not needed by BS831
+    install_shiny = FALSE  # ditto
+)
 {
-    ## CRAN packages
-    pkgs <- c("cba",
-              "caret",
-              "combinat",
-              "data.table",
-              "dendextend",
-              "devtools",
-              "dynamicTreeCut",
-              "e1071",
-              "ff",
-              "ggdendro",
-              "ggplot2",
-              "gitlabr",
-              "glmnet",
-              "gplots",
-              "gridExtra",
-              "heatmap.plus",
-              "markdown",
-              "matrixStats",
-              "mclust",
-              "msigdbr",
-              "openxlsx",
-              "pamr",
-              "pheatmap",
-              "pkgdown",
-              "pROC",
-              "Rmisc",
-              "randomForest",
-              "rgl",
-              "rjson",
-              "rmarkdown",
-              "roxygen2",
-              "statmod",
-              "tidyverse",
-              "tsne",
-              "umap",
-              "VennDiagram"
+    ## core CRAN packages
+    core_cran_pkgs <- c(
+        "caret",
+        "cba",
+        "circlize",
+        "dplyr",
+        "ggdendro",
+        "ggplot2",
+        "gridExtra",
+        "gtable",
+        "heatmap.plus",
+        "magrittr",
+        "mclust",
+        "openxlsx",
+        "pROC",
+        "pheatmap",
+        "plotly",
+        "RColorBrewer",
+        "reshape2",
+        "scales",
+        "tidyr",
+        "tsne",
+        "umap",
+        "VennDiagram",
+        "vennr")
+    ## additional optional CRAN packages
+    add_cran_pkgs <- c(
+        "combinat",
+        "data.table",
+        "dendextend",
+        "devtools",
+        "dynamicTreeCut",
+        "e1071",
+        "ff",
+        "gitlabr",
+        "glmnet",
+        "gplots",
+        "markdown",
+        "matrixStats",
+        "MEGENA",
+        "msigdbr",
+        "pamr",
+        "pkgdown",
+        "Rmisc",
+        "randomForest",
+        "reactable",
+        "rgl",
+        "rjson",
+        "rmarkdown",
+        "roxygen2",
+        "statmod",
+        "shinyjs",
+        "shinythemes",
+        "tidygraph",
+        "tidyverse"
     )
     ## Bioconductor packages
-    bioC_packages <- c(
+    core_bioC_pkgs <- c(
         "ASSIGN",
         "Biobase",
         "biomaRt",
         "ComplexHeatmap",
         "ConsensusClusterPlus",
         "DESeq2",
-        "edgeR",
         "GEOquery",
         "GSVA",
+        "edgeR",
         "limma",
+        "multtest")
+    ## additional optional BioC packages
+    add_bioC_pkgs <- c(
         "pdInfoBuilder",
         "RNASeqPower",
         "ROC"
     )
-    ## additional optional packages
-    if ( install_shiny ) {
-        pkgs <- c(pkgs,list(
-            "reactable",
-            "shinyjs",
-            "shinythemes"
-        ))
-        ##bioC_packages <- c(bioC_packages,list())
-    }
     ## install CRAN packages
-    install.packages(pkgs,repos="http://cran.r-project.org")
-
+    install.packages(core_cran_pkgs,repos="http://cran.r-project.org")
+    if (add) {
+        install.packages(add_cran_pkgs,repos="http://cran.r-project.org")
+    }
+    ## install Bioconductor packages
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+        install.packages("BiocManager", repos="http://cran.r-project.org")
+    BiocManager::install()                ## install basic distribution
+    BiocManager::install(core_bioC_pkgs)  ## additional packages
+    if (add) {
+        BiocManager::install(add_bioC_pkgs)
+    }
     ## packages better installed directly from github
     devtools::install_github("montilab/hypeR")
     devtools::install_github("montilab/vennr")
-
-    ## installBioconductor packages
-    if (!requireNamespace("BiocManager", quietly = TRUE))
-        install.packages("BiocManager",repos="http://cran.r-project.org")
-    BiocManager::install()              ## install basic distribution
-    BiocManager::install(bioC_packages) ## additional packages
+    #devtools::install_github("montilab/BS831")
 }

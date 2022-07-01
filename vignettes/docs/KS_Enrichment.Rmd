@@ -40,6 +40,7 @@ sample (from a Gaussian) to an actual distribution (uniform):
 set.seed(123)                   # for reproducible results
 x <- rnorm(100,mean=0,sd=1)     # sample 100 random observations from a standard Gaussian
 ks.test(x,"punif",min=-3,max=3) # test for difference from a uniform distribution U[-3;3]
+ks.test(x,"pnorm",mean=0,sd=1)  # test for difference from a uniform distribution U[-3;3]
 ```
 
 The function returns a score, the D statistic (between 0 and 1, with
@@ -122,7 +123,7 @@ x <- 991:1000 # the genes are last in the ranking (10 most negative t-scores)
 ks.test(x,1:1000)
 
 x <- 496:505  # the genes are smack in the middle of the ranking
-ks.test(x,1:0000)
+ks.test(x,1:1000)
 
 x <- runif(10,min=1,max=1000) # the genes' ranks are actually uniformly distributed
 ks.test(x,1:1000)

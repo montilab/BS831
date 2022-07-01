@@ -40,6 +40,8 @@ We start by loading and pre-processing the necessary expression dataset.
 ## ..breast cancer dataset
 data(renamedBreastDB)
 
+#load(file.path(Sys.getenv("BS831"),"data/renamedBreastDB.rda"))
+
 dat <- renamedBreastDB
 head(pData(dat))
 table(dat$diseaseState)

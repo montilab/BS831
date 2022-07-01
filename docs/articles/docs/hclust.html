@@ -20,6 +20,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -42,7 +44,7 @@
   <a href="../../index.html">Home</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Markdowns
      
     <span class="caret"></span>
@@ -62,7 +64,8 @@
       <a href="../../articles/docs/Mix_Normals.html">Mixture of Normals</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Preprocessing and Quality Control</li>
+    </li>
+<li class="dropdown-header">Preprocessing and Quality Control</li>
     <li>
       <a href="../../articles/docs/Microarray_Processing.html">Data Acquisition and ExpressionSet Basics</a>
     </li>
@@ -82,7 +85,8 @@
       <a href="../../articles/docs/quantileNormalization.html">Quantile Normalization</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Comparative Experiments I: Microarrays and Linear Models</li>
+    </li>
+<li class="dropdown-header">Comparative Experiments I: Microarrays and Linear Models</li>
     <li>
       <a href="../../articles/docs/SampleSize.html">Sample Size and Statistical Significance</a>
     </li>
@@ -102,7 +106,8 @@
       <a href="../../articles/docs/Diffanal_LimmaBC.html">Gene Expression Differential Analysis based on Limma</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Comparative Experiments II: RNA-seq and Generalized Lineary Models</li>
+    </li>
+<li class="dropdown-header">Comparative Experiments II: RNA-seq and Generalized Lineary Models</li>
     <li>
       <a href="../../articles/docs/RNAseq_ScalNorm.html">RNA-Seq Data Scaling and Normalization</a>
     </li>
@@ -110,7 +115,8 @@
       <a href="../../articles/docs/DiffanalysisRNAseqComparison.html">RNA-seq Differential Expression Analysis with DEseq2, edgeR and limma</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Comparative Experiments III: Differential Enrichment Analysis</li>
+    </li>
+<li class="dropdown-header">Comparative Experiments III: Differential Enrichment Analysis</li>
     <li>
       <a href="../../articles/docs/HyperEnrichment.html">HyperGeometric Enrichment</a>
     </li>
@@ -127,7 +133,8 @@
       <a href="../../articles/docs/GeneSetProjectionASSIGN.html">Geneset projection based on ASSIGN</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Classification</li>
+    </li>
+<li class="dropdown-header">Classification</li>
     <li>
       <a href="../../articles/docs/featureRedundancy.html">Feature Redundancy: the Good and the Bad</a>
     </li>
@@ -135,7 +142,8 @@
       <a href="../../articles/docs/Classification_Caret.html">Classification Using Caret</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Clustering</li>
+    </li>
+<li class="dropdown-header">Clustering</li>
     <li>
       <a href="../../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -162,39 +170,40 @@
 
       
 
-      </header><script src="hclust_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Hierarchical Clustering</h1>
-                        <h4 class="author">Stefano Monti</h4>
+                        <h4 data-toc-skip class="author">Stefano Monti</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/montilab/BS831/blob/master/vignettes/docs/hclust.Rmd"><code>vignettes/docs/hclust.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/montilab/BS831/blob/HEAD/vignettes/docs/hclust.Rmd"><code>vignettes/docs/hclust.Rmd</code></a></small>
       <div class="hidden name"><code>hclust.Rmd</code></div>
 
     </div>
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/montilab/BS831">BS831</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">heatmap.plus</span><span class="op">)</span></code></pre></div>
-<div id="clustering-of-real-data-the-drug-matrix" class="section level2">
-<h2 class="hasAnchor">
-<a href="#clustering-of-real-data-the-drug-matrix" class="anchor"></a>Clustering of Real Data: the Drug Matrix</h2>
-<p>We will use the DrugMatrix subset previously described for our examples. This data corresponds to chemical perturbation experiments, whereby rats are exposed to different chemicals, and their liver’s RNA is profiled.</p>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/montilab/BS831">BS831</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">pheatmap</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></code></pre></div>
+<div class="section level2">
+<h2 id="clustering-of-real-data-the-drug-matrix">Clustering of Real Data: the Drug Matrix<a class="anchor" aria-label="anchor" href="#clustering-of-real-data-the-drug-matrix"></a>
+</h2>
+<p>We will use the DrugMatrix subset previously described for our examples. This data corresponds to chemical perturbation experiments, whereby rats are exposed to different chemicals, and their liver's RNA is profiled.</p>
 <p>We upload the data and perform a drastic variation filtering to obtain a small and easy to manage dataset.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">dm10</span><span class="op">)</span>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">dm10</span><span class="op">)</span>
 
 <span class="va">DM</span> <span class="op">&lt;-</span> <span class="fu">variationFilter</span><span class="op">(</span><span class="va">dm10</span>,ngenes<span class="op">=</span><span class="fl">1000</span>,do.plot<span class="op">=</span><span class="cn">TRUE</span>,verbose<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <p><img src="hclust_files/figure-html/drugMatrix-1.png" width="700"></p>
 </div>
-<div id="hierarchical-clustering" class="section level2">
-<h2 class="hasAnchor">
-<a href="#hierarchical-clustering" class="anchor"></a>Hierarchical Clustering</h2>
-<p>Let us analyze the data by carrying out hierarchical clustering. We’ll use <code>heatmap.plus</code> to visualize the data. Let us first define a simple function to create a color gradient to be used for coloring the gene expression heatmaps.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="section level2">
+<h2 id="hierarchical-clustering">Hierarchical Clustering<a class="anchor" aria-label="anchor" href="#hierarchical-clustering"></a>
+</h2>
+<p>Let us analyze the data by carrying out hierarchical clustering. We'll use <code>heatmap.plus</code> to visualize the data. Let us first define a simple function to create a color gradient to be used for coloring the gene expression heatmaps.</p>
+<div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">colGradient</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span> <span class="va">cols</span>, <span class="va">length</span>, <span class="va">cmax</span><span class="op">=</span><span class="fl">255</span> <span class="op">)</span>
 <span class="op">{</span>
   <span class="co">## e.g., to create a white-to-red gradient with 10 levels</span>
@@ -205,85 +214,160 @@
   <span class="co">##</span>
   <span class="co">##   colGradient(cols=c('blue','white','red'),length=9)</span>
   <span class="co">##</span>
-  <span class="va">ramp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/colorRamp.html">colorRamp</a></span><span class="op">(</span><span class="va">cols</span><span class="op">)</span>
-  <span class="fu"><a href="https://rdrr.io/r/grDevices/rgb.html">rgb</a></span><span class="op">(</span> <span class="fu">ramp</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,length<span class="op">=</span><span class="va">length</span><span class="op">)</span><span class="op">)</span>, max<span class="op">=</span><span class="va">cmax</span> <span class="op">)</span>
+  <span class="va">ramp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/colorRamp.html" class="external-link">colorRamp</a></span><span class="op">(</span><span class="va">cols</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/grDevices/rgb.html" class="external-link">rgb</a></span><span class="op">(</span> <span class="fu">ramp</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,length<span class="op">=</span><span class="va">length</span><span class="op">)</span><span class="op">)</span>, max<span class="op">=</span><span class="va">cmax</span> <span class="op">)</span>
 <span class="op">}</span></code></pre></div>
 <p>Next, let us perform the actual clustering. While the function <code>heatmap.plus</code> can carry out hierarchical clustering internally, we explicitely call <code>hclust</code> outside the function call to illustrate its use (this will also save computation time should one want to call heatmap.plus multiple times with different color coding or other changes that would not affect the clustering).</p>
 <p>Notice that the heatmap color is somewhat saturated. In the module <code>R/Heatmaps.Rmd</code> we present additional visualization functions that do a better job at color-coding the heatmap.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## color coding of the samples indicating carcinogenicity status and chemical</span>
-<span class="va">chemicals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">dm10</span><span class="op">)</span><span class="op">[</span>,<span class="st">"CHEMICAL"</span><span class="op">]</span><span class="op">)</span>
-<span class="va">CSC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cbind.html">cbind</a></span><span class="op">(</span>CARC<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"white"</span>,<span class="st">"green"</span>,<span class="st">"pink"</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">dm10</span><span class="op">)</span><span class="op">[</span>,<span class="st">"Carcinogen_liv"</span><span class="op">]</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">NA</span>,<span class="st">"NON-CARC"</span>,<span class="st">"CARCINOGEN"</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>,
-             CHEM<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html">rainbow</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">chemicals</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html">pData</a></span><span class="op">(</span><span class="va">dm10</span><span class="op">)</span><span class="op">[</span>,<span class="st">"CHEMICAL"</span><span class="op">]</span>,<span class="va">chemicals</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">chemicals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu">pData</span><span class="op">(</span><span class="va">dm10</span><span class="op">)</span><span class="op">[</span>,<span class="st">"CHEMICAL"</span><span class="op">]</span><span class="op">)</span>
+<span class="va">annot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>CARC<span class="op">=</span><span class="va">dm10</span><span class="op">$</span><span class="va">Carcinogen_liv</span>,
+                    CHEM<span class="op">=</span><span class="va">dm10</span><span class="op">$</span><span class="va">CHEMICAL</span>,
+                    row.names <span class="op">=</span> <span class="fu">sampleNames</span><span class="op">(</span><span class="va">dm10</span><span class="op">)</span><span class="op">)</span>
+<span class="va">annot_col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+    CARC<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NON-CARC"</span><span class="op">=</span><span class="st">"green"</span>,<span class="st">"CARCINOGEN"</span><span class="op">=</span><span class="st">"pink"</span><span class="op">)</span>,
+    CHEM<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>chem<span class="op">=</span><span class="va">chemicals</span>,cols<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">rainbow</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">chemicals</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tibble/man/enframe.html" class="external-link">deframe</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co">## color gradient for the expression levels (blue=down-regulated; white=neutral; red=up-regulated)</span>
-<span class="va">bwrPalette</span> <span class="op">&lt;-</span> <span class="fu">colGradient</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"blue"</span>,<span class="st">"white"</span>,<span class="st">"red"</span><span class="op">)</span>,length<span class="op">=</span><span class="fl">13</span><span class="op">)</span>
+<span class="va">bwrPalette</span> <span class="op">&lt;-</span> <span class="fu">colGradient</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>,<span class="st">"white"</span>,<span class="st">"red"</span><span class="op">)</span>,length<span class="op">=</span><span class="fl">9</span><span class="op">)</span>
 
 <span class="co">## cluster rows (genes) and columns (samples)</span>
-<span class="va">hc.row</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html">hclust</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html">as.dist</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"ward.D2"</span><span class="op">)</span> <span class="co"># genes by correlation</span>
-<span class="va">hc.col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html">hclust</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"ward.D2"</span><span class="op">)</span>           <span class="co"># samples by euclidean distance (default)</span>
+<span class="va">hc_row</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html" class="external-link">hclust</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html" class="external-link">as.dist</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"ward.D2"</span><span class="op">)</span> <span class="co"># genes by correlation</span>
+<span class="va">hc_col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html" class="external-link">hclust</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html" class="external-link">dist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"ward.D2"</span><span class="op">)</span>           <span class="co"># samples by euclidean distance (default)</span>
+
+<span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html" class="external-link">pheatmap</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span>,
+         color<span class="op">=</span><span class="va">bwrPalette</span>, 
+         annotation_col <span class="op">=</span> <span class="va">annot</span>,
+         annotation_colors <span class="op">=</span> <span class="va">annot_col</span>,
+         cluster_rows<span class="op">=</span><span class="va">hc_row</span>,
+         cluster_cols<span class="op">=</span><span class="va">hc_col</span>,
+         show_rownames <span class="op">=</span> <span class="cn">FALSE</span>,
+         show_colnames <span class="op">=</span> <span class="cn">FALSE</span>,
+         scale <span class="op">=</span> <span class="st">"row"</span>,
+         fontsize <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></code></pre></div>
+<p><img src="hclust_files/figure-html/hclust-1.png" width="700"></p>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## color coding of the samples indicating carcinogenicity status and chemical</span>
+<span class="va">chemicals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu">pData</span><span class="op">(</span><span class="va">dm10</span><span class="op">)</span><span class="op">[</span>,<span class="st">"CHEMICAL"</span><span class="op">]</span><span class="op">)</span>
+<span class="va">CSC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>CARC<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>,<span class="st">"green"</span>,<span class="st">"pink"</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="fu">pData</span><span class="op">(</span><span class="va">dm10</span><span class="op">)</span><span class="op">[</span>,<span class="st">"Carcinogen_liv"</span><span class="op">]</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>,<span class="st">"NON-CARC"</span>,<span class="st">"CARCINOGEN"</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>,
+             CHEM<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">rainbow</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">chemicals</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="fu">pData</span><span class="op">(</span><span class="va">dm10</span><span class="op">)</span><span class="op">[</span>,<span class="st">"CHEMICAL"</span><span class="op">]</span>,<span class="va">chemicals</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
+
+<span class="co">## color gradient for the expression levels (blue=down-regulated; white=neutral; red=up-regulated)</span>
+<span class="va">bwrPalette</span> <span class="op">&lt;-</span> <span class="fu">colGradient</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>,<span class="st">"white"</span>,<span class="st">"red"</span><span class="op">)</span>,length<span class="op">=</span><span class="fl">13</span><span class="op">)</span>
+
+<span class="co">## cluster rows (genes) and columns (samples)</span>
+<span class="va">hc.row</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html" class="external-link">hclust</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html" class="external-link">as.dist</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"ward.D2"</span><span class="op">)</span> <span class="co"># genes by correlation</span>
+<span class="va">hc.col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html" class="external-link">hclust</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html" class="external-link">dist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"ward.D2"</span><span class="op">)</span>           <span class="co"># samples by euclidean distance (default)</span>
 
 <span class="co">## draw the heatmap (hide row and col labels since they'd be unreadable)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/heatmap.plus/man/heatmap.plus.package.html">heatmap.plus</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span>,Rowv<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/dendrogram.html">as.dendrogram</a></span><span class="op">(</span><span class="va">hc.row</span><span class="op">)</span>,Colv<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/dendrogram.html">as.dendrogram</a></span><span class="op">(</span><span class="va">hc.col</span><span class="op">)</span>,col<span class="op">=</span><span class="va">bwrPalette</span>,ColSideColors<span class="op">=</span><span class="va">CSC</span>,labCol<span class="op">=</span><span class="cn">NA</span>,labRow<span class="op">=</span><span class="cn">NA</span><span class="op">)</span></code></pre></div>
-<p><img src="hclust_files/figure-html/hclust-1.png" width="700"></p>
-<div id="optimal-leaf-ordering" class="section level3">
-<h3 class="hasAnchor">
-<a href="#optimal-leaf-ordering" class="anchor"></a>Optimal Leaf Ordering</h3>
-<p>As discussed in class, hierarchical clustering induces a <em>partial</em> ordering of the dendogram leaves (i.e., of the clustered items), modulo the ‘flipping’ of any of the sub-trees. However, one can obtain a <em>total</em> ordering by using the leaf-ordering algorithm developed by <a href="http://bioinformatics.oxfordjournals.org/content/19/9/1070">Bar-Joseph et al. (2001)</a>, which minimizes the distance betwees adjacent items in two distinct sub-trees.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">cba</span><span class="op">)</span> <span class="co"># load the necessary pacakge</span>
+<span class="fu">heatmap.plus</span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span>,
+             Rowv<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/dendrogram.html" class="external-link">as.dendrogram</a></span><span class="op">(</span><span class="va">hc.row</span><span class="op">)</span>,
+             Colv<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/dendrogram.html" class="external-link">as.dendrogram</a></span><span class="op">(</span><span class="va">hc.col</span><span class="op">)</span>,
+             col<span class="op">=</span><span class="va">bwrPalette</span>,
+             ColSideColors<span class="op">=</span><span class="va">CSC</span>,
+             labCol<span class="op">=</span><span class="cn">NA</span>,labRow<span class="op">=</span><span class="cn">NA</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html" class="external-link">pheatmap</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span></code></pre></div>
+<div class="section level3">
+<h3 id="optimal-leaf-ordering">Optimal Leaf Ordering<a class="anchor" aria-label="anchor" href="#optimal-leaf-ordering"></a>
+</h3>
+<p>As discussed in class, hierarchical clustering induces a <em>partial</em> ordering of the dendogram leaves (i.e., of the clustered items), modulo the 'flipping' of any of the sub-trees. However, one can obtain a <em>total</em> ordering by using the leaf-ordering algorithm developed by <a href="http://bioinformatics.oxfordjournals.org/content/19/9/1070" class="external-link">Bar-Joseph et al. (2001)</a>, which minimizes the distance betwees adjacent items in two distinct sub-trees.</p>
+<div class="sourceCode"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">cba</span><span class="op">)</span> <span class="co"># load the necessary pacakge</span>
 
 <span class="co">## First, call hclust, then call the leaf-ordering algorithm and re-order the dendrogram</span>
 
-<span class="va">hc.col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html">hclust</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"ward.D2"</span><span class="op">)</span>
-<span class="va">ord</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/cba/man/order.optimal.html">order.optimal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,merge<span class="op">=</span><span class="va">hc.col</span><span class="op">$</span><span class="va">merge</span><span class="op">)</span>
-<span class="va">hc.col</span><span class="op">$</span><span class="va">merge</span> <span class="op">&lt;-</span> <span class="va">ord</span><span class="op">$</span><span class="va">merge</span>
-<span class="va">hc.col</span><span class="op">$</span><span class="va">order</span> <span class="op">&lt;-</span> <span class="va">ord</span><span class="op">$</span><span class="va">order</span>
+<span class="va">hc_col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html" class="external-link">hclust</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/proxy/man/dist.html" class="external-link">dist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"ward.D2"</span><span class="op">)</span>
+<span class="va">ord</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/cba/man/order.optimal.html" class="external-link">order.optimal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/proxy/man/dist.html" class="external-link">dist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,merge<span class="op">=</span><span class="va">hc_col</span><span class="op">$</span><span class="va">merge</span><span class="op">)</span>
+<span class="va">hc_col</span><span class="op">$</span><span class="va">merge</span> <span class="op">&lt;-</span> <span class="va">ord</span><span class="op">$</span><span class="va">merge</span>
+<span class="va">hc_col</span><span class="op">$</span><span class="va">order</span> <span class="op">&lt;-</span> <span class="va">ord</span><span class="op">$</span><span class="va">order</span>
 
 <span class="co">## visualize the results (and compare, visually, to the results w/o optimal leaf ordering above)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/heatmap.plus/man/heatmap.plus.package.html">heatmap.plus</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span>,Rowv<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/dendrogram.html">as.dendrogram</a></span><span class="op">(</span><span class="va">hc.row</span><span class="op">)</span>,Colv<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/dendrogram.html">as.dendrogram</a></span><span class="op">(</span><span class="va">hc.col</span><span class="op">)</span>,col<span class="op">=</span><span class="va">bwrPalette</span>,ColSideColors<span class="op">=</span><span class="va">CSC</span>,labCol<span class="op">=</span><span class="cn">NA</span>,labRow<span class="op">=</span><span class="cn">NA</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html" class="external-link">pheatmap</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span>,
+         color<span class="op">=</span><span class="va">bwrPalette</span>, 
+         annotation_col <span class="op">=</span> <span class="va">annot</span>,
+         annotation_colors <span class="op">=</span> <span class="va">annot_col</span>,
+         cluster_rows<span class="op">=</span><span class="va">hc_row</span>,
+         cluster_cols<span class="op">=</span><span class="va">hc_col</span>,
+         show_rownames <span class="op">=</span> <span class="cn">FALSE</span>,
+         show_colnames <span class="op">=</span> <span class="cn">FALSE</span>,
+         scale <span class="op">=</span> <span class="st">"row"</span>,
+         fontsize <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></code></pre></div>
 <p><img src="hclust_files/figure-html/hcopt-1.png" width="700"></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## since this is a step always worth performing, let's define a simple function that implements the necessary steps</span>
-
 <span class="va">hcopt</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">d</span>, <span class="va">HC</span><span class="op">=</span><span class="cn">NULL</span>, <span class="va">method</span> <span class="op">=</span> <span class="st">"ward.D"</span>, <span class="va">members</span> <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
 <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">HC</span><span class="op">)</span> <span class="op">)</span> <span class="op">{</span> 
-    <span class="va">HC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html">hclust</a></span><span class="op">(</span><span class="va">d</span>,method<span class="op">=</span><span class="va">method</span>,members<span class="op">=</span><span class="va">members</span><span class="op">)</span>
+  <span class="kw">if</span> <span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">HC</span><span class="op">)</span> <span class="op">)</span> <span class="op">{</span> 
+    <span class="va">HC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html" class="external-link">hclust</a></span><span class="op">(</span><span class="va">d</span>,method<span class="op">=</span><span class="va">method</span>,members<span class="op">=</span><span class="va">members</span><span class="op">)</span>
   <span class="op">}</span>
-  <span class="va">ORD</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/cba/man/order.optimal.html">order.optimal</a></span><span class="op">(</span><span class="va">d</span>,merge<span class="op">=</span><span class="va">HC</span><span class="op">$</span><span class="va">merge</span><span class="op">)</span>
+  <span class="va">ORD</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/cba/man/order.optimal.html" class="external-link">order.optimal</a></span><span class="op">(</span><span class="va">d</span>,merge<span class="op">=</span><span class="va">HC</span><span class="op">$</span><span class="va">merge</span><span class="op">)</span>
   <span class="va">HC</span><span class="op">$</span><span class="va">merge</span> <span class="op">&lt;-</span> <span class="va">ORD</span><span class="op">$</span><span class="va">merge</span>
   <span class="va">HC</span><span class="op">$</span><span class="va">order</span> <span class="op">&lt;-</span> <span class="va">ORD</span><span class="op">$</span><span class="va">order</span>
   <span class="va">HC</span>
 <span class="op">}</span>
 <span class="co">## ok, now we can easily use the function in place of hclust</span>
-
-<span class="va">hc.row</span> <span class="op">&lt;-</span> <span class="fu">hcopt</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html">as.dist</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"ward.D2"</span><span class="op">)</span> <span class="co"># genes by correlation</span>
-<span class="va">hc.col</span> <span class="op">&lt;-</span> <span class="fu">hcopt</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"ward.D2"</span><span class="op">)</span>            <span class="co"># samples by euclidean distance (default)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/heatmap.plus/man/heatmap.plus.package.html">heatmap.plus</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span>,Rowv<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/dendrogram.html">as.dendrogram</a></span><span class="op">(</span><span class="va">hc.row</span><span class="op">)</span>,Colv<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/dendrogram.html">as.dendrogram</a></span><span class="op">(</span><span class="va">hc.col</span><span class="op">)</span>,col<span class="op">=</span><span class="va">bwrPalette</span>,ColSideColors<span class="op">=</span><span class="va">CSC</span>,labCol<span class="op">=</span><span class="cn">NA</span>,labRow<span class="op">=</span><span class="cn">NA</span><span class="op">)</span></code></pre></div>
+<span class="va">ho_row</span> <span class="op">&lt;-</span> <span class="fu">hcopt</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/proxy/man/dist.html" class="external-link">as.dist</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"ward.D2"</span><span class="op">)</span> <span class="co"># genes by correlation</span>
+<span class="va">ho_col</span> <span class="op">&lt;-</span> <span class="fu">hcopt</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/proxy/man/dist.html" class="external-link">dist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"ward.D2"</span><span class="op">)</span>            <span class="co"># samples by euclidean distance (default)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html" class="external-link">pheatmap</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span>,
+         color<span class="op">=</span><span class="va">bwrPalette</span>, 
+         annotation_col <span class="op">=</span> <span class="va">annot</span>,
+         annotation_colors <span class="op">=</span> <span class="va">annot_col</span>,
+         cluster_rows<span class="op">=</span><span class="va">ho_row</span>,
+         cluster_cols<span class="op">=</span><span class="va">ho_col</span>,
+         show_rownames <span class="op">=</span> <span class="cn">FALSE</span>,
+         show_colnames <span class="op">=</span> <span class="cn">FALSE</span>,
+         scale <span class="op">=</span> <span class="st">"row"</span>,
+         fontsize <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></code></pre></div>
 <p><img src="hclust_files/figure-html/hcopt-2.png" width="700"></p>
 </div>
-<div id="alternative-agglomeration-rules" class="section level3">
-<h3 class="hasAnchor">
-<a href="#alternative-agglomeration-rules" class="anchor"></a>Alternative Agglomeration Rules</h3>
-<p>In the examples above, we used the <a href="https://en.wikipedia.org/wiki/Ward's_method">Ward method</a> as our agglomeration rule. One of the nice properties of Ward is that it tends to yield well-balanced trees. Let us not look at alternative agglomeration rules.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="alternative-agglomeration-rules">Alternative Agglomeration Rules<a class="anchor" aria-label="anchor" href="#alternative-agglomeration-rules"></a>
+</h3>
+<p>In the examples above, we used the <a href="https://en.wikipedia.org/wiki/Ward's_method" class="external-link">Ward method</a> as our agglomeration rule. One of the nice properties of Ward is that it tends to yield well-balanced trees. Let us not look at alternative agglomeration rules.</p>
+<div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## complete linkage</span>
-<span class="va">hc.row1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html">hclust</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html">as.dist</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"complete"</span><span class="op">)</span> <span class="co"># genes by correlation</span>
-<span class="va">hc.col1</span> <span class="op">&lt;-</span> <span class="fu">hcopt</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"complete"</span><span class="op">)</span>            <span class="co"># samples by euclidean distance (default)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/heatmap.plus/man/heatmap.plus.package.html">heatmap.plus</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span>,Rowv<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/dendrogram.html">as.dendrogram</a></span><span class="op">(</span><span class="va">hc.row1</span><span class="op">)</span>,Colv<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/dendrogram.html">as.dendrogram</a></span><span class="op">(</span><span class="va">hc.col1</span><span class="op">)</span>,col<span class="op">=</span><span class="va">bwrPalette</span>,ColSideColors<span class="op">=</span><span class="va">CSC</span>,labCol<span class="op">=</span><span class="cn">NA</span>,labRow<span class="op">=</span><span class="cn">NA</span><span class="op">)</span></code></pre></div>
+<span class="va">ho_row1</span> <span class="op">&lt;-</span> <span class="fu">hcopt</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/proxy/man/dist.html" class="external-link">as.dist</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"complete"</span><span class="op">)</span> <span class="co"># genes by correlation</span>
+<span class="va">ho_col1</span> <span class="op">&lt;-</span> <span class="fu">hcopt</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/proxy/man/dist.html" class="external-link">dist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"complete"</span><span class="op">)</span>           <span class="co"># samples by euclidean distance (default)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html" class="external-link">pheatmap</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span>,
+         color<span class="op">=</span><span class="va">bwrPalette</span>, 
+         annotation_col <span class="op">=</span> <span class="va">annot</span>,
+         annotation_colors <span class="op">=</span> <span class="va">annot_col</span>,
+         cluster_rows<span class="op">=</span><span class="va">ho_row1</span>,
+         cluster_cols<span class="op">=</span><span class="va">ho_col1</span>,
+         show_rownames <span class="op">=</span> <span class="cn">FALSE</span>,
+         show_colnames <span class="op">=</span> <span class="cn">FALSE</span>,
+         scale <span class="op">=</span> <span class="st">"row"</span>,
+         fontsize <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></code></pre></div>
 <p><img src="hclust_files/figure-html/linkage-1.png" width="700"></p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## single linkage</span>
-<span class="va">hc.row2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html">hclust</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html">as.dist</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"single"</span><span class="op">)</span> <span class="co"># genes by correlation</span>
-<span class="va">hc.col2</span> <span class="op">&lt;-</span> <span class="fu">hcopt</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"single"</span><span class="op">)</span>            <span class="co"># samples by euclidean distance (default)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/heatmap.plus/man/heatmap.plus.package.html">heatmap.plus</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span>,Rowv<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/dendrogram.html">as.dendrogram</a></span><span class="op">(</span><span class="va">hc.row2</span><span class="op">)</span>,Colv<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/dendrogram.html">as.dendrogram</a></span><span class="op">(</span><span class="va">hc.col2</span><span class="op">)</span>,col<span class="op">=</span><span class="va">bwrPalette</span>,ColSideColors<span class="op">=</span><span class="va">CSC</span>,labCol<span class="op">=</span><span class="cn">NA</span>,labRow<span class="op">=</span><span class="cn">NA</span><span class="op">)</span></code></pre></div>
+<span class="va">ho_row2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html" class="external-link">hclust</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/proxy/man/dist.html" class="external-link">as.dist</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"single"</span><span class="op">)</span> <span class="co"># genes by correlation</span>
+<span class="va">ho_col2</span> <span class="op">&lt;-</span> <span class="fu">hcopt</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/proxy/man/dist.html" class="external-link">dist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"single"</span><span class="op">)</span>            <span class="co"># samples by euclidean distance (default)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html" class="external-link">pheatmap</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span>,
+         color<span class="op">=</span><span class="va">bwrPalette</span>, 
+         annotation_col <span class="op">=</span> <span class="va">annot</span>,
+         annotation_colors <span class="op">=</span> <span class="va">annot_col</span>,
+         cluster_rows<span class="op">=</span><span class="va">ho_row2</span>,
+         cluster_cols<span class="op">=</span><span class="va">ho_col2</span>,
+         show_rownames <span class="op">=</span> <span class="cn">FALSE</span>,
+         show_colnames <span class="op">=</span> <span class="cn">FALSE</span>,
+         scale <span class="op">=</span> <span class="st">"row"</span>,
+         fontsize <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></code></pre></div>
 <p><img src="hclust_files/figure-html/linkage-2.png" width="700"></p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## average linkage</span>
-<span class="va">hc.row3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html">hclust</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html">as.dist</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"average"</span><span class="op">)</span> <span class="co"># genes by correlation</span>
-<span class="va">hc.col3</span> <span class="op">&lt;-</span> <span class="fu">hcopt</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"average"</span><span class="op">)</span>            <span class="co"># samples by euclidean distance (default)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/heatmap.plus/man/heatmap.plus.package.html">heatmap.plus</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span>,Rowv<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/dendrogram.html">as.dendrogram</a></span><span class="op">(</span><span class="va">hc.row3</span><span class="op">)</span>,Colv<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/dendrogram.html">as.dendrogram</a></span><span class="op">(</span><span class="va">hc.col3</span><span class="op">)</span>,col<span class="op">=</span><span class="va">bwrPalette</span>,ColSideColors<span class="op">=</span><span class="va">CSC</span>,labCol<span class="op">=</span><span class="cn">NA</span>,labRow<span class="op">=</span><span class="cn">NA</span><span class="op">)</span></code></pre></div>
+<span class="va">ho_row3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html" class="external-link">hclust</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/proxy/man/dist.html" class="external-link">as.dist</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"average"</span><span class="op">)</span> <span class="co"># genes by correlation</span>
+<span class="va">ho_col3</span> <span class="op">&lt;-</span> <span class="fu">hcopt</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/proxy/man/dist.html" class="external-link">dist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,method<span class="op">=</span><span class="st">"average"</span><span class="op">)</span>            <span class="co"># samples by euclidean distance (default)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html" class="external-link">pheatmap</a></span><span class="op">(</span><span class="fu">exprs</span><span class="op">(</span><span class="va">DM</span><span class="op">)</span>,
+         color<span class="op">=</span><span class="va">bwrPalette</span>, 
+         annotation_col <span class="op">=</span> <span class="va">annot</span>,
+         annotation_colors <span class="op">=</span> <span class="va">annot_col</span>,
+         cluster_rows<span class="op">=</span><span class="va">ho_row3</span>,
+         cluster_cols<span class="op">=</span><span class="va">ho_col3</span>,
+         show_rownames <span class="op">=</span> <span class="cn">FALSE</span>,
+         show_colnames <span class="op">=</span> <span class="cn">FALSE</span>,
+         scale <span class="op">=</span> <span class="st">"row"</span>,
+         fontsize <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></code></pre></div>
 <p><img src="hclust_files/figure-html/linkage-3.png" width="700"></p>
 </div>
 </div>
@@ -300,11 +384,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://github.com/tetomonti">Stefano Monti</a>, <a href="https://github.com/anfederico">Anthony Federico</a>, <a href="https://github.com/ericreed">Eric Reed</a>, <a href="https://github.com/lia978">Amy Li</a>.</p>
+  <p></p>
+<p>Developed by <a href="https://github.com/tetomonti" class="external-link">Stefano Monti</a>, <a href="https://github.com/anfederico" class="external-link">Anthony Federico</a>, <a href="https://github.com/ericreed" class="external-link">Eric Reed</a>, <a href="https://github.com/lia978" class="external-link">Amy Li</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -312,6 +398,8 @@
 
   
 
+
+  
 
   </body>
 </html>
