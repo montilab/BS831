@@ -12,11 +12,13 @@ output:
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
 devtools::load_all(".")
+library(Biobase)
 library(pheatmap)
 library(tidyverse)
 ```
 
 ```{r eval=FALSE}
+library(Biobase)
 library(BS831)
 library(pheatmap)
 library(tidyverse)
@@ -77,7 +79,7 @@ that do a better job at color-coding the heatmap.
 chemicals <- unique(pData(dm10)[,"CHEMICAL"])
 annot <- data.frame(CARC=dm10$Carcinogen_liv,
                     CHEM=dm10$CHEMICAL,
-                    row.names = sampleNames(dm10))
+                    row.names = Biobase::sampleNames(dm10))
 annot_col <- list(
     CARC=c("NON-CARC"="green","CARCINOGEN"="pink"),
     CHEM=data.frame(chem=chemicals,cols=rainbow(length(chemicals))) %>% tibble::deframe())
