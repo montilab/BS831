@@ -12,12 +12,14 @@ output:
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
 devtools::load_all(".")
-library(heatmap.plus)
+library(pheatmap)
+library(tidyverse)
 ```
 
 ```{r eval=FALSE}
 library(BS831)
-library(heatmap.plus)
+library(pheatmap)
+library(tidyverse)
 ```
 
 ## Clustering of Real Data: the Drug Matrix 
@@ -72,6 +74,34 @@ Notice that the heatmap color is somewhat saturated. In the module
 that do a better job at color-coding the heatmap.
 
 ```{r hclust}
+chemicals <- unique(pData(dm10)[,"CHEMICAL"])
+annot <- data.frame(CARC=dm10$Carcinogen_liv,
+                    CHEM=dm10$CHEMICAL,
+                    row.names = sampleNames(dm10))
+annot_col <- list(
+    CARC=c("NON-CARC"="green","CARCINOGEN"="pink"),
+    CHEM=data.frame(chem=chemicals,cols=rainbow(length(chemicals))) %>% tibble::deframe())
+
+## color gradient for the expression levels (blue=down-regulated; white=neutral; red=up-regulated)
+bwrPalette <- colGradient(c("blue","white","red"),length=9)
+
+## cluster rows (genes) and columns (samples)
+hc_row <- hclust(as.dist(1-cor(t(exprs(DM)))),method="ward.D2") # genes by correlation
+hc_col <- hclust(dist(t(exprs(DM))),method="ward.D2")           # samples by euclidean distance (default)
+
+pheatmap(exprs(DM),
+         color=bwrPalette, 
+         annotation_col = annot,
+         annotation_colors = annot_col,
+         cluster_rows=hc_row,
+         cluster_cols=hc_col,
+         show_rownames = FALSE,
+         show_colnames = FALSE,
+         scale = "row",
+         fontsize = 5)
+```
+
+```{r hclust.old, eval=FALSE}
 ## color coding of the samples indicating carcinogenicity status and chemical
 chemicals <- unique(pData(dm10)[,"CHEMICAL"])
 CSC <- cbind(CARC=c("white","green","pink")[match(pData(dm10)[,"Carcinogen_liv"],c(NA,"NON-CARC","CARCINOGEN"))],
@@ -85,7 +115,14 @@ hc.row <- hclust(as.dist(1-cor(t(exprs(DM)))),method="ward.D2") # genes by corre
 hc.col <- hclust(dist(t(exprs(DM))),method="ward.D2")           # samples by euclidean distance (default)
 
 ## draw the heatmap (hide row and col labels since they'd be unreadable)
-heatmap.plus(exprs(DM),Rowv=as.dendrogram(hc.row),Colv=as.dendrogram(hc.col),col=bwrPalette,ColSideColors=CSC,labCol=NA,labRow=NA)
+heatmap.plus(exprs(DM),
+             Rowv=as.dendrogram(hc.row),
+             Colv=as.dendrogram(hc.col),
+             col=bwrPalette,
+             ColSideColors=CSC,
+             labCol=NA,labRow=NA)
+pheatmap(DM)
+
 ```
 
 ### Optimal Leaf Ordering
@@ -104,16 +141,24 @@ library(cba) # load the necessary pacakge
 
 ## First, call hclust, then call the leaf-ordering algorithm and re-order the dendrogram
 
-hc.col <- hclust(dist(t(exprs(DM))),method="ward.D2")
-ord <- order.optimal(dist(t(exprs(DM))),merge=hc.col$merge)
-hc.col$merge <- ord$merge
-hc.col$order <- ord$order
+hc_col <- hclust(dist(t(exprs(DM))),method="ward.D2")
+ord <- order.optimal(dist(t(exprs(DM))),merge=hc_col$merge)
+hc_col$merge <- ord$merge
+hc_col$order <- ord$order
 
 ## visualize the results (and compare, visually, to the results w/o optimal leaf ordering above)
-heatmap.plus(exprs(DM),Rowv=as.dendrogram(hc.row),Colv=as.dendrogram(hc.col),col=bwrPalette,ColSideColors=CSC,labCol=NA,labRow=NA)
+pheatmap(exprs(DM),
+         color=bwrPalette, 
+         annotation_col = annot,
+         annotation_colors = annot_col,
+         cluster_rows=hc_row,
+         cluster_cols=hc_col,
+         show_rownames = FALSE,
+         show_colnames = FALSE,
+         scale = "row",
+         fontsize = 5)
 
 ## since this is a step always worth performing, let's define a simple function that implements the necessary steps
-
 hcopt <- function(d, HC=NULL, method = "ward.D", members = NULL)
 {
   if ( is.null(HC) ) { 
@@ -125,10 +170,18 @@ hcopt <- function(d, HC=NULL, method = "ward.D", members = NULL)
   HC
 }
 ## ok, now we can easily use the function in place of hclust
-
-hc.row <- hcopt(as.dist(1-cor(t(exprs(DM)))),method="ward.D2") # genes by correlation
-hc.col <- hcopt(dist(t(exprs(DM))),method="ward.D2")            # samples by euclidean distance (default)
-heatmap.plus(exprs(DM),Rowv=as.dendrogram(hc.row),Colv=as.dendrogram(hc.col),col=bwrPalette,ColSideColors=CSC,labCol=NA,labRow=NA)
+ho_row <- hcopt(as.dist(1-cor(t(exprs(DM)))),method="ward.D2") # genes by correlation
+ho_col <- hcopt(dist(t(exprs(DM))),method="ward.D2")            # samples by euclidean distance (default)
+pheatmap(exprs(DM),
+         color=bwrPalette, 
+         annotation_col = annot,
+         annotation_colors = annot_col,
+         cluster_rows=ho_row,
+         cluster_cols=ho_col,
+         show_rownames = FALSE,
+         show_colnames = FALSE,
+         scale = "row",
+         fontsize = 5)
 ```
 
 ### Alternative Agglomeration Rules
@@ -141,18 +194,45 @@ agglomeration rules.
 
 ```{r linkage}
 ## complete linkage
-hc.row1 <- hclust(as.dist(1-cor(t(exprs(DM)))),method="complete") # genes by correlation
-hc.col1 <- hcopt(dist(t(exprs(DM))),method="complete")            # samples by euclidean distance (default)
-heatmap.plus(exprs(DM),Rowv=as.dendrogram(hc.row1),Colv=as.dendrogram(hc.col1),col=bwrPalette,ColSideColors=CSC,labCol=NA,labRow=NA)
+ho_row1 <- hcopt(as.dist(1-cor(t(exprs(DM)))),method="complete") # genes by correlation
+ho_col1 <- hcopt(dist(t(exprs(DM))),method="complete")           # samples by euclidean distance (default)
+pheatmap(exprs(DM),
+         color=bwrPalette, 
+         annotation_col = annot,
+         annotation_colors = annot_col,
+         cluster_rows=ho_row1,
+         cluster_cols=ho_col1,
+         show_rownames = FALSE,
+         show_colnames = FALSE,
+         scale = "row",
+         fontsize = 5)
 
 ## single linkage
-hc.row2 <- hclust(as.dist(1-cor(t(exprs(DM)))),method="single") # genes by correlation
-hc.col2 <- hcopt(dist(t(exprs(DM))),method="single")            # samples by euclidean distance (default)
-heatmap.plus(exprs(DM),Rowv=as.dendrogram(hc.row2),Colv=as.dendrogram(hc.col2),col=bwrPalette,ColSideColors=CSC,labCol=NA,labRow=NA)
+ho_row2 <- hclust(as.dist(1-cor(t(exprs(DM)))),method="single") # genes by correlation
+ho_col2 <- hcopt(dist(t(exprs(DM))),method="single")            # samples by euclidean distance (default)
+pheatmap(exprs(DM),
+         color=bwrPalette, 
+         annotation_col = annot,
+         annotation_colors = annot_col,
+         cluster_rows=ho_row2,
+         cluster_cols=ho_col2,
+         show_rownames = FALSE,
+         show_colnames = FALSE,
+         scale = "row",
+         fontsize = 5)
 
 ## average linkage
-hc.row3 <- hclust(as.dist(1-cor(t(exprs(DM)))),method="average") # genes by correlation
-hc.col3 <- hcopt(dist(t(exprs(DM))),method="average")            # samples by euclidean distance (default)
-heatmap.plus(exprs(DM),Rowv=as.dendrogram(hc.row3),Colv=as.dendrogram(hc.col3),col=bwrPalette,ColSideColors=CSC,labCol=NA,labRow=NA)
+ho_row3 <- hclust(as.dist(1-cor(t(exprs(DM)))),method="average") # genes by correlation
+ho_col3 <- hcopt(dist(t(exprs(DM))),method="average")            # samples by euclidean distance (default)
+pheatmap(exprs(DM),
+         color=bwrPalette, 
+         annotation_col = annot,
+         annotation_colors = annot_col,
+         cluster_rows=ho_row3,
+         cluster_cols=ho_col3,
+         show_rownames = FALSE,
+         show_colnames = FALSE,
+         scale = "row",
+         fontsize = 5)
 ```
  
