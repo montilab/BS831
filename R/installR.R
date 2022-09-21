@@ -41,6 +41,7 @@ installR <- function(
         "dynamicTreeCut",
         "e1071",
         "ff",
+        "ggcorplot",
         "gitlabr",
         "glmnet",
         "gplots",
@@ -60,6 +61,7 @@ installR <- function(
         "statmod",
         "shinyjs",
         "shinythemes",
+        "survminer",
         "tidygraph",
         "tidyverse"
     )
@@ -80,7 +82,8 @@ installR <- function(
     add_bioC_pkgs <- c(
         "pdInfoBuilder",
         "RNASeqPower",
-        "ROC"
+        "ROC",
+        "TCGAbiolinks"
     )
     ## install CRAN packages
     install.packages(core_cran_pkgs,repos="http://cran.r-project.org")
