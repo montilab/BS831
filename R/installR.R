@@ -85,12 +85,8 @@ installR <- function(
         "pdInfoBuilder",
         "RNASeqPower",
         "ROC",
-<<<<<<< HEAD
         "sesameData",
         "sesame"
-=======
-        "TCGAbiolinks"
->>>>>>> 88112592cb96aab1614aefb6945067def73814dd
     )
     ## install CRAN packages
     install.packages(core_cran_pkgs,repos="http://cran.r-project.org")
