@@ -41,6 +41,7 @@ installR <- function(
         "dynamicTreeCut",
         "e1071",
         "ff",
+        "ggcorplot",
         "gitlabr",
         "glmnet",
         "gplots",
@@ -60,6 +61,7 @@ installR <- function(
         "statmod",
         "shinyjs",
         "shinythemes",
+        "survminer",
         "tidygraph",
         "tidyverse"
     )
@@ -83,8 +85,12 @@ installR <- function(
         "pdInfoBuilder",
         "RNASeqPower",
         "ROC",
+<<<<<<< HEAD
         "sesameData",
         "sesame"
+=======
+        "TCGAbiolinks"
+>>>>>>> 88112592cb96aab1614aefb6945067def73814dd
     )
     ## install CRAN packages
     install.packages(core_cran_pkgs,repos="http://cran.r-project.org")
