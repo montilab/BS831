@@ -81,10 +81,13 @@ installR <- function(
         "multtest")
     ## additional optional BioC packages
     add_bioC_pkgs <- c(
+        "BioinformaticsFMRP/TCGAbiolinksGUI.data",
+        "BioinformaticsFMRP/TCGAbiolinks",
         "pdInfoBuilder",
         "RNASeqPower",
         "ROC",
-        "TCGAbiolinks"
+        "sesameData",
+        "sesame"
     )
     ## install CRAN packages
     install.packages(core_cran_pkgs,repos="http://cran.r-project.org")
@@ -102,5 +105,6 @@ installR <- function(
     ## packages better installed directly from github
     devtools::install_github("montilab/hypeR")
     devtools::install_github("montilab/vennr")
+    devtools::install_github("montilab/ConAn")
     #devtools::install_github("montilab/BS831")
 }
