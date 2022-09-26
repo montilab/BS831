@@ -54,6 +54,7 @@ installR <- function(
         "Rmisc",
         "randomForest",
         "reactable",
+        "readxl",
         "rgl",
         "rjson",
         "rmarkdown",
