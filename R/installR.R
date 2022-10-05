@@ -20,6 +20,7 @@ installR <- function(
         "heatmap.plus",
         "magrittr",
         "mclust",
+        "microbenchmark",
         "openxlsx",
         "pROC",
         "pheatmap",
@@ -34,6 +35,7 @@ installR <- function(
         "vennr")
     ## additional optional CRAN packages
     add_cran_pkgs <- c(
+        "BNlearn",
         "combinat",
         "data.table",
         "dendextend",
