@@ -19,8 +19,8 @@ installR <- function(
         "gtable",
         "heatmap.plus",
         "magrittr",
+        "manhattanly",
         "mclust",
-        "microbenchmark",
         "openxlsx",
         "pROC",
         "pheatmap",
@@ -35,7 +35,6 @@ installR <- function(
         "vennr")
     ## additional optional CRAN packages
     add_cran_pkgs <- c(
-        "BNlearn",
         "combinat",
         "data.table",
         "dendextend",
@@ -56,7 +55,6 @@ installR <- function(
         "Rmisc",
         "randomForest",
         "reactable",
-        "readxl",
         "rgl",
         "rjson",
         "rmarkdown",
