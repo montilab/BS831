@@ -58,6 +58,7 @@ installR <- function(
         "rgl",
         "rjson",
         "rmarkdown",
+        "rmeta",
         "roxygen2",
         "statmod",
         "shinyjs",
