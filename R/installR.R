@@ -51,6 +51,7 @@ installR <- function(
         "MEGENA",
         "msigdbr",
         "pamr",
+        "pbapply",
         "pkgdown",
         "Rmisc",
         "randomForest",
