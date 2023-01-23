@@ -1,8 +1,8 @@
 suppressPackageStartupMessages(require(heatmap.plus))
 
-ramp.wr <- colorRamp(c( "white","red"))
+ramp.wr <- circlize::colorRamp(c( "white","red"))
 palette.wr <- rgb( ramp.wr(seq(0, 1, length = 12)), max = 255)
-ramp.br <- colorRamp(c( "blue","white","red"))
+ramp.br <- circlize::colorRamp(c( "blue","white","red"))
 palette.br <- rgb( ramp.br(seq(0, 1, length = 14)), max = 255)
 old.palette.br <- c("#0000FF", "#4040FF", "#7070FF", "#8888FF",
                     "#A9A9FF", "#D5D5FF", "#EEE5EE", "#FFAADA", "#FF9DB0",
@@ -54,7 +54,7 @@ sd.map <- function(dat,max.sd=3,n.sd=1,robust=FALSE)
 {
   SD <- apply(dat,1,if(robust) mad else sd)
   MN <- apply(dat,1,if(robust) median else mean)
-  TMP <- 
+  TMP <-
     sapply(1:nrow(dat),function(i)
              cut(dat[i,],
                  breaks=unique(c(-Inf,MN[i]+seq(from=-(max.sd*SD[i]-SD[i]/(2*n.sd)),to=-(SD[i]/(2*n.sd)),by=SD[i]/n.sd),
@@ -82,4 +82,4 @@ clustColors <- function(clust,
     }
     return(CC)
 }
- 
+
