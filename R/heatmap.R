@@ -1,8 +1,8 @@
 suppressPackageStartupMessages(require(heatmap.plus))
 
-ramp.wr <- circlize::colorRamp(c( "white","red"))
+ramp.wr <- grDevices::colorRamp(c( "white","red"))
 palette.wr <- rgb( ramp.wr(seq(0, 1, length = 12)), max = 255)
-ramp.br <- circlize::colorRamp(c( "blue","white","red"))
+ramp.br <- grDevices::colorRamp(c( "blue","white","red"))
 palette.br <- rgb( ramp.br(seq(0, 1, length = 14)), max = 255)
 old.palette.br <- c("#0000FF", "#4040FF", "#7070FF", "#8888FF",
                     "#A9A9FF", "#D5D5FF", "#EEE5EE", "#FFAADA", "#FF9DB0",

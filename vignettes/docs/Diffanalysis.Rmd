@@ -149,7 +149,7 @@ ha.t <- HeatmapAnnotation(diseaseState=cancerSet$diseaseState,
 
 Heatmap(datScaled,
         name="expression", 
-        col=colorRamp2(c(-3, 0, 3), c("darkblue", "white", "darkred")),
+        col=circlize::colorRamp2(c(-3, 0, 3), c("darkblue", "white", "darkred")),
         top_annotation=ha.t, 
         cluster_rows=FALSE,
         cluster_columns=TRUE,

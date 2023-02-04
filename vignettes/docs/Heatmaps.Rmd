@@ -12,7 +12,6 @@ output:
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
 devtools::load_all(".")
-library(heatmap.plus)
 library(pheatmap)
 library(Biobase)
 library(ggdendro)
@@ -27,7 +26,7 @@ library(circlize)
 ```{r eval=FALSE}
 library(BS831)
 library(cba)
-library(heatmap.plus)
+##library(heatmap.plus)
 library(pheatmap)
 library(Biobase)
 library(ggdendro)
@@ -52,71 +51,41 @@ data(dm10)
 DM <- variationFilter(dm10, ngenes=500,do.plot=FALSE)
 ```
 
-## The Function `heatmap.plus`
+## The Function `pheatmap`
 
-We will begin by using `heatmap.plus` to visualize the data. Let us
-first define a simple function to create a color gradient to be used
-for coloring the gene expression heatmaps (this function is already
-defined in the `CBMRtools` package).
+We first illustrate the use of the function `pheatmap` from the omonimous package.  This function only requires a numeric matrix as input, and it allows for annotation of columns and rows.  It can perform different clustering methods on rows an columns, either by specifying parameters of the clustering method to use, or by inputting the output of free-standing clustering functions such as `hclust`. Check `?pheatmap` to explore different arguments you can set, there are a lot of them.
+
+Let us first define a simple function to create a color gradient to be used for coloring the gene expression heatmaps.
 
 ```{r colGradient, message=FALSE, warning=FALSE}
 colGradient <- function( cols, length, cmax=255 )
 {
   ## e.g., to create a white-to-red gradient with 10 levels
   ##
-  ##   col.gradient(cols=c('white','red'),length=10)
+  ##   colGradient(cols=c('white','red'),length=10)
   ##
   ## or, to create a blue-to-white-to-red gradients with 9 colors (4 blue's, white, 4 red's)
   ##
-  ##   col.gradient(cols=c('blue','white','red'),length=9)
+  ##   colGradient(cols=c('blue','white','red'),length=9)
   ##
   ramp <- grDevices::colorRamp(cols)
   rgb( ramp(seq(0,1,length=length)), max=cmax )
 }
 ```
 
-Next, let us establish the color coding of the samples in terms of
-their carcinogenicity (NA/negative/positive) and genotoxicity
-(NA/0/1). Notice the use of the function `rainbow` (to generate
-multiple colors), and the use of the function `match` to pair sample
-annotation to colors.
+We can then establish the color coding for the expression levels (blue=low, white=medium, to red=high).
 
-```{r heatplus1, message=FALSE, warning=FALSE}
-## color coding of the samples indicating carcinogenicity status and chemical
-chemicals <- unique(pData(dm10)[,"CHEMICAL"])
-chemPalette <- c("white","green","purple") # we will use the same colors for carc and gtox
-CSC <- cbind(CARC=chemPalette[match(pData(DM)[,"Carcinogen_liv"],c(NA,"NON-CARC","CARCINOGEN"))],
-             GTOX=chemPalette[match(pData(DM)[,"GenTox"],c(NA,0,1))],
-             CHEM=rainbow(length(chemicals))[match(pData(DM)[,"CHEMICAL"],chemicals)])
-
+```{r heatmap.colgradient}
 ## color gradient for the expression levels (blue=down-regulated; white=neutral; red=up-regulated)
-bwrPalette <- colGradient(c("blue","white","red"),length=13)
-
-## draw the heatmap (hide row and col labels since they'd be
-## unreadable. Also don't sort rows and columns by hierarchical
-## clustering, by setting Rowv and Colv to 'NA')
-heatmap.plus(exprs(DM),Rowv=NA,Colv=NA,col=bwrPalette,ColSideColors=CSC,labCol=NA,labRow=NA)
+bwrPalette <- colGradient(c("blue","white","red"),length=11)
 ```
 
-We now plot the heatmap with the rows and columns sorted by hierarchical clustering (see `Rmodule_hclust.Rmd`), by _not_ setting the parameters `Rowv` and `Colv`.
+Then, we will format the phenotype annotation for the columns of the heatmap, as well as specify the colors for each category for each variable, i.e., carcinogenicity (NA/negative/positive) and genotoxicity (NA/0/1), for both of which we will use the same color-coding, and chemicals. Notice the use of the function `rainbow` to generate a large number of colors for the annotaiton of the chemicals.
 
-```{r heatplus2, message=FALSE, warning=FALSE}
-heatmap.plus(exprs(DM),col=bwrPalette,ColSideColors=CSC,labCol=NA,labRow=NA)
-```
+```{r sample.color.coding}
+## color coding of the samples indicating carcinogenicity and genotoxicity 
+chemPalette <- c("white","green","purple") # we will use the same colors for carc and gtox
 
-Notice that the color-coding of the expression matrix is somewhat saturated,
-and does not allow for the highlighting of differential expression
-among samples. The subsequent visualization functions have a more
-sophisticated coding of the expression ranges, and will allow for
-better visualization.
-
-## The Function `pheatmap`
-
-We next illustrate the use of the function `pheatmap` from the `pheatmap` package.  This function only requires a numeric matrix as input.  As with `heatmap.plus` it allows for annotation of columns and rows, but with different formatting requirements.  It can perform different clustering methods on rows an columns, either by specifying parameters of the clustering method to use, or by inputting the output of free-standing clustering functions such as `hclust`. Check `?pheatmap` to explore different arguments you can set, there are a lot of them.
-
-First we will format the phenotype annotation for the columns of the heatmap, as well as specify the colors for each category for each variable.
-
-```{r pheatplusannot, message=FALSE, warning=FALSE}
 annot <- pData(DM)[, c("Carcinogen_liv", "GenTox", "CHEMICAL")]
 colnames(annot) <- c("CARC", "GTOX", "CHEM")
 annot$CHEM[annot$CHEM == ""] <- NA
@@ -133,23 +102,43 @@ names(annotCol$GTOX) <- c("0","1")
 names(annotCol$CHEM) <- levels(annot$CHEM)
 ```
 
-Next, we will create the heatmap, given the expression matrix from DrugMatrix.  Note that the argument `scale = "row"`, specifies that we want to scale each row (or gene) to mean zero, and let the colors denote the number of standard deviations from the mean.
+Next, we will create the heatmap, given the expression matrix from DrugMatrix.  Note that the argument `scale = "row"`, specifies that we want to scale each row (or gene) to mean zero, and let the colors denote the number of standard deviations from the mean. Below, we show the hetamaps with a couple of different codings of the color gradient, one using `grDevices::colorRamp` utilized in the function `colGraident`, and the other using `circlize::colorRamp2`. This is just to show there are multiple ways you can specify a color gradient.
 
-```{r pheatplusrun, message=FALSE, warning=FALSE, fig.align="center", fig.width=10}
+## {.tabset}
+
+### `grDevices::colorRamp`
+
+```{r pheatmap.colorRamp, message=FALSE, warning=FALSE, fig.align="center", fig.width=10}
 pheatmap(exprs(DM),
         color=bwrPalette, 
         annotation_col = annot,
         annotation_colors = annotCol,
+        clustering_method = "ward.D", # default is 'complete'
         show_rownames = FALSE,
         show_colnames = FALSE,
         scale = "row")
 ```
 
+### `circlize::colorRamp2`
+
+```{r pheatmap.colorRamp2, message=FALSE, warning=FALSE, fig.align="center", fig.width=10}
+pheatmap(exprs(DM),
+        color=circlize::colorRamp2(c(-3, 0, 3), c("#072448", "white", "#ff6150")), 
+        annotation_col = annot,
+        annotation_colors = annotCol,
+        clustering_method = "ward.D", # default is 'complete'
+        show_rownames = FALSE,
+        show_colnames = FALSE,
+        scale = "row")
+```
+
+## {-}
+
 ## The package `ComplexHeatmap`
 
 Here, we illustrate the use of Bioconductor package [`ComplexHeatmap`](https://bioconductor.org/packages/release/bioc/html/ComplexHeatmap.html), one of the most recently developed and most versatile. Its functionalities go well beyond the ones illustrated here.
 
-Here, we show the heatmap ordered by hierarchical clustering (both rows and columns), with the columns split into the four main clusters (as would be determined by `cutree(...,k=4)`).
+Here, we show the heatmap ordered by hierarchical clustering (both rows and columns), with the columns split into the four main clusters (as would be determined by `cutree(...,k=4)`). As explained in the [package's manual](https://jokergoo.github.io/ComplexHeatmap-reference/book/a-single-heatmap.html#split-by-categorical-variables), "_[i]f `row_km/column_km` is set or `row_split/column_split` is set as a vector or a data frame, hierarchical clustering is first applied to each slice which generates k dendrograms, then a parent dendrogram is generated based on the mean values of each slice._"
 
 ```{r ComplexHeamap}
 ## Scale expression by row 

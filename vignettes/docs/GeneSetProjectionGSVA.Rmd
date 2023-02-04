@@ -73,7 +73,7 @@ ha.genes <- HeatmapAnnotation(grade=DAT1$my_grade,
 
 Heatmap(t(scale(t(exprs(DAT1)))),
         name="gene expression", 
-        col=colorRamp2(c(-3, 0, 3), c("#072448", "white", "#ff6150")),
+        col=circlize::colorRamp2(c(-3, 0, 3), c("#072448", "white", "#ff6150")),
         top_annotation=ha.genes, 
         cluster_rows=TRUE,
         cluster_columns=TRUE,
@@ -104,7 +104,7 @@ featureNames(GSPdir) <- c("WNT_BCATENIN","BCATENIN.CSNK1E","BCATENIN.CTBP1","TGF
 
 Heatmap(t(scale(t(exprs(GSPdir)))),
         name="gene expression", 
-        col=colorRamp2(c(-3, 0, 3), c("#072448", "white", "#ff6150")),
+        col=circlize::colorRamp2(c(-3, 0, 3), c("#072448", "white", "#ff6150")),
         top_annotation=ha.genes, 
         cluster_rows=TRUE,
         cluster_columns=TRUE,

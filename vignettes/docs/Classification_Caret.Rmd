@@ -66,7 +66,7 @@ hm.annotation <- HeatmapAnnotation(
 )
 Heatmap(Biobase::exprs(DMscaled),
         name="expression", 
-        col=colorRamp2(c(-3, 0, 3), c("#072448", "white", "#ff6150")),
+        col=circlize::colorRamp2(c(-3, 0, 3), c("#072448", "white", "#ff6150")),
         top_annotation=hm.annotation, 
         cluster_rows=TRUE,
         cluster_columns=TRUE,

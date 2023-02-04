@@ -58,7 +58,7 @@ colGradient <- function( cols, length, cmax=255 )
   ##
   ##   colGradient(cols=c('blue','white','red'),length=9)
   ##
-  ramp <- colorRamp(cols)
+  ramp <- grDevices::colorRamp(cols)
   rgb( ramp(seq(0,1,length=length)), max=cmax )
 }
 ```

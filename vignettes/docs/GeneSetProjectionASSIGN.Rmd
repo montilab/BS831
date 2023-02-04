@@ -128,7 +128,7 @@ d$tumor_grade <- as.factor(as.character(d$tumor_grade)) # Remove eliminated entr
 
 Plot individual gene expression values, as well as YAP/TAZ ASSIGN scores with respect to tumor grade
 ```{r plot assign scores and gene expression,fig.height=5.5,fig.width=6}
-f <- colorRampPalette(c("gray75","darkgreen"))
+f <- grDevices::colorRampPalette(c("gray75","darkgreen"))
 ## Make a gradient of colours for different tumor grade
 grade.cols <- f(length(table(as.character(d$tumor_grade)))) 
 

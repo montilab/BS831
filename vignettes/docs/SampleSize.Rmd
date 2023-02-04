@@ -52,7 +52,7 @@ associated to 0 and 1, and plot the corresponding heatmaps.
 
 ```{r sample.size.heatmaps}
 ## creating a black-to-red palette for heatmap display
-ramp.br <- colorRamp(c( "blue","white","red"))
+ramp.br <- grDevices::colorRamp(c( "blue","white","red"))
 palette.blue2red <- rgb( ramp.br(seq(0, 1, length = 14)), max = 255)
 
 ## wrapper function extracting t-statistic and p-value from a call to function t.test
