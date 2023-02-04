@@ -165,7 +165,7 @@ ha.t <- HeatmapAnnotation(CHEMICAL=DMscaled$Carcinogen_liv,
 
 Heatmap(Biobase::exprs(DMscaled),
         name="expression", 
-        col=grDevices::colorRamp2(c(-3, 0, 3), c("#072448", "white", "#ff6150")),
+        col=circlize::colorRamp2(c(-3, 0, 3), c("#072448", "white", "#ff6150")),
         top_annotation=ha.t, 
         cluster_rows=TRUE,
         cluster_columns=TRUE,
@@ -186,7 +186,7 @@ In the following example, we use k-means clustering instead to split the dataset
 set.seed(123) ## for reproducibility of the k-means results
 Heatmap(Biobase::exprs(DMscaled),
         name="expression", 
-        col=grDevices::colorRamp2(c(-3, 0, 3), c("#072448", "white", "#ff6150")),
+        col=circlize::colorRamp2(c(-3, 0, 3), c("#072448", "white", "#ff6150")),
         top_annotation=ha.t, 
         cluster_rows=TRUE,
         cluster_columns=TRUE,
