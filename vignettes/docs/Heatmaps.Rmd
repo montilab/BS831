@@ -102,11 +102,9 @@ names(annotCol$GTOX) <- c("0","1")
 names(annotCol$CHEM) <- levels(annot$CHEM)
 ```
 
-Next, we will create the heatmap, given the expression matrix from DrugMatrix.  Note that the argument `scale = "row"`, specifies that we want to scale each row (or gene) to mean zero, and let the colors denote the number of standard deviations from the mean. Below, we show the hetamaps with a couple of different codings of the color gradient, one using `grDevices::colorRamp` utilized in the function `colGraident`, and the other using `circlize::colorRamp2`. This is just to show there are multiple ways you can specify a color gradient.
+Next, we will create the heatmap, given the expression matrix from DrugMatrix.  Note that the argument `scale = "row"`, specifies that we want to scale each row (or gene) to mean zero, and let the colors denote the number of standard deviations from the mean. Below, we show the hetamaps with a couple of different codings of the color gradient, one using `grDevices::colorRamp` utilized in the function `colGradient`, and the other using `circlize::colorRamp2`. This is just to show there are multiple ways you can specify a color gradient.
 
-## {.tabset}
-
-### `grDevices::colorRamp`
+### Color coding with `grDevices::colorRamp`
 
 ```{r pheatmap.colorRamp, message=FALSE, warning=FALSE, fig.align="center", fig.width=10}
 pheatmap(exprs(DM),
@@ -119,7 +117,7 @@ pheatmap(exprs(DM),
         scale = "row")
 ```
 
-### `circlize::colorRamp2`
+### Color coding with `circlize::colorRamp2`
 
 ```{r pheatmap.colorRamp2, message=FALSE, warning=FALSE, fig.align="center", fig.width=10}
 pheatmap(exprs(DM),
@@ -131,8 +129,6 @@ pheatmap(exprs(DM),
         show_colnames = FALSE,
         scale = "row")
 ```
-
-## {-}
 
 ## The package `ComplexHeatmap`
 
