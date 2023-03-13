@@ -275,15 +275,11 @@ that we want to scale each row (or gene) to mean zero, and let the
 colors denote the number of standard deviations from the mean. Below, we
 show the hetamaps with a couple of different codings of the color
 gradient, one using <code><a href="https://rdrr.io/r/grDevices/colorRamp.html" class="external-link">grDevices::colorRamp</a></code> utilized in the
-function <code>colGraident</code>, and the other using
+function <code>colGradient</code>, and the other using
 <code><a href="https://rdrr.io/pkg/circlize/man/colorRamp2.html" class="external-link">circlize::colorRamp2</a></code>. This is just to show there are
 multiple ways you can specify a color gradient.</p>
-</div>
-<div class="section level2 tabset">
-<h2 class="tabset" id="section"></h2>
 <div class="section level3">
-<h3 id="grdevicescolorramp">
-<code>grDevices::colorRamp</code><a class="anchor" aria-label="anchor" href="#grdevicescolorramp"></a>
+<h3 id="color-coding-with-grdevicescolorramp">Color coding with <code>grDevices::colorRamp</code><a class="anchor" aria-label="anchor" href="#color-coding-with-grdevicescolorramp"></a>
 </h3>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html" class="external-link">pheatmap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span>,</span>
@@ -297,8 +293,7 @@ multiple ways you can specify a color gradient.</p>
 <p><img src="Heatmaps_files/figure-html/pheatmap.colorRamp-1.png" width="960" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="circlizecolorramp2">
-<code>circlize::colorRamp2</code><a class="anchor" aria-label="anchor" href="#circlizecolorramp2"></a>
+<h3 id="color-coding-with-circlizecolorramp2">Color coding with <code>circlize::colorRamp2</code><a class="anchor" aria-label="anchor" href="#color-coding-with-circlizecolorramp2"></a>
 </h3>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/pheatmap/man/pheatmap.html" class="external-link">pheatmap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">DM</span><span class="op">)</span>,</span>
@@ -311,9 +306,6 @@ multiple ways you can specify a color gradient.</p>
 <span>        scale <span class="op">=</span> <span class="st">"row"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Heatmaps_files/figure-html/pheatmap.colorRamp2-1.png" width="960" style="display: block; margin: auto;"></p>
 </div>
-</div>
-<div class="section level2 unnumbered">
-<h2 class="unnumbered" id="section-1"></h2>
 </div>
 <div class="section level2">
 <h2 id="the-package-complexheatmap">The package <code>ComplexHeatmap</code><a class="anchor" aria-label="anchor" href="#the-package-complexheatmap"></a>
