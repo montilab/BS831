@@ -112,6 +112,6 @@ installR <- function(
     ## packages better installed directly from github
     devtools::install_github("montilab/hypeR")
     devtools::install_github("montilab/vennr")
-    devtools::install_github("montilab/ConAn")
+    #devtools::install_github("montilab/ConAn")
     #devtools::install_github("montilab/BS831")
 }
