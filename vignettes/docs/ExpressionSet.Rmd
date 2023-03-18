@@ -64,9 +64,9 @@ dim(Biobase::fData(tmp)) # the genes' annotation
 # The `SummarizedExperiment` object
 
 ![SummarizedExperiment example](../figs/SummarizedExperiment.png)
-**Figure 2: SummarizedExperiment object** [[source](https://bioconductor.org/help/course-materials/2019/BSS2019/04_Practical_CoreApproachesInBioconductor.html)].
+**Figure 2: SummarizedExperiment object** [[source](https://bioconductor.org/help/course-materials/2019/BSS2019/04_Practical_CoreApproachesInBioconductor.html)]
 
-The `ExpressionSet` is generally used for array-based experiments and gene expression data, where the rows are features, and the `SummarizedExperiment` is generally used for sequencing-based experiments, where the rows are GenomicRanges. 
+The `ExpressionSet` was originally designed for array-based experiments and gene expression data, where the rows are features, and the `SummarizedExperiment` was designed with sequencing-based experiments in mind, where the rows are GenomicRanges (e.g., the start and end location of a copy number alteration). However, the SummarizedExperiment can also be used with features, and Bioconducor recommends it as the default class to represent data from omics assays.
 
 ## Mapping from `ExpressionSet` to `SummarizedExperiment`
 It is possible to easily map an `ExpressionSet` to a `SummarizedExperiment`.

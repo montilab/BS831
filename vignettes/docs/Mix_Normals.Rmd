@@ -48,8 +48,9 @@ Below, we generate a sample from a 3-component Gaussian mixture, and
 show the data histogram together with the density plot.
 
 ```{r rmixnorm}
+## see R/mixnorm.R
 set.seed(345) # for reproducible results
-M3 <- rmixnorm(500,p=rep(1/3,3),mu=c(0,5,10),sigma=c(1,2,3))
+M3 <- rmixnorm(500,p=rep(1/3,3),mu=rep(1/3,3),sigma=rep(1/3,3))
 hist(M3,probability=TRUE)
 plot.mixnorm(1000,p=rep(1/3,3),mu=c(0,5,10),sigma=c(1,2,3),add=TRUE)
 
@@ -57,6 +58,18 @@ plot.mixnorm(1000,p=rep(1/3,3),mu=c(0,5,10),sigma=c(1,2,3),add=TRUE)
 plot.mixnorm(1000,p=rep(1/3,3),mu=c(0,5,10),sigma=c(1,2,3))
 hist(M3,probability=TRUE,add=TRUE) 
 abline(v=c(0,5,10),lty=3,col='red')
+```
+
+```{r ggplot.mixnorm, eval=FALSE, echo=FALSE}
+DF <- data.frame(
+    x = M3,
+    Q = sort(rmixnorm( size=500, p=rep(1/3,3), mu=rep(1/3,3), sigma=rep(1/3,3) ))) |>
+    dplyr::mutate(D=dmixnorm(Q, p=rep(1/3,3), mu=rep(1/3,3), sigma=rep(1/3,3)))
+
+ggplot2::ggplot(DF,aes(x=x)) +
+  geom_histogram(aes(y=..density..), col="black",fill="pink", alpha=0.4) +
+  geom_density()
+
 ```
 
 ## The MClust package

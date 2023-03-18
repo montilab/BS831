@@ -272,11 +272,15 @@ carried out straightforwardly.</p>
 <h2 id="the-summarizedexperiment-object">The <code>SummarizedExperiment</code> object<a class="anchor" aria-label="anchor" href="#the-summarizedexperiment-object"></a>
 </h2>
 <p><img src="../figs/SummarizedExperiment.png" alt="SummarizedExperiment example"><strong>Figure 2:
-SummarizedExperiment object</strong> [<a href="https://bioconductor.org/help/course-materials/2019/BSS2019/04_Practical_CoreApproachesInBioconductor.html" class="external-link">source</a>].</p>
-<p>The <code>ExpressionSet</code> is generally used for array-based
-experiments and gene expression data, where the rows are features, and
-the <code>SummarizedExperiment</code> is generally used for
-sequencing-based experiments, where the rows are GenomicRanges.</p>
+SummarizedExperiment object</strong> [<a href="https://bioconductor.org/help/course-materials/2019/BSS2019/04_Practical_CoreApproachesInBioconductor.html" class="external-link">source</a>]</p>
+<p>The <code>ExpressionSet</code> was originally designed for
+array-based experiments and gene expression data, where the rows are
+features, and the <code>SummarizedExperiment</code> was designed with
+sequencing-based experiments in mind, where the rows are GenomicRanges
+(e.g., the start and end location of a copy number alteration). However,
+the SummarizedExperiment can also be used with features, and Bioconducor
+recommends it as the default class to represent data from omics
+assays.</p>
 <div class="section level3">
 <h3 id="mapping-from-expressionset-to-summarizedexperiment">Mapping from <code>ExpressionSet</code> to
 <code>SummarizedExperiment</code><a class="anchor" aria-label="anchor" href="#mapping-from-expressionset-to-summarizedexperiment"></a>

@@ -13,7 +13,7 @@ output:
 knitr::opts_chunk$set(message=FALSE, warning=FALSE)
 ```
 
-Here we show a simple example of the gains in efficiency that can be achieved by taking advantage of matrix operations rather than multiple calls to a function. For more on the topic, see [this RCS module](http://rcs.bu.edu/examples/r/tutorials/R7-Optimization/opt.R).
+Here we show a simple example of the gains in efficiency that can be achieved by taking advantage of matrix operations rather than multiple calls to a function. For more on the topic, see [this RCS module](https://drive.google.com/file/d/1cObV9rrXIi_vyGtKer6pd6mRz_347_m6/view?usp=share_link).
 
 In this example, we compare three approaches to computing the row sums
 of a large matrix. In the first (inefficient) approach, we make
