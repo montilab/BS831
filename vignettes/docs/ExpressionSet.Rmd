@@ -9,9 +9,7 @@ output:
     css: "../style/BS831.css" 
 ---
 
-Simple example of use of the R object `ExpressionSet`,
-ideal for the storage of gene expression or similarly structured omic
-data.
+Simple example of use of the R object `ExpressionSet`, ideal for the storage of gene expression or similarly structured omic data.
 
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
@@ -26,12 +24,9 @@ library(Biobase) # The package with the ExpressionSet definition, among others
 
 # The `ExpressionSet` object
 
-An expression set is a data object consisting of three entities: the
-expression matrix (`exprs`), the phenotye data (`pData`), and the
-feature data (`fData`).
+An expression set is a data object consisting of three entities: the expression matrix (`exprs`), the phenotye data (`pData`), and the feature data (`fData`).
 
-![ExpressionSet example](../figs/ExpressionSet.png)
-**Figure 1: ExpressionSet object** 
+![ExpressionSet example](../figs/ExpressionSet.png) **Figure 1: ExpressionSet object**
 
 We upload an expression set already available. It corresponds to a subset of samples from a gene expression dataset of head and neck squamous carcinoma (HNSC) primary tissue samples from the TCGA project.
 
@@ -47,13 +42,14 @@ hnsc <- HNSC_RNASeq_toy_ES
 
 dim(hnsc)        # the expression data
 dim(Biobase::pData(hnsc)) # the phenotypic annotation
-dim(Biobase::fData(hnsc)) # the genes' annotation
-
 head(Biobase::pData(hnsc))
+
+dim(Biobase::fData(hnsc)) # the genes' annotation
 head(Biobase::fData(hnsc))
 ```
 
 One of the advantages of using an ExpressionSet is that the three component objects are always properly paired, and subsetting can be carried out straightforwardly.
+
 ```{r subsetting}
 tmp <- hnsc[1:100,1:10]
 dim(tmp)        # the expression data
@@ -63,18 +59,19 @@ dim(Biobase::fData(tmp)) # the genes' annotation
 
 # The `SummarizedExperiment` object
 
-![SummarizedExperiment example](../figs/SummarizedExperiment.png)
-**Figure 2: SummarizedExperiment object** [[source](https://bioconductor.org/help/course-materials/2019/BSS2019/04_Practical_CoreApproachesInBioconductor.html)]
+![SummarizedExperiment example](../figs/SummarizedExperiment.png) **Figure 2: SummarizedExperiment object** [[source](https://bioconductor.org/help/course-materials/2019/BSS2019/04_Practical_CoreApproachesInBioconductor.html)].
 
-The `ExpressionSet` was originally designed for array-based experiments and gene expression data, where the rows are features, and the `SummarizedExperiment` was designed with sequencing-based experiments in mind, where the rows are GenomicRanges (e.g., the start and end location of a copy number alteration). However, the SummarizedExperiment can also be used with features, and Bioconducor recommends it as the default class to represent data from omics assays.
+The `ExpressionSet` is generally used for array-based experiments and gene expression data, where the rows are features, and the `SummarizedExperiment` is generally used for sequencing-based experiments, where the rows are GenomicRanges.
 
 ## Mapping from `ExpressionSet` to `SummarizedExperiment`
+
 It is possible to easily map an `ExpressionSet` to a `SummarizedExperiment`.
 
 ```{r summarized.experiment}
 library(SummarizedExperiment)
 sexp <- SummarizedExperiment::makeSummarizedExperimentFromExpressionSet(hnsc)
 
+names(assays(sexp))
 head(SummarizedExperiment::colData(sexp)) # equivalent to pData
 head(SummarizedExperiment::rowData(sexp)) # equivalent to fData
 ```
