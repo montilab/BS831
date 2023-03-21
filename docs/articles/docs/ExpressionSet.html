@@ -189,7 +189,7 @@ Monti</h4>
 ideal for the storage of gene expression or similarly structured omic
 data.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/montilab/BS831">BS831</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">BS831</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/Biobase" class="external-link">Biobase</a></span><span class="op">)</span> <span class="co"># The package with the ExpressionSet definition, among others</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="the-expressionset-object">The <code>ExpressionSet</code> object<a class="anchor" aria-label="anchor" href="#the-expressionset-object"></a>
@@ -219,9 +219,6 @@ project.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu">Biobase</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html" class="external-link">pData</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span><span class="op">)</span> <span class="co"># the phenotypic annotation</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 25  6</span></span></code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu">Biobase</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html" class="external-link">fData</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span><span class="op">)</span> <span class="co"># the genes' annotation</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 19844     3</span></span></code></pre>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">Biobase</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/phenoData.html" class="external-link">pData</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                 bcr_patient_barcode bcr_sample_barcode tissue_type my_grade</span></span>
 <span><span class="co">## TCGA-CV-6962-11        TCGA-CV-6962    TCGA-CV-6962-11          AN       AN</span></span>
@@ -237,6 +234,9 @@ project.</p>
 <span><span class="co">## TCGA-CV-7438-11        AN                           oral tongue</span></span>
 <span><span class="co">## TCGA-CV-7440-11        AN                                larynx</span></span>
 <span><span class="co">## TCGA-BA-7269-01 stage iii                           oral tongue</span></span></code></pre>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu">Biobase</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html" class="external-link">fData</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span><span class="op">)</span> <span class="co"># the genes' annotation</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 19844     3</span></span></code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">Biobase</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html" class="external-link">fData</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##             entrez_id gene_symbol</span></span>
@@ -272,15 +272,11 @@ carried out straightforwardly.</p>
 <h2 id="the-summarizedexperiment-object">The <code>SummarizedExperiment</code> object<a class="anchor" aria-label="anchor" href="#the-summarizedexperiment-object"></a>
 </h2>
 <p><img src="../figs/SummarizedExperiment.png" alt="SummarizedExperiment example"><strong>Figure 2:
-SummarizedExperiment object</strong> [<a href="https://bioconductor.org/help/course-materials/2019/BSS2019/04_Practical_CoreApproachesInBioconductor.html" class="external-link">source</a>]</p>
-<p>The <code>ExpressionSet</code> was originally designed for
-array-based experiments and gene expression data, where the rows are
-features, and the <code>SummarizedExperiment</code> was designed with
-sequencing-based experiments in mind, where the rows are GenomicRanges
-(e.g., the start and end location of a copy number alteration). However,
-the SummarizedExperiment can also be used with features, and Bioconducor
-recommends it as the default class to represent data from omics
-assays.</p>
+SummarizedExperiment object</strong> [<a href="https://bioconductor.org/help/course-materials/2019/BSS2019/04_Practical_CoreApproachesInBioconductor.html" class="external-link">source</a>].</p>
+<p>The <code>ExpressionSet</code> is generally used for array-based
+experiments and gene expression data, where the rows are features, and
+the <code>SummarizedExperiment</code> is generally used for
+sequencing-based experiments, where the rows are GenomicRanges.</p>
 <div class="section level3">
 <h3 id="mapping-from-expressionset-to-summarizedexperiment">Mapping from <code>ExpressionSet</code> to
 <code>SummarizedExperiment</code><a class="anchor" aria-label="anchor" href="#mapping-from-expressionset-to-summarizedexperiment"></a>
@@ -291,7 +287,10 @@ assays.</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/SummarizedExperiment" class="external-link">SummarizedExperiment</a></span><span class="op">)</span></span>
 <span><span class="va">sexp</span> <span class="op">&lt;-</span> <span class="fu">SummarizedExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/makeSummarizedExperimentFromExpressionSet.html" class="external-link">makeSummarizedExperimentFromExpressionSet</a></span><span class="op">(</span><span class="va">hnsc</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">SummarizedExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">sexp</span><span class="op">)</span><span class="op">)</span> <span class="co"># equivalent to pData</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assays</a></span><span class="op">(</span><span class="va">sexp</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] "exprs"</span></span></code></pre>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">SummarizedExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">sexp</span><span class="op">)</span><span class="op">)</span> <span class="co"># equivalent to pData</span></span></code></pre></div>
 <pre><code><span><span class="co">## DataFrame with 6 rows and 6 columns</span></span>
 <span><span class="co">##                 bcr_patient_barcode bcr_sample_barcode tissue_type    my_grade</span></span>
 <span><span class="co">##                            &lt;factor&gt;           &lt;factor&gt; &lt;character&gt; &lt;character&gt;</span></span>
@@ -309,7 +308,7 @@ assays.</p>
 <span><span class="co">## TCGA-CV-7438-11          AN                           oral tongue</span></span>
 <span><span class="co">## TCGA-CV-7440-11          AN                           larynx     </span></span>
 <span><span class="co">## TCGA-BA-7269-01   stage iii                           oral tongue</span></span></code></pre>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">SummarizedExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">sexp</span><span class="op">)</span><span class="op">)</span> <span class="co"># equivalent to fData</span></span></code></pre></div>
 <pre><code><span><span class="co">## DataFrame with 6 rows and 3 columns</span></span>
 <span><span class="co">##             entrez_id gene_symbol</span></span>
