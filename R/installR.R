@@ -75,6 +75,7 @@ installR <- function(
     )
     ## Bioconductor packages
     core_bioC_pkgs <- c(
+        "affy",
         "ASSIGN",
         "Biobase",
         "biomaRt",
