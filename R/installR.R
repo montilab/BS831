@@ -91,6 +91,7 @@ installR <- function(
     add_bioC_pkgs <- c(
         "BioinformaticsFMRP/TCGAbiolinksGUI.data",
         "BioinformaticsFMRP/TCGAbiolinks",
+        'flashClust',
         "GO.db",
         "impute",
         "pdInfoBuilder",
