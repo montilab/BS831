@@ -92,6 +92,7 @@ installR <- function(
         "BioinformaticsFMRP/TCGAbiolinksGUI.data",
         "BioinformaticsFMRP/TCGAbiolinks",
         "GO.db",
+        "impute",
         "pdInfoBuilder",
         "RNASeqPower",
         "ROC",
