@@ -15,11 +15,16 @@ sizes.
 
 ```{r include=FALSE}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE)
-library(heatmap.plus)
+library(ComplexHeatmap)
 ```
 
 ```{r eval=FALSE}
-library(heatmap.plus)
+library(ComplexHeatmap)
+```
+
+```{r settings}
+Nrow <- 10000
+Ncol <- 200
 ```
 
 # Sample Size's effect on heatmap visualization
@@ -27,30 +32,62 @@ library(heatmap.plus)
 Here we show the scenario presented in class (slide "Gene markers
 selection: better than chance?"). In the examples below, we show
 heatmaps corresponding to random noise, and we show that, if enough
-hypotheses are tested (in this case, 10,000), and the sample size is
+hypotheses are tested (in this case, `r Nrow`), and the sample size is
 sufficiently small (e.g., n=6), we can easily identify 'genes' whose
 expression pattern _seems_ to be strongly associated with the
 phenotype (in this case, a random head/tail), as suggested by the
 heatmap with a clear blue-to-red pattern. As the sample size increases
-(e.g., n=100), it is more difficult to be 'fooled', as the
+(e.g., n=`r Ncol`), it is more difficult to be 'fooled', as the
 corresponding heatmap shows a less clear blue-to-red pattern.
 
-We start by generating a large [10,000x100] matrix filled with random
+## Data generation 
+We start by generating a large [`r Nrow`x`r Ncol`] matrix filled with random
 values drawn from a Gaussian distribution with mean=0 and stdev=0.5.
 
 ```{r random_matrix}
 set.seed(123) # for reproducible results
-Nrow <- 10000
-Ncol <- 100
 DAT <- matrix(rnorm(Ncol*Nrow,mean=0,sd=0.5),nrow=Nrow,ncol=Ncol)
 hist(DAT)
 ```
 
 We then pick a small subset of columns from this matrix and randomly
-assign them a binary (0-1) phenotype. We then pick the top 25 markers
-associated to 0 and 1, and plot the corresponding heatmaps.
+assign them a binary (`head`-`tail`) phenotype. We then pick the top 25 markers
+associated to `head` and `tail`, and plot the corresponding heatmaps.
 
-```{r sample.size.heatmaps}
+## Heatmaps ~ sample size {.tabset}
+
+```{r wrapper}
+heatmap_wrapper <- function(DAT, Ncol, ndraw) {
+  ## randomly select Ncol columns from the full matrix
+  DATi <- DAT[, colDraw <- sample(Ncol, size = ndraw)]
+  ## generate a (head/tail) phenotype of proper size
+  pheno <- factor(rep(c("head", "tail"), each = ndraw / 2))
+  ## perform t.test on each data row with respect to the random phenotype
+  DIFi <- t(apply(DATi, 1, tscore, x = pheno))
+
+  ## pick top 25 markers in each direction
+  topMarkers <- c(
+    order(DIFi[, 1], decreasing = FALSE)[1:25],
+    order(DIFi[, 1], decreasing = TRUE)[1:25]
+  )
+  ## visualize the corresponding heatmap of 50 markers
+  annot_col <- ComplexHeatmap::HeatmapAnnotation(
+    toss = pheno,
+    col = list(toss = c("head" = "green", "tail" = "orange"))
+  )
+  print(ComplexHeatmap::Heatmap(DATi[topMarkers, ],
+    name = paste("sample size =", ndraw),
+    col = circlize::colorRamp2(c(-1, 0, 1), c("#072448", "white", "#ff6150")),
+    top_annotation = annot_col,
+    cluster_rows = FALSE,
+    cluster_columns = FALSE,
+    row_title = "",
+    show_column_names = FALSE,
+    show_row_names = FALSE
+  ))
+  ## show the top markers (by p-value)
+  print(head(cbind(DIFi, FDR = p.adjust(DIFi[, 2], method = "BH"))[topMarkers, ]))
+}
 ## creating a black-to-red palette for heatmap display
 ramp.br <- grDevices::colorRamp(c( "blue","white","red"))
 palette.blue2red <- rgb( ramp.br(seq(0, 1, length = 14)), max = 255)
@@ -60,24 +97,31 @@ tscore <- function(y,x) {
   tmp <- t.test(y~x)
   c(score=tmp$statistic,pval=tmp$p.value)
 }
-## carry out multiple differential analysis on progressively larger sample sizes
-for (ndraw in c(6,14,30,100) ) 
-{ 
-  ## randomly select Ncol columns from the full matrix
-  DATi <- DAT[,colDraw <- sample(Ncol,size=ndraw)]
-  ## generate a (head/tail) phenotype of proper size
-  pheno <- factor(rep(c('head','tail'),each=ndraw/2))
-  ## perform t.test on each data row with respect to the random phenotype
-  DIFi <- t(apply(DATi,1,tscore,x=pheno))
-  
-  ## pick top 25 markers in each direction
-  topMarkers <- c(order(DIFi[,1],decreasing=FALSE)[1:25],order(DIFi[,1],decreasing=TRUE)[1:25])
-  ## visualize the corresponding heatmap of 50 markers
-  CSC <- c('green','orange')[pheno] # green=head, orange=tail
-  heatmap.plus(DATi[topMarkers,],col=palette.blue2red,Colv=NA,Rowv=NA,ColSideColors=cbind(CSC,CSC),
-               main=paste("sample size =",ndraw))
-  
-  ## show the top markers (by p-value)
-  print(head(cbind(DIFi,FDR=p.adjust(DIFi[,2],method="BH"))[topMarkers,]))
-}  
 ```
+
+### Sample size = 6
+```{r}
+heatmap_wrapper( DAT=DAT, Ncol=Ncol, ndraw = 6)
+```
+
+### Sample size = 14
+```{r}
+heatmap_wrapper( DAT=DAT, Ncol=Ncol, ndraw = 14)
+```
+
+### Sample size = 30
+```{r}
+heatmap_wrapper( DAT=DAT, Ncol=Ncol, ndraw = 30)
+```
+
+### Sample size = 100
+```{r}
+heatmap_wrapper( DAT=DAT, Ncol=Ncol, ndraw = 100)
+```
+
+### Sample size = 200
+```{r}
+heatmap_wrapper( DAT=DAT, Ncol=Ncol, ndraw = 200)
+```
+
+## {-}
