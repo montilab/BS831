@@ -91,6 +91,7 @@ installR <- function(
     add_bioC_pkgs <- c(
         "BioinformaticsFMRP/TCGAbiolinksGUI.data",
         "BioinformaticsFMRP/TCGAbiolinks",
+        "bumphunter",
         'flashClust',
         "GO.db",
         "impute",
@@ -98,7 +99,8 @@ installR <- function(
         "RNASeqPower",
         "ROC",
         "sesameData",
-        "sesame"
+        "sesame",
+        "IlluminaHumanMethylation450kanno.ilmn12.hg19"
     )
     ## install CRAN packages
     install.packages(core_cran_pkgs,repos="http://cran.r-project.org")
