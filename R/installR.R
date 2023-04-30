@@ -93,6 +93,7 @@ installR <- function(
         "BioinformaticsFMRP/TCGAbiolinks",
         'flashClust',
         "GO.db",
+        "gprofiler2",
         "impute",
         "pdInfoBuilder",
         "RNASeqPower",
