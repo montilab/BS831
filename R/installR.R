@@ -1,3 +1,6 @@
+## You can source this function as follows:
+## source("https://raw.githubusercontent.com/montilab/BS831/master/R/installR.R")
+
 ## various packages (more than you probably need)
 #' @import devtools
 #' @import BiocManager
@@ -53,10 +56,12 @@ installR <- function(
         "markdown",
         "matrixStats",
         "MEGENA",
+        "misc3d"
         "msigdbr",
         "pamr",
         "pbapply",
         "pkgdown",
+        "psych",
         "Rmisc",
         "randomForest",
         "reactable",
@@ -66,9 +71,10 @@ installR <- function(
         "rmeta",
         "roxygen2",
         "qdapTools",
-        "statmod",
         "shinyjs",
         "shinythemes",
+        "SILGGM",
+        "statmod",
         "survminer",
         "tidygraph",
         "tidyverse"

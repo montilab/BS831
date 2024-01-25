@@ -44,7 +44,7 @@ fast.tscore <- function(x, cls=NULL, y=NULL, generalized=FALSE, do.test=FALSE,
   score <- NULL
   x.idx <- 1:ncol(x)
 
-  VERBOSE( verbose, "\tt test .. " )
+  #VERBOSE( verbose, "\tt test .. " )
 
   n1 <- (ncol(x)); if (n1<2) stop( "need at least 2 obs per class" )
   n2 <- (ncol(y)); if (n2<2) stop( "need at least 2 obs per class" )
@@ -91,6 +91,6 @@ fast.tscore <- function(x, cls=NULL, y=NULL, generalized=FALSE, do.test=FALSE,
     }
     score <- cbind( score=score, p.value=pval )
   }
-  VERBOSE( verbose, "done.\n" )
+  #VERBOSE( verbose, "done.\n" )
   return( score )
 }
