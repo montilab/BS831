@@ -131,6 +131,35 @@ ttestRes1$t.fdr <- p.adjust(ttestRes1$t.pvalue, method = "BH")
 head(ttestRes1)
 ```
 
+### Efficient Computation
+
+Here's an aside on efficient computation (see the module [Efficient Computation in R](https://montilab.github.io/BS831/articles/docs/matrixOp.html)). Above, we used the function `t.test` together with `apply` to compute the t statistics and p-values, which requires calling the `t.test` function `r nrow(cancerSet)` times. Below, we show the use of the function `mt.teststat` in the package [`multtest`](https://bioconductor.org/packages/release/bioc/html/multtest.html), to compute the t-statistics for a large number of genes more efficiently. 
+
+```{r multtest}
+## computation based on t.test
+t_slow <- system.time(
+    res_slow <- unname(apply(
+        exprs(cancerSet), 1,
+        function(y) { t.test(y ~ pheno, var.equal = FALSE)$statistic }
+    ))
+)
+## computation based on multtest function
+t_fast <- system.time(
+    res_fast <- 
+        multtest::mt.teststat(X = exprs(cancerSet), classlabel = pheno, test = "t")
+)
+## check if the two yield the same results (modulo the sign)
+all.equal(res_slow, -res_fast)
+```
+
+Notice the considerable speed-up achieved. 
+```{r}
+## show execution times
+rbind('t.test' = t_slow, multtest = t_fast)
+```
+
+This might come particularly handy if, e.g., one wanted to compute permutation-based p-values rather than asymptotic p-values.
+
 ### Heatmap visualization
 We now show how to visualize the top markers for each class by means of the `Heatmap` function defined in the `ComplexHeatmap` package.
 

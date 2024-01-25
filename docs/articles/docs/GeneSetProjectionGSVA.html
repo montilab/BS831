@@ -20,6 +20,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -42,7 +44,7 @@
   <a href="../../index.html">Home</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Markdowns
      
     <span class="caret"></span>
@@ -62,7 +64,8 @@
       <a href="../../articles/docs/Mix_Normals.html">Mixture of Normals</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Preprocessing and Quality Control</li>
+    </li>
+<li class="dropdown-header">Preprocessing and Quality Control</li>
     <li>
       <a href="../../articles/docs/Microarray_Processing.html">Data Acquisition and ExpressionSet Basics</a>
     </li>
@@ -82,7 +85,8 @@
       <a href="../../articles/docs/quantileNormalization.html">Quantile Normalization</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Comparative Experiments I: Microarrays and Linear Models</li>
+    </li>
+<li class="dropdown-header">Comparative Experiments I: Microarrays and Linear Models</li>
     <li>
       <a href="../../articles/docs/SampleSize.html">Sample Size and Statistical Significance</a>
     </li>
@@ -102,7 +106,8 @@
       <a href="../../articles/docs/Diffanal_LimmaBC.html">Gene Expression Differential Analysis based on Limma</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Comparative Experiments II: RNA-seq and Generalized Lineary Models</li>
+    </li>
+<li class="dropdown-header">Comparative Experiments II: RNA-seq and Generalized Lineary Models</li>
     <li>
       <a href="../../articles/docs/RNAseq_ScalNorm.html">RNA-Seq Data Scaling and Normalization</a>
     </li>
@@ -110,7 +115,8 @@
       <a href="../../articles/docs/DiffanalysisRNAseqComparison.html">RNA-seq Differential Expression Analysis with DEseq2, edgeR and limma</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Comparative Experiments III: Differential Enrichment Analysis</li>
+    </li>
+<li class="dropdown-header">Comparative Experiments III: Differential Enrichment Analysis</li>
     <li>
       <a href="../../articles/docs/HyperEnrichment.html">HyperGeometric Enrichment</a>
     </li>
@@ -127,7 +133,8 @@
       <a href="../../articles/docs/GeneSetProjectionASSIGN.html">Geneset projection based on ASSIGN</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Classification</li>
+    </li>
+<li class="dropdown-header">Classification</li>
     <li>
       <a href="../../articles/docs/featureRedundancy.html">Feature Redundancy: the Good and the Bad</a>
     </li>
@@ -135,7 +142,8 @@
       <a href="../../articles/docs/Classification_Caret.html">Classification Using Caret</a>
     </li>
     <li class="divider">
-    <li class="dropdown-header">Clustering</li>
+    </li>
+<li class="dropdown-header">Clustering</li>
     <li>
       <a href="../../articles/docs/Clustering.html">Clustering and Heatmap Visualization</a>
     </li>
@@ -162,105 +170,121 @@
 
       
 
-      </header><script src="GeneSetProjectionGSVA_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Gene Set Projection based on KS</h1>
-                        <h4 class="author">Stefano Monti</h4>
+                        <h4 data-toc-skip class="author">Stefano
+Monti</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/montilab/BS831/blob/master/vignettes/docs/GeneSetProjectionGSVA.Rmd"><code>vignettes/docs/GeneSetProjectionGSVA.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/montilab/BS831/blob/HEAD/vignettes/docs/GeneSetProjectionGSVA.Rmd"><code>vignettes/docs/GeneSetProjectionGSVA.Rmd</code></a></small>
       <div class="hidden name"><code>GeneSetProjectionGSVA.Rmd</code></div>
 
     </div>
 
     
     
-<p>In this module, we show how to use Kolmogorov-Smirnov (KS)-based scoring to map gene expression data to geneset expression data. The approach is useful to <em>abstract</em> from the gene level to the signature or pathway level, thus making the data more interpretable while at the same time making them more robust to potential batch-to-batch effects.</p>
+<p>In this module, we show how to use Kolmogorov-Smirnov (KS)-based
+scoring to map gene expression data to geneset expression data. The
+approach is useful to <em>abstract</em> from the gene level to the
+signature or pathway level, thus making the data more interpretable
+while at the same time making them more robust to potential
+batch-to-batch effects.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/montilab/BS831">BS831</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rcastelo/GSVA">GSVA</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">Biobase</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">cba</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jokergoo/ComplexHeatmap">ComplexHeatmap</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jokergoo/circlize">circlize</a></span><span class="op">)</span></code></pre></div>
-<p>We start by requiring the necessary package and loading the data. The data consists of two objects: a “toy” expression dataset of 126 genes (<code>gsp.eSet</code>); and a list of four genesets (<code>gsp.GeneSet</code>).</p>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/montilab/BS831">BS831</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rcastelo/GSVA" class="external-link">GSVA</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/Biobase" class="external-link">Biobase</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">cba</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jokergoo/ComplexHeatmap" class="external-link">ComplexHeatmap</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jokergoo/circlize" class="external-link">circlize</a></span><span class="op">)</span></span></code></pre></div>
+<p>We start by requiring the necessary package and loading the data. The
+data consists of two objects: a “toy” expression dataset of 126 genes
+(<code>gsp.eSet</code>); and a list of four genesets
+(<code>gsp.GeneSet</code>).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">gspData</span><span class="op">)</span>
-
-<span class="co">## make sure the expected objects have been uploaded ..</span>
-<span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">gsp.eSet</span><span class="op">)</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"is.null(gsp.eSet)"</span><span class="op">)</span>
-<span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">gsp.GeneSet</span><span class="op">)</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"is.null(gsp.GeneSet)"</span><span class="op">)</span>
-
-<span class="co">## show the size of the genesets and of the expression dataset</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="fu">BS831</span><span class="fu">::</span><span class="fu">getGeneSet</span><span class="op">(</span><span class="va">gsp.GeneSet</span><span class="op">)</span>,<span class="va">length</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>##                                                      ST_WNT_BETA_CATENIN_PATHWAY 
-##                                                                               34 
-##                                                      PID_BETACATENIN_DEG_PATHWAY 
-##                                                                               18 
-##                                                      PID_BETACATENIN_NUC_PATHWAY 
-##                                                                               80 
-## REACTOME_TGF_BETA_RECEPTOR_SIGNALING_IN_EMT_EPITHELIAL_TO_MESENCHYMAL_TRANSITION 
-##                                                                               16</code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">gspData</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## make sure the expected objects have been uploaded ..</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">gsp.eSet</span><span class="op">)</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"is.null(gsp.eSet)"</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">gsp.GeneSet</span><span class="op">)</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"is.null(gsp.GeneSet)"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## show the size of the genesets and of the expression dataset</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu">BS831</span><span class="fu">::</span><span class="fu">getGeneSet</span><span class="op">(</span><span class="va">gsp.GeneSet</span><span class="op">)</span>,<span class="va">length</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##                                                      ST_WNT_BETA_CATENIN_PATHWAY </span></span>
+<span><span class="co">##                                                                               34 </span></span>
+<span><span class="co">##                                                      PID_BETACATENIN_DEG_PATHWAY </span></span>
+<span><span class="co">##                                                                               18 </span></span>
+<span><span class="co">##                                                      PID_BETACATENIN_NUC_PATHWAY </span></span>
+<span><span class="co">##                                                                               80 </span></span>
+<span><span class="co">## REACTOME_TGF_BETA_RECEPTOR_SIGNALING_IN_EMT_EPITHELIAL_TO_MESENCHYMAL_TRANSITION </span></span>
+<span><span class="co">##                                                                               16</span></span></code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">gsp.eSet</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## Features  Samples 
-##      126      346</code></pre>
-<p>We then rename the dataset rows, so as to have them indexed by gene symbols.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">gsp.eSet</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Features  Samples </span></span>
+<span><span class="co">##      126      346</span></span></code></pre>
+<p>We then rename the dataset rows, so as to have them indexed by gene
+symbols.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">DAT1</span> <span class="op">&lt;-</span> <span class="va">gsp.eSet</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">gsp.eSet</span><span class="op">)</span><span class="op">[</span>,<span class="st">"symbol"</span><span class="op">]</span><span class="op">!=</span><span class="st">""</span>,<span class="op">]</span>     <span class="co"># eliminate rows w/o gene symbols</span>
-<span class="fu">Biobase</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log2</a></span><span class="op">(</span><span class="fu">Biobase</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">)</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span>  <span class="co"># log-transform the data</span>
-<span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">featureNames</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/chartr.html">toupper</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html">fData</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">)</span><span class="op">[</span>,<span class="st">"symbol"</span><span class="op">]</span><span class="op">)</span> <span class="co"># replace row names</span>
-<span class="va">DAT1</span><span class="op">$</span><span class="va">my_grade</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">$</span><span class="va">my_grade</span><span class="op">)</span>
-<span class="va">DAT1</span><span class="op">$</span><span class="va">my_stage</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">$</span><span class="va">my_stage</span><span class="op">)</span></code></pre></div>
-<p>We next visualize the raw, gene-level, data. We use the heatmap function avaliable from <em>heatmap.ggplot.R</em>.</p>
+<code class="sourceCode R"><span><span class="va">DAT1</span> <span class="op">&lt;-</span> <span class="va">gsp.eSet</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html" class="external-link">fData</a></span><span class="op">(</span><span class="va">gsp.eSet</span><span class="op">)</span><span class="op">[</span>,<span class="st">"symbol"</span><span class="op">]</span><span class="op">!=</span><span class="st">""</span>,<span class="op">]</span>     <span class="co"># eliminate rows w/o gene symbols</span></span>
+<span><span class="fu">Biobase</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="fu">Biobase</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">)</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span>  <span class="co"># log-transform the data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html" class="external-link">featureNames</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/chartr.html" class="external-link">toupper</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureData.html" class="external-link">fData</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">)</span><span class="op">[</span>,<span class="st">"symbol"</span><span class="op">]</span><span class="op">)</span> <span class="co"># replace row names</span></span>
+<span><span class="va">DAT1</span><span class="op">$</span><span class="va">my_grade</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">$</span><span class="va">my_grade</span><span class="op">)</span></span>
+<span><span class="va">DAT1</span><span class="op">$</span><span class="va">my_stage</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">$</span><span class="va">my_stage</span><span class="op">)</span></span></code></pre></div>
+<p>We next visualize the raw, gene-level, data. We use the heatmap
+function avaliable from <em>heatmap.ggplot.R</em>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">grade_col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html">rainbow</a></span><span class="op">(</span>n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/nlevels.html">nlevels</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">$</span><span class="va">my_grade</span><span class="op">)</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">grade_col</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">$</span><span class="va">my_grade</span><span class="op">)</span>
-<span class="va">stage_col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html">rainbow</a></span><span class="op">(</span>n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/nlevels.html">nlevels</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">$</span><span class="va">my_stage</span><span class="op">)</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">stage_col</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">$</span><span class="va">my_stage</span><span class="op">)</span>
-<span class="va">ha.genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ComplexHeatmap/man/HeatmapAnnotation.html">HeatmapAnnotation</a></span><span class="op">(</span>grade<span class="op">=</span><span class="va">DAT1</span><span class="op">$</span><span class="va">my_grade</span>,
-                              stage<span class="op">=</span><span class="va">DAT1</span><span class="op">$</span><span class="va">my_stage</span>,
-                              col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>grade<span class="op">=</span><span class="va">grade_col</span>,stage<span class="op">=</span><span class="va">stage_col</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html">Heatmap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
-        name<span class="op">=</span><span class="st">"gene expression"</span>, 
-        col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/circlize/man/colorRamp2.html">colorRamp2</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#072448"</span>, <span class="st">"white"</span>, <span class="st">"#ff6150"</span><span class="op">)</span><span class="op">)</span>,
-        top_annotation<span class="op">=</span><span class="va">ha.genes</span>, 
-        cluster_rows<span class="op">=</span><span class="cn">TRUE</span>,
-        cluster_columns<span class="op">=</span><span class="cn">TRUE</span>,
-        clustering_distance_rows<span class="op">=</span><span class="st">"euclidean"</span>,
-        clustering_method_rows<span class="op">=</span><span class="st">"ward.D"</span>,    
-        clustering_distance_columns<span class="op">=</span><span class="st">"euclidean"</span>,
-        clustering_method_columns<span class="op">=</span><span class="st">"ward.D"</span>, 
-        show_parent_dend_line<span class="op">=</span><span class="cn">TRUE</span>,
-        row_title<span class="op">=</span><span class="st">""</span>,
-        show_column_names<span class="op">=</span><span class="cn">FALSE</span>,
-        show_row_names<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">grade_col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">rainbow</a></span><span class="op">(</span>n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/nlevels.html" class="external-link">nlevels</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">$</span><span class="va">my_grade</span><span class="op">)</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">grade_col</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">$</span><span class="va">my_grade</span><span class="op">)</span></span>
+<span><span class="va">stage_col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">rainbow</a></span><span class="op">(</span>n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/nlevels.html" class="external-link">nlevels</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">$</span><span class="va">my_stage</span><span class="op">)</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">stage_col</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">$</span><span class="va">my_stage</span><span class="op">)</span></span>
+<span><span class="va">ha.genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ComplexHeatmap/man/HeatmapAnnotation.html" class="external-link">HeatmapAnnotation</a></span><span class="op">(</span>grade<span class="op">=</span><span class="va">DAT1</span><span class="op">$</span><span class="va">my_grade</span>,</span>
+<span>                              stage<span class="op">=</span><span class="va">DAT1</span><span class="op">$</span><span class="va">my_stage</span>,</span>
+<span>                              col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>grade<span class="op">=</span><span class="va">grade_col</span>,stage<span class="op">=</span><span class="va">stage_col</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html" class="external-link">Heatmap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">DAT1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>        name<span class="op">=</span><span class="st">"gene expression"</span>, </span>
+<span>        col<span class="op">=</span><span class="fu">circlize</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/circlize/man/colorRamp2.html" class="external-link">colorRamp2</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#072448"</span>, <span class="st">"white"</span>, <span class="st">"#ff6150"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>        top_annotation<span class="op">=</span><span class="va">ha.genes</span>, </span>
+<span>        cluster_rows<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>        cluster_columns<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>        clustering_distance_rows<span class="op">=</span><span class="st">"euclidean"</span>,</span>
+<span>        clustering_method_rows<span class="op">=</span><span class="st">"ward.D"</span>,    </span>
+<span>        clustering_distance_columns<span class="op">=</span><span class="st">"euclidean"</span>,</span>
+<span>        clustering_method_columns<span class="op">=</span><span class="st">"ward.D"</span>, </span>
+<span>        show_parent_dend_line<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>        row_title<span class="op">=</span><span class="st">""</span>,</span>
+<span>        show_column_names<span class="op">=</span><span class="cn">FALSE</span>,</span>
+<span>        show_row_names<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="GeneSetProjectionGSVA_files/figure-html/visualize_raw-1.png" width="700"></p>
-<p>We next use the package <code>gsva</code> to perform single sample geneset projection.</p>
+<p>We next use the package <code>gsva</code> to perform single sample
+geneset projection.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">GSPdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/GSVA/man/gsva.html">gsva</a></span><span class="op">(</span><span class="va">DAT1</span>, <span class="fu">getGeneSet</span><span class="op">(</span><span class="va">gsp.GeneSet</span><span class="op">)</span>, mx.diff<span class="op">=</span><span class="cn">FALSE</span>, verbose<span class="op">=</span><span class="cn">FALSE</span>, parallel.sz<span class="op">=</span><span class="fl">1</span><span class="op">)</span>
-<span class="co">## extract the ExpressionSet</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">GSPdir</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## Features  Samples 
-##        4      346</code></pre>
-<p>.. and visualize the results. In this toy example, we projected onto four genesets only. In reality, one can use an entire geneset compendium (e.g., all genesets in MSigDB’s <a href="http://software.broadinstitute.org/gsea/msigdb/genesets.jsp?collection=CP">c2.cp</a> compendium) to obtain a richer output.</p>
+<code class="sourceCode R"><span><span class="va">GSPdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/GSVA/man/gsva.html" class="external-link">gsva</a></span><span class="op">(</span><span class="va">DAT1</span>, <span class="fu">getGeneSet</span><span class="op">(</span><span class="va">gsp.GeneSet</span><span class="op">)</span>, mx.diff<span class="op">=</span><span class="cn">FALSE</span>, verbose<span class="op">=</span><span class="cn">FALSE</span>, parallel.sz<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">## extract the ExpressionSet</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">GSPdir</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Features  Samples </span></span>
+<span><span class="co">##        4      346</span></span></code></pre>
+<p>.. and visualize the results. In this toy example, we projected onto
+four genesets only. In reality, one can use an entire geneset compendium
+(e.g., all genesets in MSigDB’s
+<a href="http://software.broadinstitute.org/gsea/msigdb/genesets.jsp?collection=CP" class="external-link">c2.cp</a>
+compendium) to obtain a richer output.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html">featureNames</a></span><span class="op">(</span><span class="va">GSPdir</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"WNT_BCATENIN"</span>,<span class="st">"BCATENIN.CSNK1E"</span>,<span class="st">"BCATENIN.CTBP1"</span>,<span class="st">"TGF_BETA"</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html">Heatmap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html">exprs</a></span><span class="op">(</span><span class="va">GSPdir</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
-        name<span class="op">=</span><span class="st">"gene expression"</span>, 
-        col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/circlize/man/colorRamp2.html">colorRamp2</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#072448"</span>, <span class="st">"white"</span>, <span class="st">"#ff6150"</span><span class="op">)</span><span class="op">)</span>,
-        top_annotation<span class="op">=</span><span class="va">ha.genes</span>, 
-        cluster_rows<span class="op">=</span><span class="cn">TRUE</span>,
-        cluster_columns<span class="op">=</span><span class="cn">TRUE</span>,
-        clustering_distance_rows<span class="op">=</span><span class="st">"euclidean"</span>,
-        clustering_method_rows<span class="op">=</span><span class="st">"ward.D"</span>,    
-        clustering_distance_columns<span class="op">=</span><span class="st">"euclidean"</span>,
-        clustering_method_columns<span class="op">=</span><span class="st">"ward.D"</span>, 
-        show_parent_dend_line<span class="op">=</span><span class="cn">TRUE</span>,
-        row_title<span class="op">=</span><span class="st">""</span>,
-        show_column_names<span class="op">=</span><span class="cn">FALSE</span>,
-        show_row_names<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/featureNames.html" class="external-link">featureNames</a></span><span class="op">(</span><span class="va">GSPdir</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"WNT_BCATENIN"</span>,<span class="st">"BCATENIN.CSNK1E"</span>,<span class="st">"BCATENIN.CTBP1"</span>,<span class="st">"TGF_BETA"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html" class="external-link">Heatmap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Biobase/man/exprs.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">GSPdir</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>        name<span class="op">=</span><span class="st">"gene expression"</span>, </span>
+<span>        col<span class="op">=</span><span class="fu">circlize</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/circlize/man/colorRamp2.html" class="external-link">colorRamp2</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#072448"</span>, <span class="st">"white"</span>, <span class="st">"#ff6150"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>        top_annotation<span class="op">=</span><span class="va">ha.genes</span>, </span>
+<span>        cluster_rows<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>        cluster_columns<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>        clustering_distance_rows<span class="op">=</span><span class="st">"euclidean"</span>,</span>
+<span>        clustering_method_rows<span class="op">=</span><span class="st">"ward.D"</span>,    </span>
+<span>        clustering_distance_columns<span class="op">=</span><span class="st">"euclidean"</span>,</span>
+<span>        clustering_method_columns<span class="op">=</span><span class="st">"ward.D"</span>, </span>
+<span>        show_parent_dend_line<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>        row_title<span class="op">=</span><span class="st">""</span>,</span>
+<span>        show_column_names<span class="op">=</span><span class="cn">FALSE</span>,</span>
+<span>        show_row_names<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="GeneSetProjectionGSVA_files/figure-html/visualize-1.png" width="700"></p>
   </div>
 
@@ -273,11 +297,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://github.com/tetomonti">Stefano Monti</a>, <a href="https://github.com/anfederico">Anthony Federico</a>, <a href="https://github.com/ericreed">Eric Reed</a>, <a href="https://github.com/lia978">Amy Li</a>.</p>
+  <p></p>
+<p>Developed by <a href="https://github.com/tetomonti" class="external-link">Stefano Monti</a>, <a href="https://github.com/anfederico" class="external-link">Anthony Federico</a>, <a href="https://github.com/ericreed" class="external-link">Eric Reed</a>, <a href="https://github.com/lia978" class="external-link">Amy Li</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
@@ -285,6 +311,8 @@
 
   
 
+
+  
 
   </body>
 </html>
