@@ -102,6 +102,7 @@ installR <- function(
         "GO.db",
         "gprofiler2",
         "impute",
+        "MultiAssayExperiment",
         "pdInfoBuilder",
         "RNASeqPower",
         "ROC",
