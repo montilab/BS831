@@ -64,6 +64,7 @@ installR <- function(
         "psych",
         "Rmisc",
         "randomForest",
+        "randomForestSRC",
         "reactable",
         "rgl",
         "rjson",
