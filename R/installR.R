@@ -56,7 +56,7 @@ installR <- function(
         "markdown",
         "matrixStats",
         "MEGENA",
-        "misc3d"
+        "misc3d",
         "msigdbr",
         "pamr",
         "pbapply",
