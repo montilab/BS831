@@ -35,9 +35,11 @@ installR <- function(
         "tsne",
         "umap",
         "VennDiagram",
-        "vennr")
+        "vennr",
+        "venn")
     ## additional optional CRAN packages
     add_cran_pkgs <- c(
+        "box",
         "combinat",
         "data.table",
         "dendextend",
@@ -56,7 +58,7 @@ installR <- function(
         "markdown",
         "matrixStats",
         "MEGENA",
-        "misc3d"
+        "misc3d",
         "msigdbr",
         "pamr",
         "pbapply",
