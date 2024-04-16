@@ -59,6 +59,7 @@ installR <- function(
         "matrixStats",
         "MEGENA",
         "misc3d",
+        "missForest",
         "msigdbr",
         "pamr",
         "pbapply",
