@@ -39,7 +39,11 @@ installR <- function(
         "venn")
     ## additional optional CRAN packages
     add_cran_pkgs <- c(
+<<<<<<< Updated upstream
         "box",
+=======
+        "Cairo",
+>>>>>>> Stashed changes
         "combinat",
         "data.table",
         "dendextend",
@@ -57,14 +61,19 @@ installR <- function(
         "lmerTest",
         "markdown",
         "matrixStats",
+        "mediation",
         "MEGENA",
         "misc3d",
+<<<<<<< Updated upstream
         "missForest",
+=======
+>>>>>>> Stashed changes
         "msigdbr",
         "pamr",
         "pbapply",
         "pkgdown",
-        "psych",
+        "PMCMRplus", # jonckheereTest
+        "psych",     # matrix correlation w/ p-values and q-values
         "Rmisc",
         "randomForest",
         "randomForestSRC",
@@ -78,6 +87,7 @@ installR <- function(
         "shinyjs",
         "shinythemes",
         "SILGGM",
+        "simr",
         "statmod",
         "survminer",
         "tidygraph",
