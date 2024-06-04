@@ -39,11 +39,8 @@ installR <- function(
         "venn")
     ## additional optional CRAN packages
     add_cran_pkgs <- c(
-<<<<<<< Updated upstream
         "box",
-=======
         "Cairo",
->>>>>>> Stashed changes
         "combinat",
         "data.table",
         "dendextend",
@@ -64,10 +61,7 @@ installR <- function(
         "mediation",
         "MEGENA",
         "misc3d",
-<<<<<<< Updated upstream
         "missForest",
-=======
->>>>>>> Stashed changes
         "msigdbr",
         "pamr",
         "pbapply",
