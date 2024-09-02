@@ -85,7 +85,8 @@ installR <- function(
         "statmod",
         "survminer",
         "tidygraph",
-        "tidyverse"
+        "tidyverse",
+        "vip"
     )
     ## Bioconductor packages
     core_bioC_pkgs <- c(
