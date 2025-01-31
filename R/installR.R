@@ -55,6 +55,7 @@ installR <- function(
         "glmnet",
         "gplots",
         "hierarchicalSets",
+        "leiden",
         "lme4",
         "lmerTest",
         "markdown",
