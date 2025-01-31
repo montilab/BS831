@@ -121,6 +121,7 @@ installR <- function(
         "ROC",
         "sesameData",
         "sesame",
+        "Seurat",
         "IlluminaHumanMethylation450kanno.ilmn12.hg19"
     )
     ## install CRAN packages
