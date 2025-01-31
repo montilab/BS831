@@ -110,6 +110,7 @@ installR <- function(
         "BioinformaticsFMRP/TCGAbiolinksGUI.data",
         "BioinformaticsFMRP/TCGAbiolinks",
         "bumphunter",
+        "dittoSeq"
         "EnhancedVolcano",
         "EnsDb.Hsapiens.v86",
         "flashClust",
