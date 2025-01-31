@@ -79,6 +79,7 @@ installR <- function(
         "rmeta",
         "roxygen2",
         "qdapTools",
+        "scCustomize",
         "shinyjs",
         "shinythemes",
         "SILGGM",
