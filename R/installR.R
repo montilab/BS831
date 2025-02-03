@@ -16,6 +16,7 @@ installR <- function(
         "cba",
         "circlize",
         "dplyr",
+        "eulerr",
         "ggdendro",
         "ggplot2",
         "ggpmisc",
