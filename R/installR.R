@@ -90,7 +90,8 @@ installR <- function(
         "survminer",
         "tidygraph",
         "tidyverse",
-        "vip"
+        "vip",
+        "WGCNA"
     )
     ## Bioconductor packages
     core_bioC_pkgs <- c(
@@ -111,7 +112,7 @@ installR <- function(
         "BioinformaticsFMRP/TCGAbiolinksGUI.data",
         "BioinformaticsFMRP/TCGAbiolinks",
         "bumphunter",
-        "dittoSeq"
+        "dittoSeq",
         "EnhancedVolcano",
         "EnsDb.Hsapiens.v86",
         "flashClust",
