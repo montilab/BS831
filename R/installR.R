@@ -20,6 +20,7 @@ installR <- function(
         "ggdendro",
         "ggplot2",
         "ggpmisc",
+        "ggupset",
         "gridExtra",
         "gtable",
         "heatmap.plus",
@@ -142,7 +143,7 @@ installR <- function(
         BiocManager::install(add_bioC_pkgs)
     }
     ## packages better installed directly from github
-    devtools::install_github("montilab/hypeR")
+    devtools::install_github("montilab/hypeR", ref = "dev")
     devtools::install_github("montilab/vennr")
     #devtools::install_github("montilab/ConAn")
     #devtools::install_github("montilab/BS831")
