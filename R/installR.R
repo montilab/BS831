@@ -47,6 +47,7 @@ installR <- function(
         "data.table",
         "dendextend",
         "devtools",
+        "DT",
         "dynamicTreeCut",
         "e1071",
         "ff",
@@ -90,7 +91,8 @@ installR <- function(
         "survminer",
         "tidygraph",
         "tidyverse",
-        "vip"
+        "vip",
+        "WGCNA"
     )
     ## Bioconductor packages
     core_bioC_pkgs <- c(
@@ -111,12 +113,15 @@ installR <- function(
         "BioinformaticsFMRP/TCGAbiolinksGUI.data",
         "BioinformaticsFMRP/TCGAbiolinks",
         "bumphunter",
-        "dittoSeq"
+        "ChIPQC",
+        "ChIPseeker",
+        "dittoSeq",
         "EnhancedVolcano",
         "EnsDb.Hsapiens.v86",
         "flashClust",
         "GO.db",
         "gprofiler2",
+        "IlluminaHumanMethylation450kanno.ilmn12.hg19",
         "impute",
         "MultiAssayExperiment",
         "pdInfoBuilder",
@@ -125,7 +130,7 @@ installR <- function(
         "sesameData",
         "sesame",
         "Seurat",
-        "IlluminaHumanMethylation450kanno.ilmn12.hg19"
+        "TxDb.Hsapiens.UCSC.hg38.knownGene"
     )
     ## install CRAN packages
     install.packages(core_cran_pkgs,repos="http://cran.r-project.org")
