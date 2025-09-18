@@ -18,6 +18,7 @@ installR <- function(
         "dplyr",
         "eulerr",
         "ggdendro",
+        "GGally",
         "ggplot2",
         "ggpmisc",
         "ggupset",
