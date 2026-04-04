@@ -56,6 +56,7 @@ installR <- function(
         "gee",
         "ggcorplot",
         "gitlabr",
+        "glmmTMB",
         "glmnet",
         "gplots",
         "hierarchicalSets",
