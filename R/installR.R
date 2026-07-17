@@ -55,7 +55,7 @@ installR <- function(
         "ff",
         "gee",
         "ggcorplot",
-        "gitlabr",
+        "ggpolypath",
         "glmmTMB",
         "glmnet",
         "gplots",
